@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">RealtimeBus</string>
+
+    <string name="query">查询</string>
+</resources>

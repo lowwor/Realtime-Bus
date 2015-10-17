@@ -1,0 +1,69 @@
+apply plugin: 'com.android.application'
+apply plugin: 'com.android.databinding'
+apply plugin: 'com.neenbedankt.android-apt'
+android {
+    compileSdkVersion 23
+    buildToolsVersion "22.0.1"
+
+    packagingOptions {
+        exclude 'META-INF/LICENSE.txt'
+    }
+    defaultConfig {
+        applicationId "com.lowwor.realtimebus"
+        minSdkVersion 16
+        targetSdkVersion 23
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    //parcel
+    compile 'com.hannesdorfmann.parcelableplease:annotation:1.0.1'
+    apt 'com.hannesdorfmann.parcelableplease:processor:1.0.1'
+//support
+    compile 'com.android.support:design:23.0.1'
+    compile 'com.android.support:appcompat-v7:23.0.1'
+    compile 'com.android.support:cardview-v7:23.0.1'
+    compile 'com.android.support:recyclerview-v7:23.0.1'
+
+
+    apt 'com.google.dagger:dagger-compiler:2.0'
+    compile 'io.reactivex:rxjava:1.0.0'
+    compile 'io.reactivex:rxandroid:1.0.1'
+
+    compile 'com.google.dagger:dagger:2.0'
+    compile 'org.glassfish:javax.annotation:10.0-b28'
+
+    compile 'com.jakewharton:butterknife:7.0.0'
+    compile 'com.google.code.gson:gson:2.3'
+    compile 'com.github.bumptech.glide:glide:3.6.1'
+    compile 'com.orhanobut:logger:1.11'
+
+
+    // If you need StorIO for SQLite
+    compile 'com.pushtorefresh.storio:sqlite:1.4.0'
+    // If you need StorIO for ContentResolver
+    compile 'com.pushtorefresh.storio:content-resolver:1.4.0'
+    compile 'com.pushtorefresh.storio:sqlite-annotations:1.4.0'
+    // We recommend to use Android Gradle Apt plugin: https://bitbucket.org/hvisser/android-apt
+    apt 'com.pushtorefresh.storio:sqlite-annotations-processor:1.4.0'
+
+    compile 'com.squareup.retrofit:retrofit:2.0.0-beta2'
+    compile 'com.squareup.retrofit:adapter-rxjava:2.0.0-beta2'
+    compile 'com.squareup.retrofit:converter-gson:2.0.0-beta2'
+
+    compile 'com.hannesdorfmann.parcelableplease:annotation:x.x.x'
+    apt 'com.hannesdorfmann.parcelableplease:processor:x.x.x'
+
+    compile 'com.facebook.stetho:stetho:1.1.0'
+
+
+}

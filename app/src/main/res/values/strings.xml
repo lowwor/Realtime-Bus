@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">RealtimeBus</string>
+    <string name="query">Query</string>
+
+    <string name="error_connection">Connection error！</string>
+    <string name="try_again">Try again, please!</string>
+</resources>
