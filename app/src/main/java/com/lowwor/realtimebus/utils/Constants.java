@@ -8,4 +8,5 @@ public class Constants {
 
     public static final String SP_BUS = "sp_bus";
     public static final String KEY_SP_EDITTEXT = "key_sp_edittext";
+    public static final String KEY_SP_START_FROM = "key_sp_startfrom";
 }

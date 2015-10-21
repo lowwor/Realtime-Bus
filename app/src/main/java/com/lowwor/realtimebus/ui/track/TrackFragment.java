@@ -31,7 +31,6 @@ import com.lowwor.realtimebus.utils.RxUtils;
 import com.orhanobut.logger.Logger;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -66,13 +65,16 @@ public class TrackFragment extends BaseFragment {
     @Bind(R.id.fab_switch)
     FloatingActionButton fabSwitch;
 
+    private static final int START_FROM_FIRST = 0;
+    private static final int START_FROM_LAST = 1;
+
+
 
     @Inject
     BusApiRepository mBusApiRepository;
 
 
     private String fromStation;
-    private String toStation;
     private LinearLayoutManager mLinearLayoutManager;
     private List<BusStation> mStations;
     private BusStationAdapter mBusStationAdapter;
@@ -128,7 +130,7 @@ public class TrackFragment extends BaseFragment {
                 .flatMap(new Func1<BusLineWrapper, Observable<BusStationWrapper>>() {
                     @Override
                     public Observable<BusStationWrapper> call(BusLineWrapper busLineWrapper) {
-                        return mBusApiRepository.getStationByLineId(busLineWrapper.getData().get(1).id);
+                        return mBusApiRepository.getStationByLineId(busLineWrapper.getData().get(getStartFrom()).id);
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
@@ -150,11 +152,10 @@ public class TrackFragment extends BaseFragment {
 
                     @Override
                     public void onNext(BusStationWrapper busStationWrapper) {
-//                        Logger.i(busStationWrapper.getData().get(0).name);
+                        Logger.i("getStations onNext");
                         hideLoadingViews();
                         setupBusStations(busStationWrapper.getData());
                         fromStation = mStations.get(0).name;
-                        toStation = mStations.get(mStations.size() - 1).name;
                         getBus();
                     }
                 }));
@@ -182,11 +183,12 @@ public class TrackFragment extends BaseFragment {
 
                     @Override
                     public void onNext(BusWrapper busWrapper) {
+                        Logger.i("onNext");
                         hideLoadingViews();
-
                         List<Bus> buses = busWrapper.getData();
-
-                        for (BusStation busStation : mStations) {
+                        List<BusStation> tempBustations = new ArrayList<BusStation>();
+                        tempBustations.addAll(mStations);
+                        for (BusStation busStation : tempBustations) {
                             busStation.buses = null;
                             for (Bus bus : buses) {
                                 if (bus.currentStation.equals(busStation.name)) {
@@ -203,26 +205,42 @@ public class TrackFragment extends BaseFragment {
                                 }
                             }
                         }
-                        refreshBuses();
+
+                        setupBusStations(tempBustations);
                     }
                 }));
     }
 
     private void switchDirection() {
-        String temp = fromStation;
-        fromStation = toStation;
-        toStation = temp;
-        Collections.reverse(mStations);
+        switchStartFrom();
+        getStations();
     }
 
-    private void refreshBuses() {
-        mBusStationAdapter.notifyDataSetChanged();
-    }
 
+    
     private void setupBusStations(List<BusStation> busStations) {
         mStations.clear();
         mStations.addAll(busStations);
         mBusStationAdapter.notifyDataSetChanged();
+    }
+
+    private void switchStartFrom(){
+        SharedPreferences mSharedPreferences = getActivity().getSharedPreferences(Constants.SP_BUS, Context.MODE_PRIVATE);
+        boolean startFrom = mSharedPreferences.getBoolean(Constants.KEY_SP_START_FROM, true);
+        SharedPreferences.Editor mEditor = mSharedPreferences.edit();
+        mEditor.putBoolean(Constants.KEY_SP_START_FROM,!startFrom);
+        mEditor.commit();
+    }
+
+    private int getStartFrom(){
+        SharedPreferences mSharedPreferences = getActivity().getSharedPreferences(Constants.SP_BUS, Context.MODE_PRIVATE);
+        boolean startFromFirst = mSharedPreferences.getBoolean(Constants.KEY_SP_START_FROM, true);
+        if(startFromFirst){
+            return START_FROM_FIRST;
+        }else{
+            return START_FROM_LAST;
+        }
+
     }
 
     private void restoreEdittextText() {
