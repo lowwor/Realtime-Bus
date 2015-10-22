@@ -67,6 +67,7 @@ public class TrackFragment extends BaseFragment {
 
     private static final int START_FROM_FIRST = 0;
     private static final int START_FROM_LAST = 1;
+    private String mLineName;
 
 
 
@@ -130,6 +131,7 @@ public class TrackFragment extends BaseFragment {
                 .flatMap(new Func1<BusLineWrapper, Observable<BusStationWrapper>>() {
                     @Override
                     public Observable<BusStationWrapper> call(BusLineWrapper busLineWrapper) {
+                        mLineName = busLineWrapper.getData().get(0).name;
                         return mBusApiRepository.getStationByLineId(busLineWrapper.getData().get(getStartFrom()).id);
                     }
                 })
@@ -163,7 +165,7 @@ public class TrackFragment extends BaseFragment {
 
     private void getBus() {
         Logger.i("getBus" + mStations.get(0).name);
-        mSubscriptions.add(mBusApiRepository.getBusListOnRoad(etLineName.getText().toString().toUpperCase(), fromStation)
+        mSubscriptions.add(mBusApiRepository.getBusListOnRoad(mLineName, fromStation)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
                 .subscribe(new Subscriber<BusWrapper>() {
