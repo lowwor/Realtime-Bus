@@ -189,7 +189,10 @@ public class TrackFragment extends BaseFragment {
                         List<BusStation> tempBustations = new ArrayList<BusStation>();
                         tempBustations.addAll(mStations);
                         for (BusStation busStation : tempBustations) {
-                            busStation.buses = null;
+                            if(busStation.buses!=null){
+                                busStation.buses.clear();
+                                mBusStationAdapter.notifyItemChanged(mStations.indexOf(busStation));
+                            }
                             for (Bus bus : buses) {
                                 if (bus.currentStation.equals(busStation.name)) {
 
@@ -201,12 +204,11 @@ public class TrackFragment extends BaseFragment {
                                         busStation.buses = stationBuses;
                                     }
 
-
+                                    mBusStationAdapter.notifyItemChanged(mStations.indexOf(busStation));
                                 }
                             }
                         }
 
-                        setupBusStations(tempBustations);
                     }
                 }));
     }
