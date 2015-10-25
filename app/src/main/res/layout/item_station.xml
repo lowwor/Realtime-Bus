@@ -17,12 +17,24 @@
     android:layout_height="match_parent"
     android:layout_margin="16dp"
     >
+    <ImageView
+        android:id="@+id/alarm"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:src="@{viewModel.isAlarm?@drawable/ic_alarm_on:@drawable/ic_alarm_add}"
+        android:alpha="@{viewModel.isAlarm?100:30}"
+        android:onClick="@{viewModel.onClickAlarm}"
+        android:layout_margin="8dp"
+        />
 
     <TextView
         android:id="@+id/tv_station_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
+        android:layout_toRightOf="@id/alarm"
+        android:layout_centerVertical="true"
         android:text="@{viewModel.busStationName}"
         />
 

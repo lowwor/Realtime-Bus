@@ -35,6 +35,7 @@ public class BusStation implements Parcelable {
     @SerializedName("Description")
     public String description;
 
+    public boolean isAlarm = false;
     public List<Bus> buses;
 
 

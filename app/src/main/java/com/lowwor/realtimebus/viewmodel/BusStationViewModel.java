@@ -6,8 +6,10 @@ package com.lowwor.realtimebus.viewmodel;
 
 import android.content.Context;
 import android.databinding.BaseObservable;
+import android.databinding.Bindable;
 import android.view.View;
 
+import com.lowwor.realtimebus.BR;
 import com.lowwor.realtimebus.model.BusStation;
 
 
@@ -30,12 +32,25 @@ public class BusStationViewModel extends BaseObservable {
     public int getBusNumber() {
         return (busStation.buses==null||busStation.buses.size()==0) ? 0 :busStation.buses.size();
     }
-    
 
+
+    @Bindable
+    public boolean getIsAlarm() {
+        return busStation.isAlarm;
     }
 
 
+    public View.OnClickListener onClickAlarm(){
 
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                busStation.isAlarm = !busStation.isAlarm;
+                notifyPropertyChanged(BR.isAlarm);
+
+            }
+        };
+    }
 
 
 

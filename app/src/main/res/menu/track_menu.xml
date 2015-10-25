@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/auto_refresh"
+        android:title="自动刷新"
+        android:checkable="true"
+        android:icon="@drawable/ic_time_to_leave"
+        app:showAsAction="collapseActionView"/>
+</menu>
