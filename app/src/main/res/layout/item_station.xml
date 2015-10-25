@@ -32,8 +32,9 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:textColor="@color/bus_station_bus_number"
-        android:text="@{viewModel.busNumber}"
-        android:visibility="@{viewModel.busNumberVisibility}"
+        android:layout_centerVertical="true"
+        android:text="@{viewModel.busNumber !=0 ?String.valueOf(viewModel.busNumber):null}"
+
         />
 </RelativeLayout>
 

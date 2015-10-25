@@ -15,7 +15,6 @@ public class BusStationViewModel extends BaseObservable {
 
     private Context context;
     private BusStation busStation;
-    private Boolean isUserPosts;
 
     public BusStationViewModel(Context context, BusStation busStation ) {
         this.context = context;
@@ -28,12 +27,11 @@ public class BusStationViewModel extends BaseObservable {
         return busStation.name;
     }
 
-    public String getBusNumber() {
-        return (busStation.buses==null||busStation.buses.size()==0) ? "0" :String.valueOf(busStation.buses.size());
+    public int getBusNumber() {
+        return (busStation.buses==null||busStation.buses.size()==0) ? 0 :busStation.buses.size();
     }
+    
 
-    public int getBusNumberVisibility() {
-        return  (busStation.buses==null||busStation.buses.size()==0) ? View.GONE : View.VISIBLE;
     }
 
 
