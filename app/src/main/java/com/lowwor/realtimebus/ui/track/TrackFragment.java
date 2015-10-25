@@ -94,6 +94,7 @@ public class TrackFragment extends BaseFragment {
     private CompositeSubscription mSubscriptions = new CompositeSubscription();
     private Subscription mAutoRefreshSubscription = null;
     private static final int NOTIFICATION_FLAG = 1;
+    private Subscriber mBusSubscriber;
 
     @Nullable
     @Override
@@ -192,53 +193,8 @@ public class TrackFragment extends BaseFragment {
         mSubscriptions.add(mBusApiRepository.getBusListOnRoad(mLineName, fromStation)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .subscribe(new Subscriber<BusWrapper>() {
-                    @Override
-                    public void onCompleted() {
-
-                        Logger.i("onCompleted");
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-
-                        Logger.e("There was a problem loading bus on line " + e);
-                        e.printStackTrace();
-                        hideLoadingViews();
-                    }
-
-                    @Override
-                    public void onNext(BusWrapper busWrapper) {
-                        Logger.i("onNext");
-                        hideLoadingViews();
-                        List<Bus> buses = busWrapper.getData();
-                        List<BusStation> tempBustations = new ArrayList<BusStation>();
-                        tempBustations.addAll(mStations);
-                        for (BusStation busStation : tempBustations) {
-                            if (busStation.buses != null && busStation.buses.size()!=0) {
-                                busStation.buses.clear();
-                                mBusStationAdapter.notifyItemChanged(mStations.indexOf(busStation));
-                            }
-                            for (Bus bus : buses) {
-                                if (bus.currentStation.equals(busStation.name)) {
-
-                                    if (busStation.buses != null) {
-                                        busStation.buses.add(bus);
-                                    } else {
-                                        List<Bus> stationBuses = new ArrayList<>();
-                                        stationBuses.add(bus);
-                                        busStation.buses = stationBuses;
-                                    }
-
-                                    mBusStationAdapter.notifyItemChanged(mStations.indexOf(busStation));
-                                }
-                            }
-                        }
-
-                    }
-                }));
+                .subscribe(getBusSubscriber()));
     }
-
 
     public void executeAutoRefresh() {
 
@@ -257,60 +213,65 @@ public class TrackFragment extends BaseFragment {
                     })
                             .observeOn(AndroidSchedulers.mainThread())
                             .subscribeOn(Schedulers.io())
-                            .subscribe(new Subscriber<BusWrapper>() {
-                                @Override
-                                public void onCompleted() {
-
-                                    Logger.i("onCompleted");
-                                }
-
-                                @Override
-                                public void onError(Throwable e) {
-
-                                    Logger.e("There was a problem loading bus on line " + e);
-                                    e.printStackTrace();
-                                    hideLoadingViews();
-                                }
-
-                                @Override
-                                public void onNext(BusWrapper busWrapper) {
-                                    Logger.i("onNext");
-                                    hideLoadingViews();
-                                    List<Bus> buses = busWrapper.getData();
-                                    List<BusStation> tempBustations = new ArrayList<BusStation>();
-                                    tempBustations.addAll(mStations);
-                                    for (BusStation busStation : tempBustations) {
-                                        if (busStation.buses != null) {
-                                            busStation.buses.clear();
-                                            mBusStationAdapter.notifyItemChanged(mStations.indexOf(busStation));
-                                        }
-                                        for (Bus bus : buses) {
-                                            if (bus.currentStation.equals(busStation.name)) {
-
-                                                if(busStation.isAlarm){
-                                                    notifyBusArriveNotificatoin(busStation);
-                                                }
-
-                                                if (busStation.buses != null) {
-                                                    busStation.buses.add(bus);
-                                                } else {
-                                                    List<Bus> stationBuses = new ArrayList<>();
-                                                    stationBuses.add(bus);
-                                                    busStation.buses = stationBuses;
-                                                }
-
-                                                mBusStationAdapter.notifyItemChanged(mStations.indexOf(busStation));
-                                            }
-                                        }
-                                    }
-
-                                }
-                            });
+                            .subscribe(getBusSubscriber());
         }
     }
 
 
-    private void notifyBusArriveNotificatoin(BusStation busStation ){
+    private Subscriber<BusWrapper> getBusSubscriber() {
+        return new Subscriber<BusWrapper>() {
+            @Override
+            public void onCompleted() {
+
+                Logger.i("onCompleted");
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+                Logger.e("There was a problem loading bus on line " + e);
+                e.printStackTrace();
+                hideLoadingViews();
+            }
+
+            @Override
+            public void onNext(BusWrapper busWrapper) {
+                Logger.i("onNext");
+                hideLoadingViews();
+                List<Bus> buses = busWrapper.getData();
+                List<BusStation> tempBustations = new ArrayList<BusStation>();
+                tempBustations.addAll(mStations);
+                for (BusStation busStation : tempBustations) {
+                    if (busStation.buses != null && busStation.buses.size() != 0) {
+                        busStation.buses.clear();
+                        mBusStationAdapter.notifyItemChanged(mStations.indexOf(busStation));
+                    }
+                    for (Bus bus : buses) {
+                        if (bus.currentStation.equals(busStation.name)) {
+
+                            if (busStation.isAlarm) {
+                                notifyBusArriveNotificatoin(busStation);
+                            }
+
+                            if (busStation.buses != null) {
+                                busStation.buses.add(bus);
+                            } else {
+                                List<Bus> stationBuses = new ArrayList<>();
+                                stationBuses.add(bus);
+                                busStation.buses = stationBuses;
+                            }
+
+                            mBusStationAdapter.notifyItemChanged(mStations.indexOf(busStation));
+                        }
+                    }
+                }
+
+            }
+        };
+    }
+
+
+    private void notifyBusArriveNotificatoin(BusStation busStation) {
         Notification.Builder mBuilder = new Notification.Builder(getActivity());
         mBuilder.setDefaults(Notification.DEFAULT_SOUND);
         mBuilder.setTicker(busStation.name + "的公交到站了");
