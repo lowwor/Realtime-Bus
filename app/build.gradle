@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.android.databinding'
 apply plugin: 'com.neenbedankt.android-apt'
+
 android {
     compileSdkVersion 23
     buildToolsVersion "22.0.1"
@@ -12,14 +13,36 @@ android {
         applicationId "com.lowwor.realtimebus"
         minSdkVersion 16
         targetSdkVersion 23
-        versionCode 1
-        versionName "1.0"
+        versionCode gitCommitCount()
+        versionName "1.02." + gitSha()
+        manifestPlaceholders = [CHANNEL_NAME: "Unspecified"]
     }
+    signingConfigs {
+        release
+    }
+
     buildTypes {
         release {
+            signingConfig signingConfigs.release
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            applicationVariants.all { variant ->
+                variant.outputs.each { output ->
+                    def outputFile = output.outputFile
+                    if (outputFile != null && outputFile.name.endsWith('.apk')) {
+                        // 输出apk名称为RealTimeBus_v1.0_2015-01-15_wandoujia.apk
+                        def fileName = "RealTimeBus_v${defaultConfig.versionName}_${releaseTime()}_${variant.productFlavors[0].name}.apk"
+                        output.outputFile = new File(outputFile.parent, fileName)
+                    }
+                }
+            }
         }
+    }
+
+    productFlavors {
+        umeng { manifestPlaceholders = [CHANNEL_NAME: "UMENG"] }
+        fir { manifestPlaceholders = [CHANNEL_NAME: "FIR.IM"] }
+        wandoujai {manifestPlaceholders = [CHANNEL_NAME: "WanDouJia"]}
     }
 }
 
@@ -47,6 +70,7 @@ dependencies {
     compile 'com.github.bumptech.glide:glide:3.6.1'
     compile 'com.orhanobut:logger:1.11'
 
+    compile 'com.umeng.analytics:analytics:latest.integration'
 
     // If you need StorIO for SQLite
     compile 'com.pushtorefresh.storio:sqlite:1.4.0'
@@ -67,3 +91,61 @@ dependencies {
 
 
 }
+
+//获得git commit的数目
+def gitCommitCount() {
+    try {
+        def stdout = new ByteArrayOutputStream()
+        exec {
+            commandLine 'git', 'rev-list', '--count', 'HEAD'
+            standardOutput = stdout
+        }
+        def commitCount = stdout.toString().trim().toInteger()
+        return commitCount
+    }
+    catch (ignored) {
+        return 0;
+    }
+}
+
+def gitSha() {
+    return 'git rev-parse --short HEAD'.execute().text.trim().substring(0, 4)
+}
+
+//使用独立的signing.propreties保存签名信息
+
+def File propFile = file('signing.properties');
+if (propFile.exists()) {
+    def Properties props = new Properties()
+    props.load(new FileInputStream(propFile))
+
+    if (props.containsKey('STORE_FILE') && props.containsKey('STORE_PASSWORD') &&
+            props.containsKey('KEY_ALIAS') && props.containsKey('KEY_PASSWORD')) {
+        android.signingConfigs.release.storeFile = file(props['STORE_FILE'])
+        android.signingConfigs.release.storePassword = props['STORE_PASSWORD']
+        android.signingConfigs.release.keyAlias = props['KEY_ALIAS']
+        android.signingConfigs.release.keyPassword = props['KEY_PASSWORD']
+    } else {
+        android.buildTypes.release.signingConfig = null
+    }
+} else {
+    println("keystore file not found: " + props["KEYSTORE_FILE"])
+    android.buildTypes.release.signingConfig = null
+}
+
+
+//使用独立的appkey.propreties保存appkey信息
+def File appkeyPropFile = file('appkey.properties');
+if (appkeyPropFile.exists()) {
+    def Properties appkeyProps = new Properties()
+    appkeyProps.load(new FileInputStream(appkeyPropFile))
+    android.defaultConfig.manifestPlaceholders = [UMENG_APPKEY: appkeyProps['UMENG_APPKEY']]
+} else {
+    println("appkey file not found: " + props["KEYSTORE_FILE"])
+}
+
+
+def releaseTime() {
+    return new Date().format("yyyy-MM-dd", TimeZone.getTimeZone("UTC"))
+}
+
