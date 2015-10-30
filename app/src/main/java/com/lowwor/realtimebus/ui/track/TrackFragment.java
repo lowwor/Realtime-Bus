@@ -33,6 +33,7 @@ import com.lowwor.realtimebus.model.wrapper.BusStationWrapper;
 import com.lowwor.realtimebus.model.wrapper.BusWrapper;
 import com.lowwor.realtimebus.ui.MainActivity;
 import com.lowwor.realtimebus.ui.base.BaseFragment;
+import com.lowwor.realtimebus.ui.widget.MySwipeRefreshLayout;
 import com.lowwor.realtimebus.utils.Constants;
 import com.lowwor.realtimebus.utils.NetworkUtils;
 import com.lowwor.realtimebus.utils.RxUtils;
@@ -62,7 +63,7 @@ import rx.subscriptions.CompositeSubscription;
 public class TrackFragment extends BaseFragment {
 
     @Bind(R.id.swipe_container)
-    SwipeRefreshLayout mSwipeRefreshLayout;
+    MySwipeRefreshLayout mSwipeRefreshLayout;
     @Bind(R.id.recyclerview)
     RecyclerView mRecyclerview;
     @Bind(R.id.btn_try_again)
@@ -275,6 +276,7 @@ public class TrackFragment extends BaseFragment {
         Notification.Builder mBuilder = new Notification.Builder(getActivity());
         mBuilder.setDefaults(Notification.DEFAULT_SOUND);
         mBuilder.setTicker(busStation.name + "的公交到站了");
+        mBuilder.setContentTitle(busStation.name + "的公交到站了");
         mBuilder.setContentText(busStation.name + "的公交到站了");
         mBuilder.setSmallIcon(R.drawable.ic_time_to_leave);
         NotificationManager mNotificationManager =
@@ -347,7 +349,7 @@ public class TrackFragment extends BaseFragment {
                 getBus();
             }
         });
-        mSwipeRefreshLayout.setColorSchemeResources(R.color.hn_orange);
+        mSwipeRefreshLayout.setColorSchemeResources(R.color.primary);
     }
 
     private void initRecyclerView() {
@@ -396,7 +398,6 @@ public class TrackFragment extends BaseFragment {
         ((AppCompatActivity) getActivity()).setSupportActionBar(mToolbar);
         ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         if (actionBar != null) {
-            actionBar.setDisplayShowTitleEnabled(false);
             actionBar.setDisplayHomeAsUpEnabled(false);
         }
         mToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {

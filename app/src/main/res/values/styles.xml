@@ -3,22 +3,31 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/primary</item>
+
+        <!-- colorPrimaryDark is used for the status bar -->
+        <item name="colorPrimaryDark">@color/primary_dark</item>
+
+        <!-- colorAccent is used as the default value for colorControlActivated,
+             which is used to tint widgets -->
+        <item name="colorAccent">@color/accent</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowNoTitle">true</item>
     </style>
 
-
-    <style name="AppTheme.ActionBar" parent="AppTheme">
-        <item name="android:textColorPrimary">@color/white</item>
-        <item name="android:textColor">@color/black_87pc</item>
-        <item name="drawerArrowStyle">@style/HamburgerIconStyle</item>
-        <item name="android:itemTextAppearance">@style/OptionsMenuTextColor</item>
-    </style>
 
     <style name="HamburgerIconStyle" parent="Widget.AppCompat.DrawerArrowToggle">
         <item name="color">@color/white</item>
     </style>
 
-    <style name="OptionsMenuTextColor" parent="@android:style/TextAppearance.Widget.IconMenu.Item">
-        <item name="android:textColor">@android:color/black</item>
-    </style>
 
+    <style name="TextLabel" parent="TextAppearance.AppCompat">
+        //hint color And Label Color in False State
+        <item name="android:textColorHint">@color/primary_light</item>
+        <item name="android:textSize">20sp</item>
+        //Label color in True State And Bar Color False And True State
+        <item name="colorAccent">@color/icons</item>
+        <item name="colorControlNormal">@color/primary_light</item>
+        <item name="colorControlActivated">@color/icons</item>
+    </style>
 </resources>

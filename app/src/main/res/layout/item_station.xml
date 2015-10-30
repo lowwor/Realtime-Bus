@@ -9,13 +9,12 @@
     android:id="@+id/card_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-
     android:layout_margin="8dp"
     card_view:cardCornerRadius="8dp">
 <RelativeLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="16dp"
+    android:layout_margin="8dp"
     >
     <ImageView
         android:id="@+id/alarm"
@@ -43,6 +42,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
+        android:layout_marginRight="16dp"
         android:textColor="@color/bus_station_bus_number"
         android:layout_centerVertical="true"
         android:text="@{viewModel.busNumber !=0 ?String.valueOf(viewModel.busNumber):null}"
