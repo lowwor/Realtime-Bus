@@ -14,7 +14,7 @@ android {
         minSdkVersion 16
         targetSdkVersion 23
         versionCode gitCommitCount()
-        versionName "1.02." + gitSha()
+        versionName "1.04." + gitSha()
         manifestPlaceholders = [CHANNEL_NAME: "Unspecified"]
     }
     signingConfigs {

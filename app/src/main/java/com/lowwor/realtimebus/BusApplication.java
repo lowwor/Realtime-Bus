@@ -7,6 +7,7 @@ import com.lowwor.realtimebus.injector.AppModule;
 import com.lowwor.realtimebus.injector.component.AppComponent;
 import com.lowwor.realtimebus.injector.component.DaggerAppComponent;
 import com.orhanobut.logger.Logger;
+import com.umeng.update.UmengUpdateAgent;
 
 /**
  * Created by lowworker on 2015/9/19.
@@ -23,6 +24,7 @@ public class BusApplication extends Application {
         Logger.i("onCreate BusApplication");
         initializeInjector();
         initStetho();
+        UmengUpdateAgent.update(this);
     }
 
     private void initializeInjector(){
