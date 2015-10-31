@@ -434,8 +434,10 @@ public class TrackFragment extends BaseFragment {
     }
 
     private void showHideOfflineLayout(boolean isOffline) {
+        mSwipeRefreshLayout.setVisibility(isOffline ? View.GONE : View.VISIBLE);
         mOfflineContainer.setVisibility(isOffline ? View.VISIBLE : View.GONE);
         mRecyclerview.setVisibility(isOffline ? View.GONE : View.VISIBLE);
         mProgressBar.setVisibility(isOffline ? View.GONE : View.VISIBLE);
+        fabSwitch.setVisibility(isOffline ? View.GONE : View.VISIBLE);
     }
 }
