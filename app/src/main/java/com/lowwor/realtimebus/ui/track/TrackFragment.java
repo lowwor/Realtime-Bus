@@ -19,11 +19,14 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 
+import com.f2prateek.rx.preferences.Preference;
+import com.f2prateek.rx.preferences.RxSharedPreferences;
 import com.lowwor.realtimebus.R;
 import com.lowwor.realtimebus.api.BusApiRepository;
 import com.lowwor.realtimebus.model.Bus;
@@ -40,7 +43,9 @@ import com.lowwor.realtimebus.utils.RxUtils;
 import com.orhanobut.logger.Logger;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
@@ -72,8 +77,8 @@ public class TrackFragment extends BaseFragment {
     LinearLayout mOfflineContainer;
     @Bind(R.id.progress_indicator)
     ProgressBar mProgressBar;
-    @Bind(R.id.et_line_name)
-    EditText etLineName;
+    @Bind(R.id.auto_text)
+    AutoCompleteTextView mAutoComplete;
     @Bind(R.id.fab_switch)
     FloatingActionButton fabSwitch;
     @Bind(R.id.toolbar)
@@ -86,7 +91,8 @@ public class TrackFragment extends BaseFragment {
 
     @Inject
     BusApiRepository mBusApiRepository;
-
+    @Inject
+    RxSharedPreferences mRxSharedPreferences;
 
     private String fromStation;
     private LinearLayoutManager mLinearLayoutManager;
@@ -95,7 +101,10 @@ public class TrackFragment extends BaseFragment {
     private CompositeSubscription mSubscriptions = new CompositeSubscription();
     private Subscription mAutoRefreshSubscription = null;
     private static final int NOTIFICATION_FLAG = 1;
+    private List<String> mAutoCompleteBuses = new ArrayList<>();
     private Subscriber mBusSubscriber;
+    private   ArrayAdapter<String> mAutoCompleteAdapter;
+    private Preference<Set<String>> autoCompletePref;
 
     @Nullable
     @Override
@@ -104,18 +113,17 @@ public class TrackFragment extends BaseFragment {
         ButterKnife.bind(this, fragmentView);
         Logger.i("onCreateView BaseFragment");
 
+        initDependencyInjector();
         initToolbar();
-        restoreEdittextText();
+        initAutoComplete();
         initSwipeRefresh();
         initRecyclerView();
-        initDependencyInjector();
         loadStationsIfNetworkConnected();
         return fragmentView;
     }
 
     @OnClick(R.id.btn_query)
     public void onQuery() {
-        saveEdittextText();
         loadStationsIfNetworkConnected();
     }
 
@@ -152,7 +160,7 @@ public class TrackFragment extends BaseFragment {
 
     private void getStations() {
         Logger.i("getStations");
-        mSubscriptions.add(mBusApiRepository.searchLine(etLineName.getText().toString())
+        mSubscriptions.add(mBusApiRepository.searchLine(mAutoComplete.getText().toString())
                 .flatMap(new Func1<BusLineWrapper, Observable<BusStationWrapper>>() {
                     @Override
                     public Observable<BusStationWrapper> call(BusLineWrapper busLineWrapper) {
@@ -166,7 +174,7 @@ public class TrackFragment extends BaseFragment {
                     @Override
                     public void onCompleted() {
 
-                        Logger.i("onCompleted");
+//                        Logger.i("onCompleted");
                     }
 
                     @Override
@@ -182,6 +190,7 @@ public class TrackFragment extends BaseFragment {
                         Logger.i("getStations onNext");
                         hideLoadingViews();
                         setupBusStations(busStationWrapper.getData());
+                        saveAutoComplete();
                         fromStation = mStations.get(0).name;
                         loadBusIfNetworkConnected();
                         executeAutoRefresh();
@@ -224,7 +233,7 @@ public class TrackFragment extends BaseFragment {
             @Override
             public void onCompleted() {
 
-                Logger.i("onCompleted");
+//                Logger.i("onCompleted");
             }
 
             @Override
@@ -237,7 +246,7 @@ public class TrackFragment extends BaseFragment {
 
             @Override
             public void onNext(BusWrapper busWrapper) {
-                Logger.i("onNext");
+//                Logger.i("onNext");
                 hideLoadingViews();
                 List<Bus> buses = busWrapper.getData();
                 List<BusStation> tempBustations = new ArrayList<BusStation>();
@@ -316,17 +325,50 @@ public class TrackFragment extends BaseFragment {
 
     }
 
-    private void restoreEdittextText() {
-        SharedPreferences mSharedPreferences = getActivity().getSharedPreferences(Constants.SP_BUS, Context.MODE_PRIVATE);
-        String busLineName = mSharedPreferences.getString(Constants.KEY_SP_EDITTEXT, "3a");
-        etLineName.setText(busLineName);
+    private void initAutoComplete() {
+        mAutoCompleteBuses.add("3a");
+        mAutoCompleteAdapter =  new ArrayAdapter<>(getActivity(), R.layout.item_auto_complete, mAutoCompleteBuses);
+        mAutoComplete.setAdapter(mAutoCompleteAdapter);
+        mAutoComplete.setThreshold(3);
+        autoCompletePref = mRxSharedPreferences.getStringSet(Constants.KEY_SP_AUTO_COMPLETE);
+        refreshAutoComplete();
     }
 
-    private void saveEdittextText() {
+    private void refreshAutoComplete(){
+        //don't know why didn't auto refresh
+        mSubscriptions.add(autoCompletePref.asObservable()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<Set<String>>() {
+                    @Override
+                    public void onCompleted() {
+                        Logger.i("auto onCompleted" );
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Logger.i( " auto e");
+
+                    }
+
+                    @Override
+                    public void onNext(Set<String> strings) {
+                        Logger.i("auto onNext" + strings.toString());
+                        mAutoCompleteAdapter.clear();
+                        mAutoCompleteAdapter.addAll(strings);
+                        mAutoCompleteAdapter.notifyDataSetChanged();
+                    }
+                }));
+    }
+
+    private void saveAutoComplete() {
+        Logger.i("save auto");
         SharedPreferences mSharedPreferences = getActivity().getSharedPreferences(Constants.SP_BUS, Context.MODE_PRIVATE);
         SharedPreferences.Editor mEditor = mSharedPreferences.edit();
-        mEditor.putString(Constants.KEY_SP_EDITTEXT, etLineName.getText().toString());
+        Set<String> mbuses =  mSharedPreferences.getStringSet(Constants.KEY_SP_AUTO_COMPLETE, new HashSet<String>());
+        mbuses.add(mAutoComplete.getText().toString());
+        mEditor.putStringSet(Constants.KEY_SP_AUTO_COMPLETE, mbuses);
         mEditor.commit();
+        refreshAutoComplete();
     }
 
     private boolean getAutoRefresh() {
@@ -382,6 +424,7 @@ public class TrackFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
+
         mSubscriptions = RxUtils.getNewCompositeSubIfUnsubscribed(mSubscriptions);
     }
 

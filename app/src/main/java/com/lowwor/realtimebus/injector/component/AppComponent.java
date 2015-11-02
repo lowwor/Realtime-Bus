@@ -1,5 +1,6 @@
 package com.lowwor.realtimebus.injector.component;
 
+import com.f2prateek.rx.preferences.RxSharedPreferences;
 import com.lowwor.realtimebus.BusApplication;
 import com.lowwor.realtimebus.api.BusApiRepository;
 import com.lowwor.realtimebus.injector.AppModule;
@@ -19,6 +20,7 @@ public interface AppComponent {
 
     BusApplication app();
     BusApiRepository busApiRepository();
+    RxSharedPreferences rxSharedPreferences();
 
 
 }

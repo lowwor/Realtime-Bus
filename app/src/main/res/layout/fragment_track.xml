@@ -56,15 +56,19 @@
                             android:layout_marginBottom="8dp"
                             android:theme="@style/TextLabel">
 
-                            <EditText
-                                android:id="@+id/et_line_name"
+
+                            <AutoCompleteTextView
+                                android:id="@+id/auto_text"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_toLeftOf="@id/btn_query"
-                                android:hint="请输入公交车线路名字"
                                 android:maxEms="12"
                                 android:textColor="@color/icons"
-                                app:theme="@style/ThemeOverlay.AppCompat" />
+                                app:theme="@style/ThemeOverlay.AppCompat"
+                                android:hint="请输入公交车线路名字"
+                                android:completionThreshold="1"
+                                android:dropDownAnchor = "@id/auto_text"
+                                android:singleLine="true"/>
                         </android.support.design.widget.TextInputLayout>
 
                     </RelativeLayout>
