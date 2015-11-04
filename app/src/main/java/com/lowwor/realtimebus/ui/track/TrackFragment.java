@@ -5,6 +5,7 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -332,6 +333,20 @@ public class TrackFragment extends BaseFragment {
         mAutoComplete.setThreshold(3);
         autoCompletePref = mRxSharedPreferences.getStringSet(Constants.KEY_SP_AUTO_COMPLETE);
         refreshAutoComplete();
+        mAutoComplete.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(hasFocus){
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            mAutoComplete.showDropDown();
+                        }
+                    }, 300);
+                }
+            }
+        });
+
     }
 
     private void refreshAutoComplete(){
@@ -361,7 +376,10 @@ public class TrackFragment extends BaseFragment {
     }
 
     private void saveAutoComplete() {
-        Logger.i("save auto");
+//        Logger.i("save auto");
+        if(mAutoComplete.getText().toString().equals("")){
+            return;
+        }
         SharedPreferences mSharedPreferences = getActivity().getSharedPreferences(Constants.SP_BUS, Context.MODE_PRIVATE);
         SharedPreferences.Editor mEditor = mSharedPreferences.edit();
         Set<String> mbuses =  mSharedPreferences.getStringSet(Constants.KEY_SP_AUTO_COMPLETE, new HashSet<String>());
