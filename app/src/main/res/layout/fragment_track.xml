@@ -57,7 +57,7 @@
                             android:theme="@style/TextLabel">
 
 
-                            <AutoCompleteTextView
+                            <com.lowwor.realtimebus.ui.widget.InstantAutoComplete
                                 android:id="@+id/auto_text"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"

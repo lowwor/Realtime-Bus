@@ -5,7 +5,6 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -25,6 +24,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.f2prateek.rx.preferences.Preference;
 import com.f2prateek.rx.preferences.RxSharedPreferences;
@@ -185,6 +185,7 @@ public class TrackFragment extends BaseFragment {
 
                         Logger.e("There was a problem loading the top stories " + e);
                         e.printStackTrace();
+                        Toast.makeText(getActivity(), "找不到线路,请重试！", Toast.LENGTH_SHORT).show();
                         hideLoadingViews();
                     }
 
@@ -329,27 +330,12 @@ public class TrackFragment extends BaseFragment {
     }
 
     private void initAutoComplete() {
-        mAutoCompleteBuses.add("3a");
         mAutoCompleteAdapter =  new ArrayAdapter<>(getActivity(), R.layout.item_auto_complete, mAutoCompleteBuses);
         mAutoComplete.setAdapter(mAutoCompleteAdapter);
         mAutoComplete.setThreshold(3);
         mAutoComplete.setText(getLastQueryLine());
         autoCompletePref = mRxSharedPreferences.getStringSet(Constants.KEY_SP_AUTO_COMPLETE);
         refreshAutoComplete();
-        mAutoComplete.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if(hasFocus){
-                    new Handler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            mAutoComplete.showDropDown();
-                        }
-                    }, 300);
-                }
-            }
-        });
-
     }
 
     private void refreshAutoComplete(){
