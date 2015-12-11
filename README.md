@@ -1,5 +1,5 @@
 # Realtime-Bus
-An android app to track bus status of Zhuhai using RxJava for Android and Android Data Binding library.
+An android app to track bus status of Zhuhai using RxJava and Android Data Binding library(MVVM).
 
 
 ======
@@ -9,7 +9,6 @@ Demo
 ---------
 
 #[fir.im][1]
-
 
 Libraries
 ---------
