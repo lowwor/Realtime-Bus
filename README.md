@@ -5,6 +5,12 @@ An android app to track bus status of Zhuhai using RxJava for Android and Androi
 ======
 Under development.
 
+Demo
+---------
+
+#[fir.im][1]
+
+
 Libraries
 ---------
 
@@ -14,3 +20,6 @@ Libraries
  * Glide  - https://github.com/bumptech/glide
  * OkHttp - http://square.github.io/okhttp
  * RxJava - https://github.com/ReactiveX/RxJava
+
+
+  [1]: http://fir.im/2feu
