@@ -2,4 +2,8 @@
     <string name="app_name">珠海公交</string>
 
     <string name="query">查询</string>
+
+
+    <string name="error_connection">网络连接错误！</string>
+    <string name="try_again">再试一次!</string>
 </resources>

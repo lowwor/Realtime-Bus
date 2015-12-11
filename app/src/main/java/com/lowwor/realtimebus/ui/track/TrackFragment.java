@@ -90,6 +90,7 @@ public class TrackFragment extends BaseFragment {
     private String mLineName;
 
 
+
     @Inject
     BusApiRepository mBusApiRepository;
     @Inject
@@ -103,7 +104,6 @@ public class TrackFragment extends BaseFragment {
     private Subscription mAutoRefreshSubscription = null;
     private static final int NOTIFICATION_FLAG = 1;
     private List<String> mAutoCompleteBuses = new ArrayList<>();
-    private Subscriber mBusSubscriber;
     private   ArrayAdapter<String> mAutoCompleteAdapter;
     private Preference<Set<String>> autoCompletePref;
 
@@ -122,6 +122,7 @@ public class TrackFragment extends BaseFragment {
         loadStationsIfNetworkConnected();
         return fragmentView;
     }
+
 
     @OnClick(R.id.btn_query)
     public void onQuery() {
@@ -166,6 +167,7 @@ public class TrackFragment extends BaseFragment {
                     @Override
                     public Observable<BusStationWrapper> call(BusLineWrapper busLineWrapper) {
                         mLineName = busLineWrapper.getData().get(0).name;
+                        saveLastQueryLine(mLineName);
                         return mBusApiRepository.getStationByLineId(busLineWrapper.getData().get(getStartFrom()).id);
                     }
                 })
@@ -215,7 +217,7 @@ public class TrackFragment extends BaseFragment {
         }
         if (getAutoRefresh()) {
             mAutoRefreshSubscription =
-                    Observable.interval(2, TimeUnit.SECONDS)
+                    Observable.interval(Constants.REFRESH_INTERVAL, TimeUnit.SECONDS)
                             .timeInterval().flatMap(new Func1<TimeInterval<Long>, Observable<BusWrapper>>() {
                         @Override
                         public Observable<BusWrapper> call(TimeInterval<Long> longTimeInterval) {
@@ -331,6 +333,7 @@ public class TrackFragment extends BaseFragment {
         mAutoCompleteAdapter =  new ArrayAdapter<>(getActivity(), R.layout.item_auto_complete, mAutoCompleteBuses);
         mAutoComplete.setAdapter(mAutoCompleteAdapter);
         mAutoComplete.setThreshold(3);
+        mAutoComplete.setText(getLastQueryLine());
         autoCompletePref = mRxSharedPreferences.getStringSet(Constants.KEY_SP_AUTO_COMPLETE);
         refreshAutoComplete();
         mAutoComplete.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -389,6 +392,16 @@ public class TrackFragment extends BaseFragment {
         refreshAutoComplete();
     }
 
+    private String getLastQueryLine() {
+        SharedPreferences mSharedPreferences = getActivity().getSharedPreferences(Constants.SP_BUS, Context.MODE_PRIVATE);
+        return mSharedPreferences.getString(Constants.KEY_SP_LAST_QUERY, "3a");
+    }
+    private void  saveLastQueryLine(String lastQueryStation) {
+        SharedPreferences mSharedPreferences = getActivity().getSharedPreferences(Constants.SP_BUS, Context.MODE_PRIVATE);
+        SharedPreferences.Editor mEditor = mSharedPreferences.edit();
+        mEditor.putString(Constants.KEY_SP_LAST_QUERY, lastQueryStation);
+        mEditor.commit();
+    }
     private boolean getAutoRefresh() {
         SharedPreferences mSharedPreferences = getActivity().getSharedPreferences(Constants.SP_BUS, Context.MODE_PRIVATE);
         return mSharedPreferences.getBoolean(Constants.KEY_SP_AUTO_REFRESH, false);
