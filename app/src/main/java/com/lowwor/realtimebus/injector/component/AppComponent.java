@@ -1,7 +1,7 @@
 package com.lowwor.realtimebus.injector.component;
 
 import com.lowwor.realtimebus.BusApplication;
-import com.lowwor.realtimebus.api.BusApiRepository;
+import com.lowwor.realtimebus.data.api.BusApiRepository;
 import com.lowwor.realtimebus.data.local.PreferencesHelper;
 import com.lowwor.realtimebus.injector.module.AppModule;
 import com.lowwor.realtimebus.injector.module.RepositoryModule;

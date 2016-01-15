@@ -1,10 +1,11 @@
-package com.lowwor.realtimebus.model;
+package com.lowwor.realtimebus.data.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
 import com.hannesdorfmann.parcelableplease.annotation.ParcelablePlease;
+import com.lowwor.realtimebus.model.BusLineParcelablePlease;
 
 /**
  * Created by lowworker on 2015/10/14.

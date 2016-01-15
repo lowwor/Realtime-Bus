@@ -1,15 +1,15 @@
-package com.lowwor.realtimebus.api;
+package com.lowwor.realtimebus.data.api;
 
 /**
  * Created by lowworker on 2015/10/14.
  */
 
-import com.lowwor.realtimebus.model.wrapper.BusLineWrapper;
-import com.lowwor.realtimebus.model.wrapper.BusStationWrapper;
-import com.lowwor.realtimebus.model.wrapper.BusWrapper;
-import com.lowwor.realtimebus.model.postdata.PostGetBusListOnRoad;
-import com.lowwor.realtimebus.model.postdata.PostGetStationByLineId;
-import com.lowwor.realtimebus.model.postdata.PostSearchLine;
+import com.lowwor.realtimebus.data.model.wrapper.BusLineWrapper;
+import com.lowwor.realtimebus.data.model.wrapper.BusStationWrapper;
+import com.lowwor.realtimebus.data.model.wrapper.BusWrapper;
+import com.lowwor.realtimebus.data.model.postdata.PostGetBusListOnRoad;
+import com.lowwor.realtimebus.data.model.postdata.PostGetStationByLineId;
+import com.lowwor.realtimebus.data.model.postdata.PostSearchLine;
 import com.squareup.okhttp.OkHttpClient;
 
 import retrofit.GsonConverterFactory;

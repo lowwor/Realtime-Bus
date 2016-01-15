@@ -1,11 +1,11 @@
-package com.lowwor.realtimebus.api;
+package com.lowwor.realtimebus.data.api;
 
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
 
 import com.google.gson.internal.$Gson$Types;
-import com.lowwor.realtimebus.api.exceptions.RetrofitException;
+import com.lowwor.realtimebus.data.api.exceptions.RetrofitException;
 
 import java.io.IOException;
 import java.lang.annotation.Annotation;

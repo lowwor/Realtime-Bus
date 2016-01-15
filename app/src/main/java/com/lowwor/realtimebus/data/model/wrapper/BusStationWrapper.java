@@ -1,7 +1,7 @@
-package com.lowwor.realtimebus.model.wrapper;
+package com.lowwor.realtimebus.data.model.wrapper;
 
 import com.google.gson.annotations.SerializedName;
-import com.lowwor.realtimebus.model.BusStation;
+import com.lowwor.realtimebus.data.model.BusStation;
 
 import java.util.List;
 

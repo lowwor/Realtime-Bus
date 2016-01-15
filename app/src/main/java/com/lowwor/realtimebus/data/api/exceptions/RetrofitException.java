@@ -1,4 +1,4 @@
-package com.lowwor.realtimebus.api.exceptions;
+package com.lowwor.realtimebus.data.api.exceptions;
 
 import com.squareup.okhttp.ResponseBody;
 

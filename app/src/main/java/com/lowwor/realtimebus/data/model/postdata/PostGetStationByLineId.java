@@ -1,4 +1,4 @@
-package com.lowwor.realtimebus.model.postdata;
+package com.lowwor.realtimebus.data.model.postdata;
 
 import com.google.gson.annotations.SerializedName;
 

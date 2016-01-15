@@ -10,7 +10,7 @@ import android.databinding.Bindable;
 import android.view.View;
 
 import com.lowwor.realtimebus.BR;
-import com.lowwor.realtimebus.model.BusStation;
+import com.lowwor.realtimebus.data.model.BusStation;
 
 
 public class BusStationViewModel extends BaseObservable {

@@ -1,7 +1,7 @@
 package com.lowwor.realtimebus.injector.module;
 
 
-import com.lowwor.realtimebus.api.BusApiRepository;
+import com.lowwor.realtimebus.data.api.BusApiRepository;
 
 import javax.inject.Singleton;
 

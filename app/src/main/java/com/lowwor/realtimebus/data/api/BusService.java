@@ -1,11 +1,11 @@
-package com.lowwor.realtimebus.api;
+package com.lowwor.realtimebus.data.api;
 
-import com.lowwor.realtimebus.model.postdata.PostGetBusListOnRoad;
-import com.lowwor.realtimebus.model.postdata.PostGetStationByLineId;
-import com.lowwor.realtimebus.model.postdata.PostSearchLine;
-import com.lowwor.realtimebus.model.wrapper.BusLineWrapper;
-import com.lowwor.realtimebus.model.wrapper.BusStationWrapper;
-import com.lowwor.realtimebus.model.wrapper.BusWrapper;
+import com.lowwor.realtimebus.data.model.postdata.PostGetBusListOnRoad;
+import com.lowwor.realtimebus.data.model.postdata.PostGetStationByLineId;
+import com.lowwor.realtimebus.data.model.postdata.PostSearchLine;
+import com.lowwor.realtimebus.data.model.wrapper.BusLineWrapper;
+import com.lowwor.realtimebus.data.model.wrapper.BusStationWrapper;
+import com.lowwor.realtimebus.data.model.wrapper.BusWrapper;
 
 import retrofit.http.Body;
 import retrofit.http.POST;

@@ -1,4 +1,4 @@
-package com.lowwor.realtimebus.api;
+package com.lowwor.realtimebus.data.api;
 
 import com.orhanobut.logger.Logger;
 import com.squareup.okhttp.Interceptor;

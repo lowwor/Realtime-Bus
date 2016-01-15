@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 
 import com.lowwor.realtimebus.R;
 import com.lowwor.realtimebus.databinding.ItemStationBinding;
-import com.lowwor.realtimebus.model.BusStation;
+import com.lowwor.realtimebus.data.model.BusStation;
 import com.lowwor.realtimebus.viewmodel.BusStationViewModel;
 
 import java.util.ArrayList;
