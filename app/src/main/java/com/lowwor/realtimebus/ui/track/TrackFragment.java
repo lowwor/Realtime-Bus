@@ -3,7 +3,6 @@ package com.lowwor.realtimebus.ui.track;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -26,10 +25,9 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.f2prateek.rx.preferences.Preference;
-import com.f2prateek.rx.preferences.RxSharedPreferences;
 import com.lowwor.realtimebus.R;
 import com.lowwor.realtimebus.api.BusApiRepository;
+import com.lowwor.realtimebus.data.local.PreferencesHelper;
 import com.lowwor.realtimebus.model.Bus;
 import com.lowwor.realtimebus.model.BusStation;
 import com.lowwor.realtimebus.model.wrapper.BusLineWrapper;
@@ -44,7 +42,6 @@ import com.lowwor.realtimebus.utils.RxUtils;
 import com.orhanobut.logger.Logger;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -90,11 +87,10 @@ public class TrackFragment extends BaseFragment {
     private String mLineName;
 
 
-
     @Inject
     BusApiRepository mBusApiRepository;
     @Inject
-    RxSharedPreferences mRxSharedPreferences;
+    PreferencesHelper mPreferencesHelper;
 
     private String fromStation;
     private LinearLayoutManager mLinearLayoutManager;
@@ -104,8 +100,8 @@ public class TrackFragment extends BaseFragment {
     private Subscription mAutoRefreshSubscription = null;
     private static final int NOTIFICATION_FLAG = 1;
     private List<String> mAutoCompleteBuses = new ArrayList<>();
-    private   ArrayAdapter<String> mAutoCompleteAdapter;
-    private Preference<Set<String>> autoCompletePref;
+    private ArrayAdapter<String> mAutoCompleteAdapter;
+
 
     @Nullable
     @Override
@@ -167,7 +163,7 @@ public class TrackFragment extends BaseFragment {
                     @Override
                     public Observable<BusStationWrapper> call(BusLineWrapper busLineWrapper) {
                         mLineName = busLineWrapper.getData().get(0).name;
-                        saveLastQueryLine(mLineName);
+                        mPreferencesHelper.saveLastQueryLine(mLineName);
                         return mBusApiRepository.getStationByLineId(busLineWrapper.getData().get(getStartFrom()).id);
                     }
                 })
@@ -195,6 +191,7 @@ public class TrackFragment extends BaseFragment {
                         hideLoadingViews();
                         setupBusStations(busStationWrapper.getData());
                         saveAutoComplete();
+                        refreshAutoComplete();
                         fromStation = mStations.get(0).name;
                         loadBusIfNetworkConnected();
                         executeAutoRefresh();
@@ -311,46 +308,36 @@ public class TrackFragment extends BaseFragment {
     }
 
     private void switchStartFrom() {
-        SharedPreferences mSharedPreferences = getActivity().getSharedPreferences(Constants.SP_BUS, Context.MODE_PRIVATE);
-        boolean startFrom = mSharedPreferences.getBoolean(Constants.KEY_SP_START_FROM, true);
-        SharedPreferences.Editor mEditor = mSharedPreferences.edit();
-        mEditor.putBoolean(Constants.KEY_SP_START_FROM, !startFrom);
-        mEditor.commit();
+        boolean startFrom = mPreferencesHelper.getIsStartFromFirst();
+        mPreferencesHelper.saveStartFromFirst(!startFrom);
     }
 
     private int getStartFrom() {
-        SharedPreferences mSharedPreferences = getActivity().getSharedPreferences(Constants.SP_BUS, Context.MODE_PRIVATE);
-        boolean startFromFirst = mSharedPreferences.getBoolean(Constants.KEY_SP_START_FROM, true);
-        if (startFromFirst) {
-            return START_FROM_FIRST;
-        } else {
-            return START_FROM_LAST;
-        }
-
+        return mPreferencesHelper.getIsStartFromFirst() ? START_FROM_FIRST : START_FROM_LAST;
     }
 
+
     private void initAutoComplete() {
-        mAutoCompleteAdapter =  new ArrayAdapter<>(getActivity(), R.layout.item_auto_complete, mAutoCompleteBuses);
+        mAutoCompleteAdapter = new ArrayAdapter<>(getActivity(), R.layout.item_auto_complete, mAutoCompleteBuses);
         mAutoComplete.setAdapter(mAutoCompleteAdapter);
         mAutoComplete.setThreshold(3);
-        mAutoComplete.setText(getLastQueryLine());
-        autoCompletePref = mRxSharedPreferences.getStringSet(Constants.KEY_SP_AUTO_COMPLETE);
+        mAutoComplete.setText(mPreferencesHelper.getLastQueryLine());
         refreshAutoComplete();
     }
 
-    private void refreshAutoComplete(){
+    private void refreshAutoComplete() {
         //don't know why didn't auto refresh
-        mSubscriptions.add(autoCompletePref.asObservable()
+        mSubscriptions.add(mPreferencesHelper.getIsAutoRefreshAsObservable()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<Set<String>>() {
                     @Override
                     public void onCompleted() {
-                        Logger.i("auto onCompleted" );
+                        Logger.i("auto onCompleted");
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        Logger.i( " auto e");
+                        Logger.i(" auto e");
 
                     }
 
@@ -366,39 +353,18 @@ public class TrackFragment extends BaseFragment {
 
     private void saveAutoComplete() {
 //        Logger.i("save auto");
-        if(mAutoComplete.getText().toString().equals("")){
+        if (mAutoComplete.getText().toString().equals("")) {
             return;
         }
-        SharedPreferences mSharedPreferences = getActivity().getSharedPreferences(Constants.SP_BUS, Context.MODE_PRIVATE);
-        SharedPreferences.Editor mEditor = mSharedPreferences.edit();
-        Set<String> mbuses =  mSharedPreferences.getStringSet(Constants.KEY_SP_AUTO_COMPLETE, new HashSet<String>());
-        mbuses.add(mAutoComplete.getText().toString());
-        mEditor.putStringSet(Constants.KEY_SP_AUTO_COMPLETE, mbuses);
-        mEditor.commit();
-        refreshAutoComplete();
+        mPreferencesHelper.saveAutoCompleteItem(mAutoComplete.getText().toString());
     }
 
-    private String getLastQueryLine() {
-        SharedPreferences mSharedPreferences = getActivity().getSharedPreferences(Constants.SP_BUS, Context.MODE_PRIVATE);
-        return mSharedPreferences.getString(Constants.KEY_SP_LAST_QUERY, "3a");
-    }
-    private void  saveLastQueryLine(String lastQueryStation) {
-        SharedPreferences mSharedPreferences = getActivity().getSharedPreferences(Constants.SP_BUS, Context.MODE_PRIVATE);
-        SharedPreferences.Editor mEditor = mSharedPreferences.edit();
-        mEditor.putString(Constants.KEY_SP_LAST_QUERY, lastQueryStation);
-        mEditor.commit();
-    }
     private boolean getAutoRefresh() {
-        SharedPreferences mSharedPreferences = getActivity().getSharedPreferences(Constants.SP_BUS, Context.MODE_PRIVATE);
-        return mSharedPreferences.getBoolean(Constants.KEY_SP_AUTO_REFRESH, false);
-
+        return mPreferencesHelper.getAutoRefresh();
     }
 
     private void saveAutoRefresh(boolean isAutoRefresh) {
-        SharedPreferences mSharedPreferences = getActivity().getSharedPreferences(Constants.SP_BUS, Context.MODE_PRIVATE);
-        SharedPreferences.Editor mEditor = mSharedPreferences.edit();
-        mEditor.putBoolean(Constants.KEY_SP_AUTO_REFRESH, isAutoRefresh);
-        mEditor.commit();
+        mPreferencesHelper.saveAutoRefresh(isAutoRefresh);
     }
 
     private void initSwipeRefresh() {
@@ -441,7 +407,6 @@ public class TrackFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
-
         mSubscriptions = RxUtils.getNewCompositeSubIfUnsubscribed(mSubscriptions);
     }
 
@@ -453,7 +418,6 @@ public class TrackFragment extends BaseFragment {
     }
 
     private void initToolbar() {
-
         setHasOptionsMenu(true);
         ((AppCompatActivity) getActivity()).setSupportActionBar(mToolbar);
         ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
@@ -484,7 +448,6 @@ public class TrackFragment extends BaseFragment {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-
         inflater.inflate(R.menu.track_menu, menu);
     }
 

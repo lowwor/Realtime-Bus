@@ -3,7 +3,7 @@ package com.lowwor.realtimebus;
 import android.app.Application;
 
 import com.facebook.stetho.Stetho;
-import com.lowwor.realtimebus.injector.AppModule;
+import com.lowwor.realtimebus.injector.module.AppModule;
 import com.lowwor.realtimebus.injector.component.AppComponent;
 import com.lowwor.realtimebus.injector.component.DaggerAppComponent;
 import com.orhanobut.logger.Logger;
