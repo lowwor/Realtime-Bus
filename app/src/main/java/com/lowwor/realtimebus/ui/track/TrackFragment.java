@@ -2,7 +2,9 @@ package com.lowwor.realtimebus.ui.track;
 
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -146,16 +148,6 @@ public class TrackFragment extends BaseFragment {
         }
     }
 
-    private void loadBusIfNetworkConnected() {
-        if (NetworkUtils.isNetworkAvailable(getActivity())) {
-            showHideOfflineLayout(false);
-            getBus();
-
-        } else {
-            showHideOfflineLayout(true);
-        }
-    }
-
     private void getStations() {
         Logger.i("getStations");
         mSubscriptions.add(mBusApiRepository.searchLine(mAutoComplete.getText().toString())
@@ -197,6 +189,16 @@ public class TrackFragment extends BaseFragment {
                         executeAutoRefresh();
                     }
                 }));
+    }
+
+    private void loadBusIfNetworkConnected() {
+        if (NetworkUtils.isNetworkAvailable(getActivity())) {
+            showHideOfflineLayout(false);
+            getBus();
+
+        } else {
+            showHideOfflineLayout(true);
+        }
     }
 
     private void getBus() {
@@ -283,12 +285,18 @@ public class TrackFragment extends BaseFragment {
 
 
     private void notifyBusArriveNotificatoin(BusStation busStation) {
-        Notification.Builder mBuilder = new Notification.Builder(getActivity());
-        mBuilder.setDefaults(Notification.DEFAULT_SOUND);
-        mBuilder.setTicker(busStation.name + "的公交到站了");
-        mBuilder.setContentTitle(busStation.name + "的公交到站了");
-        mBuilder.setContentText(busStation.name + "的公交到站了");
-        mBuilder.setSmallIcon(R.drawable.ic_time_to_leave);
+         Intent  notificationIntent = new Intent(getActivity(), MainActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(
+                getActivity(), NOTIFICATION_FLAG, notificationIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+        Notification.Builder mBuilder = new Notification.Builder(getActivity())
+                .setDefaults(Notification.DEFAULT_SOUND)
+                .setTicker(busStation.name + "的公交到站了")
+                .setContentIntent(pendingIntent)
+                .setContentTitle(busStation.name + "的公交到站了")
+                .setContentText(busStation.name + "的公交到站了")
+                .setSmallIcon(R.drawable.ic_time_to_leave);
+
         NotificationManager mNotificationManager =
                 (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
         mNotificationManager.notify(NOTIFICATION_FLAG, mBuilder.build());
@@ -371,7 +379,7 @@ public class TrackFragment extends BaseFragment {
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                getBus();
+                loadBusIfNetworkConnected();
             }
         });
         mSwipeRefreshLayout.setColorSchemeResources(R.color.primary);
