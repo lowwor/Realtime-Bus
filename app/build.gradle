@@ -1,5 +1,4 @@
 apply plugin: 'com.android.application'
-apply plugin: 'com.android.databinding'
 apply plugin: 'com.neenbedankt.android-apt'
 
 android {
@@ -9,13 +8,18 @@ android {
     packagingOptions {
         exclude 'META-INF/LICENSE.txt'
     }
+    dataBinding {
+        enabled = true
+    }
     defaultConfig {
         applicationId "com.lowwor.realtimebus"
         minSdkVersion 16
         targetSdkVersion 23
         versionCode gitCommitCount()
-        versionName "1.05." + gitSha()
+        versionName "1.06." + gitSha()
         manifestPlaceholders = [CHANNEL_NAME: "Unspecified"]
+        setProperty("archivesBaseName", "RealTimeBus_v-$versionName-${releaseTime()}")
+
     }
     signingConfigs {
         release
@@ -26,23 +30,14 @@ android {
             signingConfig signingConfigs.release
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            applicationVariants.all { variant ->
-                variant.outputs.each { output ->
-                    def outputFile = output.outputFile
-                    if (outputFile != null && outputFile.name.endsWith('.apk')) {
-                        // 输出apk名称为RealTimeBus_v1.0_2015-01-15_wandoujia.apk
-                        def fileName = "RealTimeBus_v${defaultConfig.versionName}_${releaseTime()}_${variant.productFlavors[0].name}.apk"
-                        output.outputFile = new File(outputFile.parent, fileName)
-                    }
-                }
-            }
+
         }
     }
 
     productFlavors {
         umeng { manifestPlaceholders = [CHANNEL_NAME: "UMENG"] }
         fir { manifestPlaceholders = [CHANNEL_NAME: "FIR.IM"] }
-        wandoujai {manifestPlaceholders = [CHANNEL_NAME: "WanDouJia"]}
+        github {manifestPlaceholders = [CHANNEL_NAME: "github"]}
     }
 }
 
@@ -52,10 +47,10 @@ dependencies {
     compile 'com.hannesdorfmann.parcelableplease:annotation:1.0.1'
     apt 'com.hannesdorfmann.parcelableplease:processor:1.0.1'
 //support
-    compile 'com.android.support:design:23.1.0'
-    compile 'com.android.support:appcompat-v7:23.1.0'
-    compile 'com.android.support:cardview-v7:23.0.1'
-    compile 'com.android.support:recyclerview-v7:23.0.1'
+    compile 'com.android.support:design:23.1.1'
+    compile 'com.android.support:appcompat-v7:23.1.1'
+    compile 'com.android.support:cardview-v7:23.1.1'
+    compile 'com.android.support:recyclerview-v7:23.1.1'
 
 
     compile 'io.reactivex:rxjava:1.0.0'
@@ -66,7 +61,7 @@ dependencies {
     compile 'org.glassfish:javax.annotation:10.0-b28'
 
     compile 'com.jakewharton:butterknife:7.0.0'
-    compile 'com.google.code.gson:gson:2.3'
+    compile 'com.google.code.gson:gson:2.4'
     compile 'com.github.bumptech.glide:glide:3.6.1'
     compile 'com.orhanobut:logger:1.11'
 
