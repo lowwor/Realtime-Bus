@@ -5,7 +5,7 @@ import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
 import com.hannesdorfmann.parcelableplease.annotation.ParcelablePlease;
-import com.lowwor.realtimebus.model.BusStationParcelablePlease;
+
 
 import java.util.List;
 
