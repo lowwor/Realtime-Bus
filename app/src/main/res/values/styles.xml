@@ -16,11 +16,6 @@
     </style>
 
 
-    <style name="HamburgerIconStyle" parent="Widget.AppCompat.DrawerArrowToggle">
-        <item name="color">@color/white</item>
-    </style>
-
-
     <style name="TextLabel" parent="TextAppearance.AppCompat">
         //hint color And Label Color in False State
         <item name="android:textColorHint">@color/primary_light</item>

@@ -53,7 +53,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_marginRight="16dp"
-        android:textColor="@color/bus_station_bus_number"
+        android:textColor="@color/primary"
         android:layout_centerVertical="true"
         android:text="@{viewModel.busNumber !=0 ?String.valueOf(viewModel.busNumber):null}"
 

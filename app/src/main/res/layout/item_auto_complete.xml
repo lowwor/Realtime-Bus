@@ -4,7 +4,7 @@
     android:textAppearance="?android:attr/textAppearanceLargePopupMenu"
     android:singleLine="true"
     android:background="@color/primary"
-    android:textColor="@color/white"
+    android:textColor="@color/icons"
     android:layout_width="match_parent"
     android:padding="16dp"
     android:layout_height="56dp"
