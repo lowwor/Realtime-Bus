@@ -3,7 +3,7 @@ apply plugin: 'com.neenbedankt.android-apt'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "22.0.1"
+    buildToolsVersion "23.0.2"
 
     packagingOptions {
         exclude 'META-INF/LICENSE.txt'
@@ -37,36 +37,30 @@ android {
     productFlavors {
         umeng { manifestPlaceholders = [CHANNEL_NAME: "UMENG"] }
         fir { manifestPlaceholders = [CHANNEL_NAME: "FIR.IM"] }
-        github {manifestPlaceholders = [CHANNEL_NAME: "github"]}
+        github { manifestPlaceholders = [CHANNEL_NAME: "github"] }
     }
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     //parcel
     compile 'com.hannesdorfmann.parcelableplease:annotation:1.0.1'
     apt 'com.hannesdorfmann.parcelableplease:processor:1.0.1'
-//support
+    //support
     compile 'com.android.support:design:23.1.1'
     compile 'com.android.support:appcompat-v7:23.1.1'
     compile 'com.android.support:cardview-v7:23.1.1'
     compile 'com.android.support:recyclerview-v7:23.1.1'
-
-
     compile 'io.reactivex:rxjava:1.0.0'
     compile 'io.reactivex:rxandroid:1.0.1'
-
     apt 'com.google.dagger:dagger-compiler:2.0'
     compile 'com.google.dagger:dagger:2.0'
     compile 'org.glassfish:javax.annotation:10.0-b28'
-
     compile 'com.jakewharton:butterknife:7.0.0'
     compile 'com.google.code.gson:gson:2.4'
     compile 'com.github.bumptech.glide:glide:3.6.1'
     compile 'com.orhanobut:logger:1.11'
-
     compile 'com.umeng.analytics:analytics:latest.integration'
-
     // If you need StorIO for SQLite
     compile 'com.pushtorefresh.storio:sqlite:1.4.0'
     // If you need StorIO for ContentResolver
@@ -74,18 +68,15 @@ dependencies {
     compile 'com.pushtorefresh.storio:sqlite-annotations:1.4.0'
     // We recommend to use Android Gradle Apt plugin: https://bitbucket.org/hvisser/android-apt
     apt 'com.pushtorefresh.storio:sqlite-annotations-processor:1.4.0'
-
-    compile 'com.squareup.retrofit:retrofit:2.0.0-beta2'
-    compile 'com.squareup.retrofit:adapter-rxjava:2.0.0-beta2'
-    compile 'com.squareup.retrofit:converter-gson:2.0.0-beta2'
-
+    compile 'com.squareup.retrofit2:retrofit:2.0.0-beta3'
+    compile 'com.squareup.retrofit2:adapter-rxjava:2.0.0-beta3'
+    compile 'com.squareup.retrofit2:converter-gson:2.0.0-beta3'
+    compile 'com.squareup.okhttp3:logging-interceptor:3.0.1'
+    compile 'com.squareup.okhttp3:okhttp:3.0.1'
     compile 'com.hannesdorfmann.parcelableplease:annotation:x.x.x'
     apt 'com.hannesdorfmann.parcelableplease:processor:x.x.x'
-
     compile 'com.facebook.stetho:stetho:1.1.0'
-
     compile 'com.f2prateek.rx.preferences:rx-preferences:1.0.1'
-
 }
 
 //获得git commit的数目
@@ -128,7 +119,6 @@ if (propFile.exists()) {
     println("keystore file not found: " + props["KEYSTORE_FILE"])
     android.buildTypes.release.signingConfig = null
 }
-
 
 //使用独立的appkey.propreties保存appkey信息
 def File appkeyPropFile = file('appkey.properties');

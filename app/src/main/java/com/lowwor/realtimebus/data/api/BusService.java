@@ -7,8 +7,8 @@ import com.lowwor.realtimebus.data.model.wrapper.BusLineWrapper;
 import com.lowwor.realtimebus.data.model.wrapper.BusStationWrapper;
 import com.lowwor.realtimebus.data.model.wrapper.BusWrapper;
 
-import retrofit.http.Body;
-import retrofit.http.POST;
+import retrofit2.http.Body;
+import retrofit2.http.POST;
 import rx.Observable;
 
 /**
