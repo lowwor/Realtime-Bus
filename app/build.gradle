@@ -37,7 +37,7 @@ android {
     productFlavors {
         umeng { manifestPlaceholders = [CHANNEL_NAME: "UMENG"] }
         fir { manifestPlaceholders = [CHANNEL_NAME: "FIR.IM"] }
-        github { manifestPlaceholders = [CHANNEL_NAME: "github"] }
+        wandoujia { manifestPlaceholders = [CHANNEL_NAME: "WanDouJia"] }
     }
 }
 

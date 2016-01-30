@@ -3,9 +3,10 @@ package com.lowwor.realtimebus;
 import android.app.Application;
 
 import com.facebook.stetho.Stetho;
-import com.lowwor.realtimebus.injector.module.AppModule;
 import com.lowwor.realtimebus.injector.component.AppComponent;
 import com.lowwor.realtimebus.injector.component.DaggerAppComponent;
+import com.lowwor.realtimebus.injector.module.AppModule;
+import com.orhanobut.logger.LogLevel;
 import com.orhanobut.logger.Logger;
 import com.umeng.update.UmengUpdateAgent;
 
@@ -24,10 +25,20 @@ public class BusApplication extends Application {
         Logger.i("onCreate BusApplication");
         initializeInjector();
         initStetho();
+        initLogger();
         UmengUpdateAgent.update(this);
     }
 
-    private void initializeInjector(){
+    private void initLogger() {
+
+        if (!BuildConfig.DEBUG) {
+            // default LogLevel.FULL
+            Logger.init().setLogLevel(LogLevel.NONE);
+        }
+
+    }
+
+    private void initializeInjector() {
 
         mAppComponent = DaggerAppComponent.builder()
                 .appModule(new AppModule(this))
@@ -41,7 +52,7 @@ public class BusApplication extends Application {
         return mAppComponent;
     }
 
-    void initStetho(){
+    void initStetho() {
         Stetho.initialize(
                 Stetho.newInitializerBuilder(this)
                         .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))

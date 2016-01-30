@@ -80,6 +80,7 @@
             android:id="@+id/content_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@color/track_background"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
             <com.lowwor.realtimebus.ui.widget.MySwipeRefreshLayout

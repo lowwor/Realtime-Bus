@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <color name="track_background">#E9E9E9</color>
+
     <color name="primary">#FF6600</color>
     <color name="primary_dark">#e65c00</color>
     <color name="primary_light">#FFCCBC</color>

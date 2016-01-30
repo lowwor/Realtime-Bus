@@ -14,13 +14,13 @@
     android:layout_gravity="center_horizontal"
     app:cardBackgroundColor="@android:color/white"
     android:layout_marginTop="8dp"
-    android:layout_marginLeft="16dp"
-    android:layout_marginRight="16dp">
+    android:layout_marginLeft="12dp"
+    android:layout_marginRight="12dp">
 <RelativeLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="20dp"
-    android:layout_marginBottom="20dp"
+    android:layout_marginTop="16dp"
+    android:layout_marginBottom="16dp"
     android:layout_marginLeft="20dp"
     android:layout_marginRight="20dp"
     >
@@ -39,7 +39,6 @@
 
     <TextView
         android:id="@+id/tv_station_name"
-        android:fontFamily="sans-serif-thin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/alarm"

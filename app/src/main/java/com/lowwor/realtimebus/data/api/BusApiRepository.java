@@ -4,6 +4,7 @@ package com.lowwor.realtimebus.data.api;
  * Created by lowworker on 2015/10/14.
  */
 
+import com.lowwor.realtimebus.BuildConfig;
 import com.lowwor.realtimebus.data.model.postdata.PostGetBusListOnRoad;
 import com.lowwor.realtimebus.data.model.postdata.PostGetStationByLineId;
 import com.lowwor.realtimebus.data.model.postdata.PostSearchLine;
@@ -27,7 +28,12 @@ public class BusApiRepository {
 
     public BusApiRepository() {
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        if (BuildConfig.DEBUG) {
+            interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        } else {
+            interceptor.setLevel(HttpLoggingInterceptor.Level.NONE);
+        }
+
         OkHttpClient okHttpClient = new OkHttpClient.Builder().addInterceptor(interceptor).build();
 
         Retrofit mRetrofit = new Retrofit.Builder()
