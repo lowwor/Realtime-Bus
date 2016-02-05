@@ -24,6 +24,10 @@ before_script:
     - adb shell settings put global animator_duration_scale 0 &
     - adb shell input keyevent 82 &
 
+#fix for ./gradlew Permission Denied. Reference: http://stackoverflow.com/questions/33820638/travis-yml-gradlew-permission-denied
+before_install:
+    - chmod +x gradlew
+
 notifications:
   email: false
 
