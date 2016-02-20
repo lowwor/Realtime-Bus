@@ -1,6 +1,10 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.neenbedankt.android-apt'
 
+
+def preDexEnabled = "true".equals(System.getProperty("pre-dex", "true"))
+def isCi = "true".equals(System.getenv("CI"))
+
 android {
     compileSdkVersion 23
     buildToolsVersion "23.0.2"
@@ -46,6 +50,10 @@ android {
         abortOnError false
     }
 
+    dexOptions {
+        // Skip pre-dexing when running on Travis CI or when disabled via -Dpre-dex=false.
+        preDexLibraries = preDexEnabled && !isCi
+    }
 }
 
 dependencies {
@@ -107,7 +115,6 @@ def gitSha() {
 }
 
 //使用独立的signing.propreties保存签名信息
-def isCi = "true".equals(System.getenv("CI"))
 def File propFile = file('signing.properties');
 if (isCi) {
     android.signingConfigs.release.storePassword = System.getenv("KEYSTORE_PASS")
