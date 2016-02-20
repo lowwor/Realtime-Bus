@@ -107,9 +107,13 @@ def gitSha() {
 }
 
 //使用独立的signing.propreties保存签名信息
-
+def isCi = "true".equals(System.getenv("CI"))
 def File propFile = file('signing.properties');
-if (propFile.exists()) {
+if (isCi) {
+    android.signingConfigs.release.storePassword = System.getenv("KEYSTORE_PASS")
+    android.signingConfigs.release.keyAlias = System.getenv('KEY_ALIAS')
+    android.signingConfigs.release.keyPassword = System.getenv('KEY_PASSWORD')
+} else if (propFile.exists()) {
     def Properties props = new Properties()
     props.load(new FileInputStream(propFile))
     if (props != null && props.containsKey('STORE_FILE') && props.containsKey('STORE_PASSWORD') &&
@@ -135,7 +139,9 @@ if (propFile.exists()) {
 
 //使用独立的appkey.propreties保存appkey信息
 def File appkeyPropFile = file('appkey.properties');
-if (appkeyPropFile.exists()) {
+if (isCi) {
+    android.defaultConfig.manifestPlaceholders = [UMENG_APPKEY: System.getenv("UMENG_APPKEY")]
+} else if (appkeyPropFile.exists()) {
     def Properties appkeyProps = new Properties()
     appkeyProps.load(new FileInputStream(appkeyPropFile))
     android.defaultConfig.manifestPlaceholders = [UMENG_APPKEY: appkeyProps['UMENG_APPKEY']]
