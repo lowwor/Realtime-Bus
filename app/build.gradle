@@ -117,6 +117,7 @@ def gitSha() {
 //使用独立的signing.propreties保存签名信息
 def File propFile = file('signing.properties');
 if (isCi) {
+    android.signingConfigs.release.storeFile = file('../lowwor.jks')
     android.signingConfigs.release.storePassword = System.getenv("KEYSTORE_PASS")
     android.signingConfigs.release.keyAlias = System.getenv('KEY_ALIAS')
     android.signingConfigs.release.keyPassword = System.getenv('KEY_PASSWORD')
