@@ -1,4 +1,4 @@
-# Realtime-Bus
+# Realtime-Bus [![Build Status](https://travis-ci.org/lowwor/Realtime-Bus.svg?branch=master)](https://travis-ci.org/lowwor/Realtime-Bus)
 An android app to track bus status of Zhuhai using RxJava and Android Data Binding library(MVVM).
 
 
