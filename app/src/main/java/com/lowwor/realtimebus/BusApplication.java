@@ -8,6 +8,8 @@ import com.lowwor.realtimebus.injector.component.DaggerAppComponent;
 import com.lowwor.realtimebus.injector.module.AppModule;
 import com.orhanobut.logger.LogLevel;
 import com.orhanobut.logger.Logger;
+import com.squareup.leakcanary.LeakCanary;
+import com.squareup.leakcanary.RefWatcher;
 import com.umeng.update.UmengUpdateAgent;
 
 /**
@@ -16,7 +18,7 @@ import com.umeng.update.UmengUpdateAgent;
 public class BusApplication extends Application {
 
     private AppComponent mAppComponent;
-
+    private RefWatcher refWatcher;
 
     @Override
     public void onCreate() {
@@ -26,7 +28,12 @@ public class BusApplication extends Application {
         initializeInjector();
         initStetho();
         initLogger();
+        initLeakCanary();
         UmengUpdateAgent.update(this);
+    }
+
+    private void initLeakCanary() {
+        refWatcher = LeakCanary.install(this);
     }
 
     private void initLogger() {
