@@ -45,7 +45,7 @@ public class PreferencesHelper {
         return mPref.getBoolean(PREF_KEY_START_FROM, true);
     }
 
-    public Observable<Set<String>> getIsAutoRefreshAsObservable() {
+    public Observable<Set<String>> getAutoCompleteAsObservable() {
         return mRxSharedPreferences.getStringSet(PREF_KEY_AUTO_COMPLETE).asObservable();
     }
 

@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@android:id/text1"
     android:textAppearance="?android:attr/textAppearanceLargePopupMenu"
     android:singleLine="true"
     android:background="@color/primary"
     android:textColor="@color/icons"
     android:layout_width="match_parent"
     android:padding="16dp"
-    android:layout_height="56dp"
-    android:ellipsize="marquee" />
+    android:layout_height="56dp"/>

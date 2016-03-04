@@ -6,9 +6,6 @@ import android.os.Parcelable;
 import com.google.gson.annotations.SerializedName;
 import com.hannesdorfmann.parcelableplease.annotation.ParcelablePlease;
 
-
-import java.util.List;
-
 /**
  * Created by lowworker on 2015/10/14.
  */
@@ -37,7 +34,6 @@ public class BusStation implements Parcelable {
     public String description;
 
     public boolean isAlarm = false;
-    public List<Bus> buses;
 
 
     @Override

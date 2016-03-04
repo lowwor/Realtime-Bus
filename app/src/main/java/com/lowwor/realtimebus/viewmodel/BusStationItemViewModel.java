@@ -4,7 +4,6 @@ package com.lowwor.realtimebus.viewmodel;
  * Created by lowworker on 2015/10/15.
  */
 
-import android.content.Context;
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
 import android.view.View;
@@ -13,13 +12,15 @@ import com.lowwor.realtimebus.BR;
 import com.lowwor.realtimebus.data.model.BusStation;
 
 
-public class BusStationViewModel extends BaseObservable {
+public class BusStationItemViewModel extends BaseObservable {
 
-    private Context context;
+
     private BusStation busStation;
+    @Bindable
+    private int busNumber = 0;
 
-    public BusStationViewModel(Context context, BusStation busStation ) {
-        this.context = context;
+
+    public BusStationItemViewModel(BusStation busStation ) {
         this.busStation = busStation;
     }
 
@@ -29,9 +30,23 @@ public class BusStationViewModel extends BaseObservable {
         return busStation.name;
     }
 
+
     public int getBusNumber() {
-        return (busStation.buses==null||busStation.buses.size()==0) ? 0 :busStation.buses.size();
+        return busNumber;
     }
+
+    public void resetBusNumber() {
+        if (busNumber!=0) {
+            busNumber = 0;
+            notifyPropertyChanged(BR.busNumber);
+        }
+    }
+
+    public void increaseBusNumber() {
+        busNumber++;
+        notifyPropertyChanged(BR.busNumber);
+    }
+
 
 
     @Bindable

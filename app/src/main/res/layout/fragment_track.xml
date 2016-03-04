@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data>
+        <import type="android.view.View"/>
+        <import type="me.tatarka.bindingcollectionadapter.LayoutManagers" />
+        <variable name="autoCompleteViewModel" type="com.lowwor.realtimebus.viewmodel.AutoCompleteViewModel"/>
+        <variable name="trackViewModel" type="com.lowwor.realtimebus.viewmodel.TrackViewModel"/>
+        <variable name="stationListViewModel" type="com.lowwor.realtimebus.viewmodel.BusStationListViewModel"/>
+    </data>
+<LinearLayout
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -16,13 +25,13 @@
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
             <android.support.design.widget.CollapsingToolbarLayout
-                android:id="@+id/track.collapsing"
+                android:id="@+id/collapsing"
                 android:layout_width="match_parent"
                 android:layout_height="150dp"
                 app:layout_scrollFlags="scroll|enterAlwaysCollapsed|snap">
 
                 <FrameLayout
-                    android:id="@+id/track.title"
+                    android:id="@+id/title"
                     android:layout_width="match_parent"
                     android:layout_height="150dp"
                     android:layout_gravity="bottom|center_horizontal"
@@ -63,11 +72,13 @@
                                 android:layout_toLeftOf="@id/btn_query"
                                 android:maxEms="12"
                                 android:textColor="@color/icons"
-                                app:theme="@style/ThemeOverlay.AppCompat"
+                                android:theme="@style/ThemeOverlay.AppCompat"
                                 android:hint="请输入公交车线路名字"
                                 android:completionThreshold="1"
                                 android:dropDownAnchor = "@id/auto_text"
-                                android:singleLine="true"/>
+                                android:singleLine="true"
+                                app:textChange="@{autoCompleteViewModel.text}"
+                                />
                         </android.support.design.widget.TextInputLayout>
 
                     </RelativeLayout>
@@ -86,12 +97,19 @@
             <com.lowwor.realtimebus.ui.widget.MySwipeRefreshLayout
                 android:id="@+id/swipe_container"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:visibility="@{trackViewModel.isOffline  ? View.GONE : View.VISIBLE}"
+                app:isRefreshing ="@{trackViewModel.isLoading}"
+                >
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/recyclerview"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
+                    android:layout_height="match_parent"
+                    app:itemView = "@{stationListViewModel.itemViewStation}"
+                    app:items ="@{stationListViewModel.mBusStations}"
+                    app:layoutManager="@{LayoutManagers.linear()}"
+                    />
             </com.lowwor.realtimebus.ui.widget.MySwipeRefreshLayout>
 
             <ProgressBar
@@ -99,9 +117,34 @@
                 style="?android:attr/progressBarStyleLarge"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:visibility="@{trackViewModel.isLoading ? View.VISIBLE: View.GONE}"
                 android:layout_centerInParent="true" />
+            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/offline_container"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:visibility="@{trackViewModel.isOffline ? View.VISIBLE: View.GONE}">
 
-            <include layout="@layout/layout_offline" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:text="@string/error_connection"
+                    android:textSize="@dimen/text_large_body" />
+
+                <Button
+                    android:id="@+id/btn_try_again"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="12dp"
+                    android:clickable="true"
+                    android:enabled="true"
+                    android:text="@string/try_again"
+                    android:textColor="@color/icons" />
+
+            </LinearLayout>
 
         </RelativeLayout>
 
@@ -110,7 +153,7 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/primary"
-            app:layout_anchor="@id/track.title"
+            app:layout_anchor="@id/title"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
             app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
 
@@ -124,9 +167,13 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/fab_margin"
             android:clickable="true"
+            android:visibility="@{trackViewModel.isOffline ? View.GONE: View.VISIBLE}"
             android:src="@drawable/ic_swap_vert_white_48dp"
             app:backgroundTint="@color/accent"
             app:layout_anchor="@id/recyclerview"
-            app:layout_anchorGravity="bottom|right|end" />
+            app:layout_anchorGravity="bottom|right|end"
+
+            />
     </android.support.design.widget.CoordinatorLayout>
 </LinearLayout>
+</layout>

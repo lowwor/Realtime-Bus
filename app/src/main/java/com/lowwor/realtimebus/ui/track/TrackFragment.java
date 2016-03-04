@@ -5,14 +5,12 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -22,35 +20,35 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.ProgressBar;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.lowwor.realtimebus.R;
 import com.lowwor.realtimebus.data.api.BusApiRepository;
 import com.lowwor.realtimebus.data.local.PreferencesHelper;
-import com.lowwor.realtimebus.data.model.Bus;
 import com.lowwor.realtimebus.data.model.BusStation;
 import com.lowwor.realtimebus.data.model.wrapper.BusLineWrapper;
 import com.lowwor.realtimebus.data.model.wrapper.BusStationWrapper;
 import com.lowwor.realtimebus.data.model.wrapper.BusWrapper;
+import com.lowwor.realtimebus.databinding.FragmentTrackBinding;
 import com.lowwor.realtimebus.ui.MainActivity;
 import com.lowwor.realtimebus.ui.base.BaseFragment;
-import com.lowwor.realtimebus.ui.widget.MySwipeRefreshLayout;
+import com.lowwor.realtimebus.ui.widget.LimitArrayAdapter;
 import com.lowwor.realtimebus.utils.Constants;
 import com.lowwor.realtimebus.utils.NetworkUtils;
 import com.lowwor.realtimebus.utils.RxUtils;
+import com.lowwor.realtimebus.viewmodel.AutoCompleteViewModel;
+import com.lowwor.realtimebus.viewmodel.BusStationListViewModel;
+import com.lowwor.realtimebus.viewmodel.NotificationView;
+import com.lowwor.realtimebus.viewmodel.TrackViewModel;
 import com.orhanobut.logger.Logger;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
-import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import rx.Observable;
@@ -65,60 +63,48 @@ import rx.subscriptions.CompositeSubscription;
 /**
  * Created by lowworker on 2015/10/15.
  */
-public class TrackFragment extends BaseFragment {
-
-    @Bind(R.id.swipe_container)
-    MySwipeRefreshLayout mSwipeRefreshLayout;
-    @Bind(R.id.recyclerview)
-    RecyclerView mRecyclerview;
-    @Bind(R.id.btn_try_again)
-    Button btnTryAgain;
-    @Bind(R.id.offline_container)
-    LinearLayout mOfflineContainer;
-    @Bind(R.id.progress_indicator)
-    ProgressBar mProgressBar;
-    @Bind(R.id.auto_text)
-    AutoCompleteTextView mAutoComplete;
-    @Bind(R.id.fab_switch)
-    FloatingActionButton fabSwitch;
-    @Bind(R.id.toolbar)
-    Toolbar mToolbar;
-
-    private static final int START_FROM_FIRST = 0;
-    private static final int START_FROM_LAST = 1;
-    private String mLineName;
-
+public class TrackFragment extends BaseFragment implements NotificationView {
 
     @Inject
     BusApiRepository mBusApiRepository;
     @Inject
     PreferencesHelper mPreferencesHelper;
 
-    private String fromStation;
-    private LinearLayoutManager mLinearLayoutManager;
-    private List<BusStation> mStations;
-    private BusStationAdapter mBusStationAdapter;
+
     private CompositeSubscription mSubscriptions = new CompositeSubscription();
     private Subscription mAutoRefreshSubscription = null;
     private static final int NOTIFICATION_FLAG = 1;
-    private List<String> mAutoCompleteBuses = new ArrayList<>();
-    private ArrayAdapter<String> mAutoCompleteAdapter;
+    private BusStationListViewModel busStationListViewModel;
+    private TrackViewModel trackViewModel;
+    private String mNormalLineId;
+    private String mReverseLineId;
+    private String mLineId;
+    private String mLineName;
+    private String fromStation;
+    private String firstStation;
+    private String lastStation;
+    private AutoCompleteViewModel autoCompleteViewModel;
+    private ArrayAdapter mAutoCompleteAdapter;
 
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View fragmentView = inflater.inflate(R.layout.fragment_track, container, false);
-        ButterKnife.bind(this, fragmentView);
-        Logger.i("onCreateView BaseFragment");
-
+        FragmentTrackBinding fragmentTrackBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_track, container, false);
+        ButterKnife.bind(this, fragmentTrackBinding.getRoot());
         initDependencyInjector();
-        initToolbar();
-        initAutoComplete();
-        initSwipeRefresh();
-        initRecyclerView();
+        busStationListViewModel = new BusStationListViewModel(this);
+        trackViewModel = new TrackViewModel();
+        autoCompleteViewModel = new AutoCompleteViewModel();
+        fragmentTrackBinding.setStationListViewModel(busStationListViewModel);
+        fragmentTrackBinding.setTrackViewModel(trackViewModel);
+        fragmentTrackBinding.setAutoCompleteViewModel(autoCompleteViewModel);
+        initToolbar(fragmentTrackBinding.toolbar);
+        initAutoComplete(fragmentTrackBinding.autoText);
+        initSwipeRefresh(fragmentTrackBinding.swipeContainer);
+        fragmentTrackBinding.executePendingBindings();
         loadStationsIfNetworkConnected();
-        return fragmentView;
+        return fragmentTrackBinding.getRoot();
     }
 
 
@@ -140,69 +126,86 @@ public class TrackFragment extends BaseFragment {
 
     private void loadStationsIfNetworkConnected() {
         if (NetworkUtils.isNetworkAvailable(getActivity())) {
-            showHideOfflineLayout(false);
-            getStations();
-
+            setIsOffline(false);
+            searchLine();
         } else {
-            showHideOfflineLayout(true);
+            setIsOffline(true);
         }
-    }
-
-    private void getStations() {
-        Logger.i("getStations");
-        mSubscriptions.add(mBusApiRepository.searchLine(mAutoComplete.getText().toString())
-                .flatMap(new Func1<BusLineWrapper, Observable<BusStationWrapper>>() {
-                    @Override
-                    public Observable<BusStationWrapper> call(BusLineWrapper busLineWrapper) {
-                        mLineName = busLineWrapper.getData().get(0).name;
-                        mPreferencesHelper.saveLastQueryLine(mLineName);
-                        return mBusApiRepository.getStationByLineId(busLineWrapper.getData().get(getStartFrom()).id);
-                    }
-                })
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.io())
-                .subscribe(new Subscriber<BusStationWrapper>() {
-                    @Override
-                    public void onCompleted() {
-
-//                        Logger.i("onCompleted");
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-
-                        Logger.e("There was a problem loading the top stories " + e);
-                        e.printStackTrace();
-                        Toast.makeText(getActivity(), "找不到线路,请重试！", Toast.LENGTH_SHORT).show();
-                        hideLoadingViews();
-                    }
-
-                    @Override
-                    public void onNext(BusStationWrapper busStationWrapper) {
-                        Logger.i("getStations onNext");
-                        hideLoadingViews();
-                        setupBusStations(busStationWrapper.getData());
-                        saveAutoComplete();
-                        refreshAutoComplete();
-                        fromStation = mStations.get(0).name;
-                        loadBusIfNetworkConnected();
-                        executeAutoRefresh();
-                    }
-                }));
     }
 
     private void loadBusIfNetworkConnected() {
         if (NetworkUtils.isNetworkAvailable(getActivity())) {
-            showHideOfflineLayout(false);
+            setIsOffline(false);
             getBus();
-
         } else {
-            showHideOfflineLayout(true);
+            setIsOffline(true);
         }
     }
 
+    private void searchLine() {
+        Logger.i("searchLine: " + autoCompleteViewModel.text.get());
+        mBusApiRepository.searchLine(autoCompleteViewModel.text.get()).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Subscriber<BusLineWrapper>() {
+            @Override
+            public void onCompleted() {
+                getStations();
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onNext(BusLineWrapper busLineWrapper) {
+                mLineName = busLineWrapper.getData().get(0).name;
+                mPreferencesHelper.saveLastQueryLine(mLineName);
+
+                firstStation = busLineWrapper.getData().get(0).fromStation;
+                lastStation = busLineWrapper.getData().get(0).toStation;
+                fromStation = getStartFrom() ? firstStation : lastStation;
+
+                mNormalLineId = busLineWrapper.getData().get(0).id;
+                mReverseLineId = busLineWrapper.getData().get(1).id;
+                mLineId = getStartFrom() ? mNormalLineId : mReverseLineId;
+            }
+        });
+    }
+
+
+    private void getStations() {
+        mSubscriptions.add(
+                mBusApiRepository.getStationByLineId(mLineId)
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribeOn(Schedulers.io())
+                        .subscribe(new Subscriber<BusStationWrapper>() {
+                            @Override
+                            public void onCompleted() {
+
+                            }
+
+                            @Override
+                            public void onError(Throwable e) {
+                                Logger.e("There was a problem loading the top stories " + e);
+                                e.printStackTrace();
+                                Toast.makeText(getActivity(), "找不到线路,请重试！", Toast.LENGTH_SHORT).show();
+                                setIsLoading();
+                            }
+
+                            @Override
+                            public void onNext(BusStationWrapper busStationWrapper) {
+                                setIsLoading();
+                                setupBusStations(busStationWrapper.getData());
+                                saveAutoComplete();
+                                refreshAutoComplete();
+                                loadBusIfNetworkConnected();
+                                executeAutoRefresh();
+                            }
+                        }));
+    }
+
+
     private void getBus() {
-        Logger.i("getBus" + mStations.get(0).name);
+//        Logger.i("getBus" + fromStation);
         mSubscriptions.add(mBusApiRepository.getBusListOnRoad(mLineName, fromStation)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
@@ -211,7 +214,7 @@ public class TrackFragment extends BaseFragment {
 
     public void executeAutoRefresh() {
 
-        if (mAutoRefreshSubscription != null && !mAutoRefreshSubscription.isUnsubscribed() && !getAutoRefresh()) {
+        if (mAutoRefreshSubscription != null && !mAutoRefreshSubscription.isUnsubscribed() ) {
             mAutoRefreshSubscription.unsubscribe();
             return;
         }
@@ -244,64 +247,41 @@ public class TrackFragment extends BaseFragment {
 
                 Logger.e("There was a problem loading bus on line " + e);
                 e.printStackTrace();
-                hideLoadingViews();
+                setIsLoading();
             }
 
             @Override
             public void onNext(BusWrapper busWrapper) {
 //                Logger.i("onNext");
-                hideLoadingViews();
-                List<Bus> buses = busWrapper.getData();
-                List<BusStation> tempBustations = new ArrayList<BusStation>();
-                tempBustations.addAll(mStations);
-                for (BusStation busStation : tempBustations) {
-                    if (busStation.buses != null && busStation.buses.size() != 0) {
-                        busStation.buses.clear();
-                        mBusStationAdapter.notifyItemChanged(mStations.indexOf(busStation));
-                    }
-                    for (Bus bus : buses) {
-                        if (bus.currentStation.equals(busStation.name)) {
-
-                            if (busStation.isAlarm) {
-                                notifyBusArriveNotificatoin(busStation);
-                            }
-
-                            if (busStation.buses != null) {
-                                busStation.buses.add(bus);
-                            } else {
-                                List<Bus> stationBuses = new ArrayList<>();
-                                stationBuses.add(bus);
-                                busStation.buses = stationBuses;
-                            }
-
-                            mBusStationAdapter.notifyItemChanged(mStations.indexOf(busStation));
-                        }
-                    }
-                }
-
+                setIsLoading();
+                busStationListViewModel.setBuses(busWrapper.getData());
             }
         };
     }
 
+    @Override
+    public void showNotification(String busStationName) {
 
-    private void notifyBusArriveNotificatoin(BusStation busStation) {
-         Intent  notificationIntent = new Intent(getActivity(), MainActivity.class);
+        Intent notificationIntent = new Intent(getActivity(), MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(
                 getActivity(), NOTIFICATION_FLAG, notificationIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
         Notification.Builder mBuilder = new Notification.Builder(getActivity())
                 .setDefaults(Notification.DEFAULT_SOUND)
-                .setTicker(busStation.name + "的公交到站了")
+                .setTicker(busStationName + "的公交到站了")
                 .setContentIntent(pendingIntent)
-                .setContentTitle(busStation.name + "的公交到站了")
-                .setContentText(busStation.name + "的公交到站了")
+                .setContentTitle(busStationName + "的公交到站了")
+                .setContentText(busStationName + "的公交到站了")
                 .setSmallIcon(R.drawable.ic_time_to_leave);
 
         NotificationManager mNotificationManager =
                 (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
         mNotificationManager.notify(NOTIFICATION_FLAG, mBuilder.build());
 
+        ImageView iconView = new ImageView(getActivity());
+        iconView.setImageResource(R.mipmap.ic_launcher);
     }
+
 
     private void switchDirection() {
         switchStartFrom();
@@ -310,32 +290,31 @@ public class TrackFragment extends BaseFragment {
 
 
     private void setupBusStations(List<BusStation> busStations) {
-        mStations.clear();
-        mStations.addAll(busStations);
-        mBusStationAdapter.notifyDataSetChanged();
+        busStationListViewModel.setItems(busStations);
     }
 
     private void switchStartFrom() {
-        boolean startFrom = mPreferencesHelper.getIsStartFromFirst();
-        mPreferencesHelper.saveStartFromFirst(!startFrom);
+        mPreferencesHelper.saveStartFromFirst(!getStartFrom());
+        boolean startFromFirst = mPreferencesHelper.getIsStartFromFirst();
+        mLineId = startFromFirst ? mNormalLineId : mReverseLineId;
+        fromStation = startFromFirst ? firstStation : lastStation;
     }
 
-    private int getStartFrom() {
-        return mPreferencesHelper.getIsStartFromFirst() ? START_FROM_FIRST : START_FROM_LAST;
+    private boolean getStartFrom() {
+        return mPreferencesHelper.getIsStartFromFirst();
     }
 
 
-    private void initAutoComplete() {
-        mAutoCompleteAdapter = new ArrayAdapter<>(getActivity(), R.layout.item_auto_complete, mAutoCompleteBuses);
-        mAutoComplete.setAdapter(mAutoCompleteAdapter);
-        mAutoComplete.setThreshold(3);
-        mAutoComplete.setText(mPreferencesHelper.getLastQueryLine());
+    private void initAutoComplete(AutoCompleteTextView autoCompleteTextView) {
+        mAutoCompleteAdapter = new LimitArrayAdapter<>(getActivity(), R.layout.item_auto_complete, autoCompleteViewModel.lineNameItems);
+        autoCompleteTextView.setAdapter(mAutoCompleteAdapter);
+        autoCompleteViewModel.setText(mPreferencesHelper.getLastQueryLine());
         refreshAutoComplete();
     }
 
     private void refreshAutoComplete() {
         //don't know why didn't auto refresh
-        mSubscriptions.add(mPreferencesHelper.getIsAutoRefreshAsObservable()
+        mSubscriptions.add(mPreferencesHelper.getAutoCompleteAsObservable()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<Set<String>>() {
                     @Override
@@ -351,7 +330,8 @@ public class TrackFragment extends BaseFragment {
 
                     @Override
                     public void onNext(Set<String> strings) {
-                        Logger.i("auto onNext" + strings.toString());
+                        // TODO: 2016/3/3 0003 move to view model 
+//                        Logger.i("auto onNext" + strings.toString());
                         mAutoCompleteAdapter.clear();
                         mAutoCompleteAdapter.addAll(strings);
                         mAutoCompleteAdapter.notifyDataSetChanged();
@@ -361,10 +341,7 @@ public class TrackFragment extends BaseFragment {
 
     private void saveAutoComplete() {
 //        Logger.i("save auto");
-        if (mAutoComplete.getText().toString().equals("")) {
-            return;
-        }
-        mPreferencesHelper.saveAutoCompleteItem(mAutoComplete.getText().toString());
+        mPreferencesHelper.saveAutoCompleteItem(mLineName);
     }
 
     private boolean getAutoRefresh() {
@@ -375,37 +352,14 @@ public class TrackFragment extends BaseFragment {
         mPreferencesHelper.saveAutoRefresh(isAutoRefresh);
     }
 
-    private void initSwipeRefresh() {
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+    private void initSwipeRefresh(SwipeRefreshLayout swipeRefreshLayout) {
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 loadBusIfNetworkConnected();
             }
         });
-        mSwipeRefreshLayout.setColorSchemeResources(R.color.primary);
-    }
-
-    private void initRecyclerView() {
-
-        mLinearLayoutManager = new LinearLayoutManager(getActivity());
-        mRecyclerview.setLayoutManager(mLinearLayoutManager);
-        mStations = new ArrayList<>();
-        mBusStationAdapter = new BusStationAdapter(getActivity());
-        mBusStationAdapter.setItems(mStations);
-        mRecyclerview.setAdapter(mBusStationAdapter);
-        mRecyclerview.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                int lastVisibleItem = mLinearLayoutManager.findLastVisibleItemPosition();
-                int totalItemCount = mBusStationAdapter.getItemCount();
-
-                if (lastVisibleItem > totalItemCount - 4 && dy > 0) {
-
-                }
-
-            }
-        });
+        swipeRefreshLayout.setColorSchemeResources(R.color.primary);
     }
 
     private void initDependencyInjector() {
@@ -425,14 +379,14 @@ public class TrackFragment extends BaseFragment {
         RxUtils.unsubscribeIfNotNull(mSubscriptions);
     }
 
-    private void initToolbar() {
+    private void initToolbar(Toolbar toolbar) {
         setHasOptionsMenu(true);
-        ((AppCompatActivity) getActivity()).setSupportActionBar(mToolbar);
+        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
         ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(false);
         }
-        mToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()) {
@@ -459,16 +413,12 @@ public class TrackFragment extends BaseFragment {
         inflater.inflate(R.menu.track_menu, menu);
     }
 
-    private void hideLoadingViews() {
-        mProgressBar.setVisibility(View.GONE);
-        mSwipeRefreshLayout.setRefreshing(false);
+    private void setIsLoading() {
+        trackViewModel.setIsLoading(false);
     }
 
-    private void showHideOfflineLayout(boolean isOffline) {
-        mSwipeRefreshLayout.setVisibility(isOffline ? View.GONE : View.VISIBLE);
-        mOfflineContainer.setVisibility(isOffline ? View.VISIBLE : View.GONE);
-        mRecyclerview.setVisibility(isOffline ? View.GONE : View.VISIBLE);
-        mProgressBar.setVisibility(isOffline ? View.GONE : View.VISIBLE);
-        fabSwitch.setVisibility(isOffline ? View.GONE : View.VISIBLE);
+
+    private void setIsOffline(boolean isOffline) {
+        trackViewModel.setIsOffline(isOffline);
     }
 }
