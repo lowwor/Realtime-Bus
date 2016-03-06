@@ -12,6 +12,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -21,6 +22,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.lowwor.realtimebus.R;
@@ -85,6 +87,7 @@ public class TrackFragment extends BaseFragment implements NotificationView {
     private String lastStation;
     private AutoCompleteViewModel autoCompleteViewModel;
     private ArrayAdapter mAutoCompleteAdapter;
+    private Toast toast;
 
 
     @Nullable
@@ -214,7 +217,7 @@ public class TrackFragment extends BaseFragment implements NotificationView {
 
     public void executeAutoRefresh() {
 
-        if (mAutoRefreshSubscription != null && !mAutoRefreshSubscription.isUnsubscribed() ) {
+        if (mAutoRefreshSubscription != null && !mAutoRefreshSubscription.isUnsubscribed()) {
             mAutoRefreshSubscription.unsubscribe();
             return;
         }
@@ -261,7 +264,6 @@ public class TrackFragment extends BaseFragment implements NotificationView {
 
     @Override
     public void showNotification(String busStationName) {
-
         Intent notificationIntent = new Intent(getActivity(), MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(
                 getActivity(), NOTIFICATION_FLAG, notificationIntent,
@@ -272,7 +274,9 @@ public class TrackFragment extends BaseFragment implements NotificationView {
                 .setContentIntent(pendingIntent)
                 .setContentTitle(busStationName + "的公交到站了")
                 .setContentText(busStationName + "的公交到站了")
-                .setSmallIcon(R.drawable.ic_time_to_leave);
+                .setSmallIcon(R.drawable.ic_time_to_leave)
+                .setWhen(System.currentTimeMillis())
+                .setAutoCancel(true);
 
         NotificationManager mNotificationManager =
                 (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
@@ -280,8 +284,26 @@ public class TrackFragment extends BaseFragment implements NotificationView {
 
         ImageView iconView = new ImageView(getActivity());
         iconView.setImageResource(R.mipmap.ic_launcher);
+
+        showToast(busStationName);
     }
 
+    private void showToast(String busStationName) {
+        if (toast != null) {
+            toast.cancel();
+        }
+        toast = new Toast(getActivity());
+        toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+        toast.setDuration(Toast.LENGTH_LONG);
+        LayoutInflater inflater = LayoutInflater.from(getActivity());
+        View view = inflater.inflate(R.layout.toast_bus_arrived, null);
+        TextView tvToast = (TextView) view.findViewById(R.id.tv_toast);
+        tvToast.setText(busStationName + "的公交到站了");
+        toast.setView(view);
+        toast.show();
+
+
+    }
 
     private void switchDirection() {
         switchStartFrom();
@@ -421,4 +443,6 @@ public class TrackFragment extends BaseFragment implements NotificationView {
     private void setIsOffline(boolean isOffline) {
         trackViewModel.setIsOffline(isOffline);
     }
+
+
 }
