@@ -1,6 +1,8 @@
 package com.lowwor.realtimebus.injector.component;
 
 import com.lowwor.realtimebus.BusApplication;
+import com.lowwor.realtimebus.data.rx.RxTrackService;
+import com.lowwor.realtimebus.data.service.TrackService;
 import com.lowwor.realtimebus.data.api.BusApiRepository;
 import com.lowwor.realtimebus.data.local.PreferencesHelper;
 import com.lowwor.realtimebus.injector.module.AppModule;
@@ -21,5 +23,7 @@ public interface AppComponent {
     BusApplication app();
     BusApiRepository busApiRepository();
     PreferencesHelper preferencesHelper();
+    RxTrackService rxTrackService();
+    void inject(TrackService trackService);
 
 }

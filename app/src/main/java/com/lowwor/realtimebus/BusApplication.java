@@ -1,8 +1,10 @@
 package com.lowwor.realtimebus;
 
 import android.app.Application;
+import android.content.Intent;
 
 import com.facebook.stetho.Stetho;
+import com.lowwor.realtimebus.data.service.TrackService;
 import com.lowwor.realtimebus.injector.component.AppComponent;
 import com.lowwor.realtimebus.injector.component.DaggerAppComponent;
 import com.lowwor.realtimebus.injector.module.AppModule;
@@ -24,12 +26,19 @@ public class BusApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        Logger.i("onCreate BusApplication");
+//        Logger.i("onCreate BusApplication");
         initializeInjector();
         initStetho();
         initLogger();
         initLeakCanary();
+        initService();
+
         UmengUpdateAgent.update(this);
+    }
+
+    private void initService() {
+        Intent intent = new Intent(this, TrackService.class);
+        startService(intent);
     }
 
     private void initLeakCanary() {
@@ -52,6 +61,7 @@ public class BusApplication extends Application {
                 .build();
 
     }
+
 
 
     public AppComponent getAppComponent() {

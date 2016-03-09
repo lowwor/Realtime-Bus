@@ -26,8 +26,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.lowwor.realtimebus.R;
+import com.lowwor.realtimebus.data.rx.RxTrackService;
 import com.lowwor.realtimebus.data.api.BusApiRepository;
 import com.lowwor.realtimebus.data.local.PreferencesHelper;
+import com.lowwor.realtimebus.data.model.Bus;
 import com.lowwor.realtimebus.data.model.BusStation;
 import com.lowwor.realtimebus.data.model.wrapper.BusLineWrapper;
 import com.lowwor.realtimebus.data.model.wrapper.BusStationWrapper;
@@ -36,7 +38,6 @@ import com.lowwor.realtimebus.databinding.FragmentTrackBinding;
 import com.lowwor.realtimebus.ui.MainActivity;
 import com.lowwor.realtimebus.ui.base.BaseFragment;
 import com.lowwor.realtimebus.ui.widget.LimitArrayAdapter;
-import com.lowwor.realtimebus.utils.Constants;
 import com.lowwor.realtimebus.utils.NetworkUtils;
 import com.lowwor.realtimebus.utils.RxUtils;
 import com.lowwor.realtimebus.viewmodel.AutoCompleteViewModel;
@@ -47,20 +48,18 @@ import com.orhanobut.logger.Logger;
 
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func1;
+import rx.functions.Action0;
 import rx.schedulers.Schedulers;
-import rx.schedulers.TimeInterval;
 import rx.subscriptions.CompositeSubscription;
+import rx.subscriptions.Subscriptions;
 
 /**
  * Created by lowworker on 2015/10/15.
@@ -71,10 +70,10 @@ public class TrackFragment extends BaseFragment implements NotificationView {
     BusApiRepository mBusApiRepository;
     @Inject
     PreferencesHelper mPreferencesHelper;
-
+    @Inject
+    RxTrackService mTrackService;
 
     private CompositeSubscription mSubscriptions = new CompositeSubscription();
-    private Subscription mAutoRefreshSubscription = null;
     private static final int NOTIFICATION_FLAG = 1;
     private BusStationListViewModel busStationListViewModel;
     private TrackViewModel trackViewModel;
@@ -106,8 +105,40 @@ public class TrackFragment extends BaseFragment implements NotificationView {
         initAutoComplete(fragmentTrackBinding.autoText);
         initSwipeRefresh(fragmentTrackBinding.swipeContainer);
         fragmentTrackBinding.executePendingBindings();
+        initTrackService();
         loadStationsIfNetworkConnected();
+
         return fragmentTrackBinding.getRoot();
+    }
+
+    private void initTrackService() {
+
+        Subscriber<List<Bus>> subscriber = new Subscriber<List<Bus>>() {
+            @Override
+            public void onCompleted() {
+                Logger.d("onCompleted() called with: " + "");
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                Logger.d("onError() called with: " + "e = [" + e + "]");
+            }
+
+            @Override
+            public void onNext(List<Bus> buses) {
+                setIsLoading(false);
+                busStationListViewModel.setBuses(buses);
+            }
+        };
+        subscriber.add(Subscriptions.create(new Action0() {
+            @Override
+            public void call() {
+               mTrackService.close();
+            }
+        }));
+        Subscription autoRefreshSubscription = mTrackService.getBusObservable().subscribe(
+                subscriber);
+        mSubscriptions.add(autoRefreshSubscription);
     }
 
 
@@ -147,31 +178,41 @@ public class TrackFragment extends BaseFragment implements NotificationView {
 
     private void searchLine() {
         Logger.i("searchLine: " + autoCompleteViewModel.text.get());
-        mBusApiRepository.searchLine(autoCompleteViewModel.text.get()).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Subscriber<BusLineWrapper>() {
-            @Override
-            public void onCompleted() {
-                getStations();
-            }
+        mBusApiRepository.searchLine(autoCompleteViewModel.text.get())
+                .doOnSubscribe(new Action0() {
+                    @Override
+                    public void call() {
+                        setIsLoading(true);
+                    }
+                })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<BusLineWrapper>() {
+                    @Override
+                    public void onCompleted() {
+                        getStations();
+                    }
 
-            @Override
-            public void onError(Throwable e) {
-                e.printStackTrace();
-            }
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                    }
 
-            @Override
-            public void onNext(BusLineWrapper busLineWrapper) {
-                mLineName = busLineWrapper.getData().get(0).name;
-                mPreferencesHelper.saveLastQueryLine(mLineName);
+                    @Override
+                    public void onNext(BusLineWrapper busLineWrapper) {
+                        mLineName = busLineWrapper.getData().get(0).name;
+                        mPreferencesHelper.saveLastQueryLine(mLineName);
 
-                firstStation = busLineWrapper.getData().get(0).fromStation;
-                lastStation = busLineWrapper.getData().get(0).toStation;
-                fromStation = getStartFrom() ? firstStation : lastStation;
+                        firstStation = busLineWrapper.getData().get(0).fromStation;
+                        lastStation = busLineWrapper.getData().get(0).toStation;
+                        fromStation = getStartFrom() ? firstStation : lastStation;
 
-                mNormalLineId = busLineWrapper.getData().get(0).id;
-                mReverseLineId = busLineWrapper.getData().get(1).id;
-                mLineId = getStartFrom() ? mNormalLineId : mReverseLineId;
-            }
-        });
+                        mNormalLineId = busLineWrapper.getData().get(0).id;
+                        mReverseLineId = busLineWrapper.getData().get(1).id;
+                        mLineId = getStartFrom() ? mNormalLineId : mReverseLineId;
+
+                    }
+                });
     }
 
 
@@ -191,12 +232,12 @@ public class TrackFragment extends BaseFragment implements NotificationView {
                                 Logger.e("There was a problem loading the top stories " + e);
                                 e.printStackTrace();
                                 Toast.makeText(getActivity(), "找不到线路,请重试！", Toast.LENGTH_SHORT).show();
-                                setIsLoading();
+                                setIsLoading(false);
                             }
 
                             @Override
                             public void onNext(BusStationWrapper busStationWrapper) {
-                                setIsLoading();
+                                setIsLoading(false);
                                 setupBusStations(busStationWrapper.getData());
                                 saveAutoComplete();
                                 refreshAutoComplete();
@@ -215,24 +256,11 @@ public class TrackFragment extends BaseFragment implements NotificationView {
                 .subscribe(getBusSubscriber()));
     }
 
-    public void executeAutoRefresh() {
 
-        if (mAutoRefreshSubscription != null && !mAutoRefreshSubscription.isUnsubscribed()) {
-            mAutoRefreshSubscription.unsubscribe();
-            return;
-        }
+    public void executeAutoRefresh() {
+        mTrackService.stopAutoRefresh();
         if (getAutoRefresh()) {
-            mAutoRefreshSubscription =
-                    Observable.interval(Constants.REFRESH_INTERVAL, TimeUnit.SECONDS)
-                            .timeInterval().flatMap(new Func1<TimeInterval<Long>, Observable<BusWrapper>>() {
-                        @Override
-                        public Observable<BusWrapper> call(TimeInterval<Long> longTimeInterval) {
-                            return mBusApiRepository.getBusListOnRoad(mLineName, fromStation);
-                        }
-                    })
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribeOn(Schedulers.io())
-                            .subscribe(getBusSubscriber());
+            mTrackService.startAutoRefresh(mLineName, fromStation);
         }
     }
 
@@ -250,13 +278,13 @@ public class TrackFragment extends BaseFragment implements NotificationView {
 
                 Logger.e("There was a problem loading bus on line " + e);
                 e.printStackTrace();
-                setIsLoading();
+                setIsLoading(false);
             }
 
             @Override
             public void onNext(BusWrapper busWrapper) {
 //                Logger.i("onNext");
-                setIsLoading();
+                setIsLoading(false);
                 busStationListViewModel.setBuses(busWrapper.getData());
             }
         };
@@ -435,8 +463,8 @@ public class TrackFragment extends BaseFragment implements NotificationView {
         inflater.inflate(R.menu.track_menu, menu);
     }
 
-    private void setIsLoading() {
-        trackViewModel.setIsLoading(false);
+    private void setIsLoading(boolean isLoading) {
+        trackViewModel.setIsLoading(isLoading);
     }
 
 
