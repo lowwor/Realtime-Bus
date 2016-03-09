@@ -40,8 +40,6 @@ import com.lowwor.realtimebus.ui.base.BaseFragment;
 import com.lowwor.realtimebus.ui.widget.LimitArrayAdapter;
 import com.lowwor.realtimebus.utils.NetworkUtils;
 import com.lowwor.realtimebus.utils.RxUtils;
-import com.lowwor.realtimebus.viewmodel.AutoCompleteViewModel;
-import com.lowwor.realtimebus.viewmodel.BusStationListViewModel;
 import com.lowwor.realtimebus.viewmodel.NotificationView;
 import com.lowwor.realtimebus.viewmodel.TrackViewModel;
 import com.orhanobut.logger.Logger;
@@ -75,7 +73,6 @@ public class TrackFragment extends BaseFragment implements NotificationView {
 
     private CompositeSubscription mSubscriptions = new CompositeSubscription();
     private static final int NOTIFICATION_FLAG = 1;
-    private BusStationListViewModel busStationListViewModel;
     private TrackViewModel trackViewModel;
     private String mNormalLineId;
     private String mReverseLineId;
@@ -84,7 +81,6 @@ public class TrackFragment extends BaseFragment implements NotificationView {
     private String fromStation;
     private String firstStation;
     private String lastStation;
-    private AutoCompleteViewModel autoCompleteViewModel;
     private ArrayAdapter mAutoCompleteAdapter;
     private Toast toast;
 
@@ -95,12 +91,8 @@ public class TrackFragment extends BaseFragment implements NotificationView {
         FragmentTrackBinding fragmentTrackBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_track, container, false);
         ButterKnife.bind(this, fragmentTrackBinding.getRoot());
         initDependencyInjector();
-        busStationListViewModel = new BusStationListViewModel(this);
-        trackViewModel = new TrackViewModel();
-        autoCompleteViewModel = new AutoCompleteViewModel();
-        fragmentTrackBinding.setStationListViewModel(busStationListViewModel);
+        trackViewModel = new TrackViewModel(this);
         fragmentTrackBinding.setTrackViewModel(trackViewModel);
-        fragmentTrackBinding.setAutoCompleteViewModel(autoCompleteViewModel);
         initToolbar(fragmentTrackBinding.toolbar);
         initAutoComplete(fragmentTrackBinding.autoText);
         initSwipeRefresh(fragmentTrackBinding.swipeContainer);
@@ -127,7 +119,7 @@ public class TrackFragment extends BaseFragment implements NotificationView {
             @Override
             public void onNext(List<Bus> buses) {
                 setIsLoading(false);
-                busStationListViewModel.setBuses(buses);
+                trackViewModel.setBuses(buses);
             }
         };
         subscriber.add(Subscriptions.create(new Action0() {
@@ -177,8 +169,8 @@ public class TrackFragment extends BaseFragment implements NotificationView {
     }
 
     private void searchLine() {
-        Logger.i("searchLine: " + autoCompleteViewModel.text.get());
-        mBusApiRepository.searchLine(autoCompleteViewModel.text.get())
+        Logger.i("searchLine: " + trackViewModel.text.get());
+        mBusApiRepository.searchLine(trackViewModel.text.get())
                 .doOnSubscribe(new Action0() {
                     @Override
                     public void call() {
@@ -285,7 +277,7 @@ public class TrackFragment extends BaseFragment implements NotificationView {
             public void onNext(BusWrapper busWrapper) {
 //                Logger.i("onNext");
                 setIsLoading(false);
-                busStationListViewModel.setBuses(busWrapper.getData());
+                trackViewModel.setBuses(busWrapper.getData());
             }
         };
     }
@@ -340,7 +332,7 @@ public class TrackFragment extends BaseFragment implements NotificationView {
 
 
     private void setupBusStations(List<BusStation> busStations) {
-        busStationListViewModel.setItems(busStations);
+        trackViewModel.setItems(busStations);
     }
 
     private void switchStartFrom() {
@@ -356,9 +348,9 @@ public class TrackFragment extends BaseFragment implements NotificationView {
 
 
     private void initAutoComplete(AutoCompleteTextView autoCompleteTextView) {
-        mAutoCompleteAdapter = new LimitArrayAdapter<>(getActivity(), R.layout.item_auto_complete, autoCompleteViewModel.lineNameItems);
+        mAutoCompleteAdapter = new LimitArrayAdapter<>(getActivity(), R.layout.item_auto_complete, trackViewModel.lineNameItems);
         autoCompleteTextView.setAdapter(mAutoCompleteAdapter);
-        autoCompleteViewModel.setText(mPreferencesHelper.getLastQueryLine());
+        trackViewModel.setText(mPreferencesHelper.getLastQueryLine());
         refreshAutoComplete();
     }
 

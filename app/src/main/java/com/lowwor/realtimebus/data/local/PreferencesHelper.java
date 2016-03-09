@@ -61,7 +61,7 @@ public class PreferencesHelper {
 
 
     public String getLastQueryLine() {
-        return mPref.getString(PREF_KEY_LAST_QUERY, "3a");
+        return mPref.getString(PREF_KEY_LAST_QUERY, "3A");
     }
 
     public boolean getAutoRefresh() {

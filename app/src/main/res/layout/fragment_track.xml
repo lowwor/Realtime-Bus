@@ -5,9 +5,7 @@
     <data>
         <import type="android.view.View"/>
         <import type="me.tatarka.bindingcollectionadapter.LayoutManagers" />
-        <variable name="autoCompleteViewModel" type="com.lowwor.realtimebus.viewmodel.AutoCompleteViewModel"/>
-        <variable name="trackViewModel" type="com.lowwor.realtimebus.viewmodel.TrackViewModel"/>
-        <variable name="stationListViewModel" type="com.lowwor.realtimebus.viewmodel.BusStationListViewModel"/>
+        <variable name="trackViewModel" type="com.lowwor.realtimebus.viewmodel.TrackViewModel"/>/>
     </data>
 <LinearLayout
     android:layout_width="match_parent"
@@ -77,7 +75,7 @@
                                 android:completionThreshold="1"
                                 android:dropDownAnchor = "@id/auto_text"
                                 android:singleLine="true"
-                                app:textChange="@{autoCompleteViewModel.text}"
+                                app:textChange="@{trackViewModel.text}"
                                 />
                         </android.support.design.widget.TextInputLayout>
 
@@ -106,8 +104,8 @@
                     android:id="@+id/recyclerview"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    app:itemView = "@{stationListViewModel.itemViewStation}"
-                    app:items ="@{stationListViewModel.mBusStations}"
+                    app:itemView = "@{trackViewModel.itemViewStation}"
+                    app:items ="@{trackViewModel.mBusStations}"
                     app:layoutManager="@{LayoutManagers.linear()}"
                     />
             </com.lowwor.realtimebus.ui.widget.MySwipeRefreshLayout>
