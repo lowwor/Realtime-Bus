@@ -16,6 +16,10 @@ public interface RxTrackService {
 
     void startAutoRefresh(String lineName, String fromStation);
 
+    void addAlarmStation(String stationName);
+
+    void removeAlarmStation(String stationName);
+
     void close();
 
     Observable<List<Bus>> getBusObservable();

@@ -1,10 +1,5 @@
 package com.lowwor.realtimebus.ui.track;
 
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Context;
-import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -12,7 +7,6 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -21,12 +15,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.lowwor.realtimebus.R;
-import com.lowwor.realtimebus.data.rx.RxTrackService;
 import com.lowwor.realtimebus.data.api.BusApiRepository;
 import com.lowwor.realtimebus.data.local.PreferencesHelper;
 import com.lowwor.realtimebus.data.model.Bus;
@@ -34,13 +25,13 @@ import com.lowwor.realtimebus.data.model.BusStation;
 import com.lowwor.realtimebus.data.model.wrapper.BusLineWrapper;
 import com.lowwor.realtimebus.data.model.wrapper.BusStationWrapper;
 import com.lowwor.realtimebus.data.model.wrapper.BusWrapper;
+import com.lowwor.realtimebus.data.rx.RxTrackService;
 import com.lowwor.realtimebus.databinding.FragmentTrackBinding;
 import com.lowwor.realtimebus.ui.MainActivity;
 import com.lowwor.realtimebus.ui.base.BaseFragment;
 import com.lowwor.realtimebus.ui.widget.LimitArrayAdapter;
 import com.lowwor.realtimebus.utils.NetworkUtils;
 import com.lowwor.realtimebus.utils.RxUtils;
-import com.lowwor.realtimebus.viewmodel.NotificationView;
 import com.lowwor.realtimebus.viewmodel.TrackViewModel;
 import com.orhanobut.logger.Logger;
 
@@ -62,18 +53,18 @@ import rx.subscriptions.Subscriptions;
 /**
  * Created by lowworker on 2015/10/15.
  */
-public class TrackFragment extends BaseFragment implements NotificationView {
+public class TrackFragment extends BaseFragment   {
 
     @Inject
     BusApiRepository mBusApiRepository;
     @Inject
     PreferencesHelper mPreferencesHelper;
     @Inject
-    RxTrackService mTrackService;
+    RxTrackService mRxTrackService;
+    @Inject
+    TrackViewModel trackViewModel;
 
     private CompositeSubscription mSubscriptions = new CompositeSubscription();
-    private static final int NOTIFICATION_FLAG = 1;
-    private TrackViewModel trackViewModel;
     private String mNormalLineId;
     private String mReverseLineId;
     private String mLineId;
@@ -82,7 +73,6 @@ public class TrackFragment extends BaseFragment implements NotificationView {
     private String firstStation;
     private String lastStation;
     private ArrayAdapter mAutoCompleteAdapter;
-    private Toast toast;
 
 
     @Nullable
@@ -91,19 +81,16 @@ public class TrackFragment extends BaseFragment implements NotificationView {
         FragmentTrackBinding fragmentTrackBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_track, container, false);
         ButterKnife.bind(this, fragmentTrackBinding.getRoot());
         initDependencyInjector();
-        trackViewModel = new TrackViewModel(this);
         fragmentTrackBinding.setTrackViewModel(trackViewModel);
         initToolbar(fragmentTrackBinding.toolbar);
         initAutoComplete(fragmentTrackBinding.autoText);
         initSwipeRefresh(fragmentTrackBinding.swipeContainer);
         fragmentTrackBinding.executePendingBindings();
-        initTrackService();
-        loadStationsIfNetworkConnected();
-
         return fragmentTrackBinding.getRoot();
     }
 
     private void initTrackService() {
+        Logger.d("initTrackService() called with: " + "");
 
         Subscriber<List<Bus>> subscriber = new Subscriber<List<Bus>>() {
             @Override
@@ -118,6 +105,7 @@ public class TrackFragment extends BaseFragment implements NotificationView {
 
             @Override
             public void onNext(List<Bus> buses) {
+                Logger.d("onNext() called with: " + "buses = [" + buses + "]");
                 setIsLoading(false);
                 trackViewModel.setBuses(buses);
             }
@@ -125,10 +113,10 @@ public class TrackFragment extends BaseFragment implements NotificationView {
         subscriber.add(Subscriptions.create(new Action0() {
             @Override
             public void call() {
-               mTrackService.close();
+               mRxTrackService.close();
             }
         }));
-        Subscription autoRefreshSubscription = mTrackService.getBusObservable().subscribe(
+        Subscription autoRefreshSubscription = mRxTrackService.getBusObservable().subscribe(
                 subscriber);
         mSubscriptions.add(autoRefreshSubscription);
     }
@@ -250,9 +238,9 @@ public class TrackFragment extends BaseFragment implements NotificationView {
 
 
     public void executeAutoRefresh() {
-        mTrackService.stopAutoRefresh();
+        mRxTrackService.stopAutoRefresh();
         if (getAutoRefresh()) {
-            mTrackService.startAutoRefresh(mLineName, fromStation);
+            mRxTrackService.startAutoRefresh(mLineName, fromStation);
         }
     }
 
@@ -280,49 +268,6 @@ public class TrackFragment extends BaseFragment implements NotificationView {
                 trackViewModel.setBuses(busWrapper.getData());
             }
         };
-    }
-
-    @Override
-    public void showNotification(String busStationName) {
-        Intent notificationIntent = new Intent(getActivity(), MainActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(
-                getActivity(), NOTIFICATION_FLAG, notificationIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT);
-        Notification.Builder mBuilder = new Notification.Builder(getActivity())
-                .setDefaults(Notification.DEFAULT_SOUND)
-                .setTicker(busStationName + "的公交到站了")
-                .setContentIntent(pendingIntent)
-                .setContentTitle(busStationName + "的公交到站了")
-                .setContentText(busStationName + "的公交到站了")
-                .setSmallIcon(R.drawable.ic_time_to_leave)
-                .setWhen(System.currentTimeMillis())
-                .setAutoCancel(true);
-
-        NotificationManager mNotificationManager =
-                (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
-        mNotificationManager.notify(NOTIFICATION_FLAG, mBuilder.build());
-
-        ImageView iconView = new ImageView(getActivity());
-        iconView.setImageResource(R.mipmap.ic_launcher);
-
-        showToast(busStationName);
-    }
-
-    private void showToast(String busStationName) {
-        if (toast != null) {
-            toast.cancel();
-        }
-        toast = new Toast(getActivity());
-        toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
-        toast.setDuration(Toast.LENGTH_LONG);
-        LayoutInflater inflater = LayoutInflater.from(getActivity());
-        View view = inflater.inflate(R.layout.toast_bus_arrived, null);
-        TextView tvToast = (TextView) view.findViewById(R.id.tv_toast);
-        tvToast.setText(busStationName + "的公交到站了");
-        toast.setView(view);
-        toast.show();
-
-
     }
 
     private void switchDirection() {
@@ -409,11 +354,12 @@ public class TrackFragment extends BaseFragment implements NotificationView {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onStart() {
+        super.onStart();
         mSubscriptions = RxUtils.getNewCompositeSubIfUnsubscribed(mSubscriptions);
+        initTrackService();
+        loadStationsIfNetworkConnected();
     }
-
 
     @Override
     public void onPause() {

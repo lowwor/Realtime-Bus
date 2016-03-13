@@ -1,22 +1,35 @@
 package com.lowwor.realtimebus.data.service;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.os.RemoteCallbackList;
 import android.os.RemoteException;
 import android.support.annotation.Nullable;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.lowwor.realtimebus.BusApplication;
 import com.lowwor.realtimebus.ITrackCallback;
 import com.lowwor.realtimebus.ITrackService;
+import com.lowwor.realtimebus.R;
 import com.lowwor.realtimebus.data.api.BusApiRepository;
 import com.lowwor.realtimebus.data.model.Bus;
 import com.lowwor.realtimebus.data.model.wrapper.BusWrapper;
+import com.lowwor.realtimebus.ui.MainActivity;
 import com.lowwor.realtimebus.utils.Constants;
 import com.lowwor.realtimebus.utils.RxUtils;
 import com.orhanobut.logger.Logger;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -42,6 +55,9 @@ public class TrackService extends Service {
     CompositeSubscription compositeSubscription;
 
     final RemoteCallbackList<ITrackCallback> mCallbacks = new RemoteCallbackList<>();
+    private static final int NOTIFICATION_FLAG = 1;
+    private Toast toast;
+    private List<String> mAlarmStations = new ArrayList<>();
 
     @Nullable
     @Override
@@ -97,6 +113,25 @@ public class TrackService extends Service {
         }
 
         @Override
+        public void addAlarmStation(String stationName) throws RemoteException {
+            if (!mAlarmStations.contains(stationName)) {
+                mAlarmStations.add(stationName);
+            }
+        }
+
+        @Override
+        public void removeAlarmStation(String stationName) throws RemoteException {
+            if (mAlarmStations.contains(stationName)) {
+                mAlarmStations.remove(stationName);
+            }
+        }
+
+        @Override
+        public void clearAlarmStation() throws RemoteException {
+            mAlarmStations.clear();
+        }
+
+        @Override
         public void registerCallback(ITrackCallback callback) throws RemoteException {
             if (callback != null) {
                 mCallbacks.register(callback);
@@ -141,6 +176,14 @@ public class TrackService extends Service {
 
     void callbackSuccess(List<Bus> buses) {
 //        Logger.d("callbackSuccess() called with: " + "buses = [" + buses.size() + "]");
+        for (Bus bus : buses) {
+            for (String alarmStation : mAlarmStations) {
+                if (alarmStation.equals(bus.currentStation)) {
+                    showNotification(alarmStation);
+                    showToast(alarmStation);
+                }
+            }
+        }
         final int N = mCallbacks.beginBroadcast();
         for (int i = 0; i < N; i++) {
             try {
@@ -165,6 +208,45 @@ public class TrackService extends Service {
         }
         mCallbacks.finishBroadcast();
     }
+
+    public void showNotification(String busStationName) {
+        Intent notificationIntent = new Intent(getApplicationContext(), MainActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(
+                getApplicationContext(), NOTIFICATION_FLAG, notificationIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+        Notification.Builder mBuilder = new Notification.Builder(getApplicationContext())
+                .setDefaults(Notification.DEFAULT_SOUND)
+                .setTicker(busStationName + "的公交到站了")
+                .setContentIntent(pendingIntent)
+                .setContentTitle(busStationName + "的公交到站了")
+                .setContentText(busStationName + "的公交到站了")
+                .setSmallIcon(R.drawable.ic_time_to_leave)
+                .setWhen(System.currentTimeMillis())
+                .setAutoCancel(true);
+
+        NotificationManager mNotificationManager =
+                (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager.notify(NOTIFICATION_FLAG, mBuilder.build());
+
+        ImageView iconView = new ImageView(getApplicationContext());
+        iconView.setImageResource(R.mipmap.ic_launcher);
+    }
+
+    private void showToast(String busStationName) {
+        if (toast != null) {
+            toast.cancel();
+        }
+        toast = new Toast(getApplicationContext());
+        toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+        toast.setDuration(Toast.LENGTH_LONG);
+        LayoutInflater inflater = LayoutInflater.from(getApplicationContext());
+        View view = inflater.inflate(R.layout.toast_bus_arrived, null);
+        TextView tvToast = (TextView) view.findViewById(R.id.tv_toast);
+        tvToast.setText(busStationName + "的公交到站了");
+        toast.setView(view);
+        toast.show();
+    }
+
 
     @Override
     public void onDestroy() {

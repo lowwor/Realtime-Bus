@@ -9,6 +9,7 @@ import com.lowwor.realtimebus.BR;
 import com.lowwor.realtimebus.R;
 import com.lowwor.realtimebus.data.model.Bus;
 import com.lowwor.realtimebus.data.model.BusStation;
+import com.lowwor.realtimebus.data.rx.RxTrackService;
 import com.lowwor.realtimebus.utils.BindableString;
 import com.orhanobut.logger.Logger;
 
@@ -22,6 +23,7 @@ import me.tatarka.bindingcollectionadapter.ItemView;
 public class TrackViewModel extends BaseObservable {
 
 
+    private final RxTrackService rxTrackService;
     @Bindable
     private boolean isOffline;
     @Bindable
@@ -30,18 +32,17 @@ public class TrackViewModel extends BaseObservable {
 
     @Bindable
     public BindableString text = new BindableString();
-    private final NotificationView notificationView;
     public ObservableList<BusStationItemViewModel> mBusStations = new ObservableArrayList<>();
 
-    public TrackViewModel(NotificationView notificationView) {
-        this.notificationView = notificationView;
+    public TrackViewModel(RxTrackService rxTrackService) {
+        this.rxTrackService = rxTrackService;
     }
 
     public void setItems(List<BusStation> busStations) {
         Logger.i("setItems: " + busStations);
         mBusStations.clear();
         for (BusStation busStation : busStations) {
-            mBusStations.add(new BusStationItemViewModel(busStation));
+            mBusStations.add(new BusStationItemViewModel(busStation,rxTrackService));
         }
     }
 
@@ -53,9 +54,6 @@ public class TrackViewModel extends BaseObservable {
                 if (bus.currentStation.equals(busStationItemViewModel.getBusStationName())) {
                     busStationItemViewModel.increaseBusNumber();
                 }
-            }
-            if (busStationItemViewModel.getBusNumber() != 0 && busStationItemViewModel.getIsAlarm()) {
-                notificationView.showNotification(busStationItemViewModel.getBusStationName());
             }
         }
     }

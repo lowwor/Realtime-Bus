@@ -23,6 +23,12 @@ interface ITrackService {
 
     void unregisterCallback(ITrackCallback callback);
 
+    void addAlarmStation(String stationName);
+
+    void removeAlarmStation(String stationName);
+
+    void clearAlarmStation();
+
 
 
 }

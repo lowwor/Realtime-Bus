@@ -31,7 +31,6 @@ public class RxTrackServiceImpl implements RxTrackService {
     private BehaviorSubject<ITrackService> trackServiceSubject = BehaviorSubject.create();
     private final PublishSubject<List<Bus>> mBusSubject = PublishSubject.create();
     private ITrackService mService;
-
     private CompositeSubscription compositeSubscription;
 
     public RxTrackServiceImpl(Context context) {
@@ -48,6 +47,7 @@ public class RxTrackServiceImpl implements RxTrackService {
             // connected to it.
             try {
                 mService.registerCallback(mCallback);
+                mService.clearAlarmStation();
             } catch (RemoteException e) {
                 // In this case the service has crashed before we could even
                 // do anything with it; we can count on soon being
@@ -102,7 +102,6 @@ public class RxTrackServiceImpl implements RxTrackService {
     }
 
 
-
     @Override
     public void startAutoRefresh(final String lineName, final String fromStation) {
 
@@ -111,7 +110,7 @@ public class RxTrackServiceImpl implements RxTrackService {
                     @Override
                     public void call(ITrackService trackService) {
                         try {
-                            mService.startAutoRefresh(lineName,fromStation);
+                            mService.startAutoRefresh(lineName, fromStation);
                         } catch (RemoteException e) {
                             e.printStackTrace();
                         }
@@ -126,7 +125,52 @@ public class RxTrackServiceImpl implements RxTrackService {
     }
 
     @Override
-    public Observable<List<Bus>> getBusObservable(){
+    public void addAlarmStation(final String stationName) {
+        Subscription stopAutoRefreshSubscription =
+                trackServiceSubject.subscribe(new Action1<ITrackService>() {
+                    @Override
+                    public void call(ITrackService trackService) {
+                        Logger.d("call() called with: " + "trackService = [" + trackService + "]");
+                        try {
+                            mService.addAlarmStation(stationName);
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        mBusSubject.onError(throwable);
+                    }
+                });
+        compositeSubscription.add(stopAutoRefreshSubscription);
+    }
+
+    @Override
+    public void removeAlarmStation(final String stationName) {
+        Subscription stopAutoRefreshSubscription =
+                trackServiceSubject.subscribe(new Action1<ITrackService>() {
+                    @Override
+                    public void call(ITrackService trackService) {
+                        Logger.d("call() called with: " + "trackService = [" + trackService + "]");
+                        try {
+                            mService.removeAlarmStation(stationName);
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        mBusSubject.onError(throwable);
+                    }
+                });
+        compositeSubscription.add(stopAutoRefreshSubscription);
+    }
+
+
+    @Override
+    public Observable<List<Bus>> getBusObservable() {
         Intent intent = new Intent(mContext, TrackService.class);
         mContext.startService(intent);
         mContext.bindService(intent, mServiceConnection,
@@ -135,7 +179,7 @@ public class RxTrackServiceImpl implements RxTrackService {
     }
 
 
-    public void close()  {
+    public void close() {
         Logger.d("close() called with: " + "");
         try {
             mService.unregisterCallback(mCallback);

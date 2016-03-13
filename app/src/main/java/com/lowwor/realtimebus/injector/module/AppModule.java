@@ -1,9 +1,10 @@
 package com.lowwor.realtimebus.injector.module;
 
 import com.lowwor.realtimebus.BusApplication;
+import com.lowwor.realtimebus.data.local.PreferencesHelper;
 import com.lowwor.realtimebus.data.rx.RxTrackService;
 import com.lowwor.realtimebus.data.rx.RxTrackServiceImpl;
-import com.lowwor.realtimebus.data.local.PreferencesHelper;
+import com.lowwor.realtimebus.viewmodel.TrackViewModel;
 
 import javax.inject.Singleton;
 
@@ -38,6 +39,13 @@ public class AppModule {
     @Provides
     RxTrackService provideRxTrackService(BusApplication busApplication){
         return new RxTrackServiceImpl(busApplication);
+    }
+
+
+    @Singleton
+    @Provides
+    TrackViewModel provideTrackViewModel(RxTrackService rxTrackService){
+        return new TrackViewModel(rxTrackService);
     }
 
 }

@@ -10,18 +10,21 @@ import android.view.View;
 
 import com.lowwor.realtimebus.BR;
 import com.lowwor.realtimebus.data.model.BusStation;
+import com.lowwor.realtimebus.data.rx.RxTrackService;
 
 
 public class BusStationItemViewModel extends BaseObservable {
 
 
+    private final RxTrackService rxTrackService;
     private BusStation busStation;
     @Bindable
     private int busNumber = 0;
 
 
-    public BusStationItemViewModel(BusStation busStation ) {
+    public BusStationItemViewModel(BusStation busStation, RxTrackService rxTrackService) {
         this.busStation = busStation;
+        this.rxTrackService = rxTrackService;
     }
 
 
@@ -61,6 +64,11 @@ public class BusStationItemViewModel extends BaseObservable {
             @Override
             public void onClick(View view) {
                 busStation.isAlarm = !busStation.isAlarm;
+                if ( busStation.isAlarm) {
+                    rxTrackService.addAlarmStation(busStation.name);
+                } else {
+                    rxTrackService.removeAlarmStation(busStation.name);
+                }
                 notifyPropertyChanged(BR.isAlarm);
 
             }
