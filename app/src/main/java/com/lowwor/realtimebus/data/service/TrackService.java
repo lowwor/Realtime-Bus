@@ -25,7 +25,6 @@ import com.lowwor.realtimebus.data.api.BusApiRepository;
 import com.lowwor.realtimebus.data.model.Bus;
 import com.lowwor.realtimebus.data.model.wrapper.BusWrapper;
 import com.lowwor.realtimebus.ui.MainActivity;
-import com.lowwor.realtimebus.utils.Constants;
 import com.lowwor.realtimebus.utils.RxUtils;
 import com.orhanobut.logger.Logger;
 
@@ -58,6 +57,8 @@ public class TrackService extends Service {
     private static final int NOTIFICATION_FLAG = 1;
     private Toast toast;
     private List<String> mAlarmStations = new ArrayList<>();
+    private boolean shouldShowNotification = true;
+    private boolean shouldShowPopupNotification =true;
 
     @Nullable
     @Override
@@ -80,10 +81,10 @@ public class TrackService extends Service {
         }
 
         @Override
-        public void startAutoRefresh(final String lineName, final String fromStation) throws RemoteException {
+        public void startAutoRefresh(final String lineName, final String fromStation,int interval) throws RemoteException {
             Logger.d("startAutoRefresh() called with: " + "lineName = [" + lineName + "], fromStation = [" + fromStation + "]");
             compositeSubscription = RxUtils.getNewCompositeSubIfUnsubscribed(compositeSubscription);
-            Subscription autoRefreshSupscription = Observable.interval(Constants.REFRESH_INTERVAL, TimeUnit.SECONDS).timeInterval()
+            Subscription autoRefreshSupscription = Observable.interval(interval, TimeUnit.SECONDS).timeInterval()
                     .flatMap(new Func1<TimeInterval<Long>, Observable<BusWrapper>>() {
                         @Override
                         public Observable<BusWrapper> call(TimeInterval<Long> longTimeInterval) {
@@ -110,6 +111,16 @@ public class TrackService extends Service {
                         }
                     });
             compositeSubscription.add(autoRefreshSupscription);
+        }
+
+        @Override
+        public void setShowNotificatoin(boolean shouldShow) throws RemoteException {
+            shouldShowNotification = shouldShow;
+        }
+
+        @Override
+        public void setShowPopupNotification(boolean shouldShow) throws RemoteException {
+            shouldShowPopupNotification = shouldShow;
         }
 
         @Override
@@ -179,8 +190,12 @@ public class TrackService extends Service {
         for (Bus bus : buses) {
             for (String alarmStation : mAlarmStations) {
                 if (alarmStation.equals(bus.currentStation)) {
-                    showNotification(alarmStation);
-                    showToast(alarmStation);
+                    if (shouldShowNotification) {
+                        showNotification(alarmStation);
+                    }
+                    if (shouldShowPopupNotification) {
+                        showToast(alarmStation);
+                    }
                 }
             }
         }

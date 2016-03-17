@@ -29,7 +29,7 @@ public class BusApiRepository {
     public BusApiRepository() {
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
         if (BuildConfig.DEBUG) {
-            interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+            interceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
         } else {
             interceptor.setLevel(HttpLoggingInterceptor.Level.NONE);
         }

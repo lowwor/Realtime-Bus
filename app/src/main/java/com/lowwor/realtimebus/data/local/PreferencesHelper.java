@@ -2,8 +2,11 @@ package com.lowwor.realtimebus.data.local;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
+import android.preference.PreferenceManager;
 
 import com.f2prateek.rx.preferences.RxSharedPreferences;
+import com.lowwor.realtimebus.R;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -24,13 +27,16 @@ public class PreferencesHelper {
     private static final String PREF_KEY_LAST_QUERY = "PREF_KEY_LAST_QUERY";
 
     private final SharedPreferences mPref;
+    private final SharedPreferences mSettingsPref;
     private final RxSharedPreferences mRxSharedPreferences;
+    private final Resources mResources;
 
     @Inject
     public PreferencesHelper(Context context) {
         mPref = context.getSharedPreferences(PREF_FILE_APP, Context.MODE_PRIVATE);
+        mSettingsPref = PreferenceManager.getDefaultSharedPreferences(context);
         mRxSharedPreferences = RxSharedPreferences.create(mPref);
-
+        mResources = context.getResources();
     }
 
     public void clear() {
@@ -52,7 +58,7 @@ public class PreferencesHelper {
     public void saveAutoCompleteItem(String item) {
         Set<String> mbuses = mPref.getStringSet(PREF_KEY_AUTO_COMPLETE, new HashSet<String>());
         mbuses.add(item);
-        mPref.edit().putStringSet(PREF_KEY_AUTO_COMPLETE,mbuses).apply();
+        mPref.edit().putStringSet(PREF_KEY_AUTO_COMPLETE, mbuses).apply();
     }
 
     public void saveLastQueryLine(String lastQueryStation) {
@@ -71,6 +77,18 @@ public class PreferencesHelper {
 
     public void saveAutoRefresh(boolean isAutoRefresh) {
         mPref.edit().putBoolean(PREF_KEY_AUTO_REFRESH, isAutoRefresh).apply();
+    }
+
+    public boolean getShowNotification() {
+        return mSettingsPref.getBoolean(mResources.getString(R.string.preferences_settings_key_notification), true);
+    }
+
+    public boolean getShowPopupNotification() {
+        return mSettingsPref.getBoolean(mResources.getString(R.string.preferences_settings_key_pop_up_notification), true);
+    }
+
+    public int getAutoRefreshInterval() {
+        return Integer.valueOf(mSettingsPref.getString(mResources.getString(R.string.preferences_settings_key_auto_refresh_interval), null));
     }
 
 }

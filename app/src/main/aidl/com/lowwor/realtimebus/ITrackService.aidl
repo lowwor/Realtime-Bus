@@ -17,7 +17,12 @@ interface ITrackService {
 
     void stopAutoRefresh();
 
-    void startAutoRefresh(String lineName,  String fromStation);
+    void startAutoRefresh(String lineName,  String fromStation,int interval);
+
+    //Not safe for multi thread SharedPreferences
+    void setShowNotificatoin(boolean shouldShow);
+
+    void setShowPopupNotification(boolean shouldShow);
 
     void registerCallback(ITrackCallback callback);
 

@@ -47,6 +47,6 @@ public class MainActivity extends BaseActivity {
     void replaceTrackFragment(){
 
         TrackFragment trackFragment = new TrackFragment();
-        getSupportFragmentManager().beginTransaction().replace(R.id.container,trackFragment).commit();
+        getFragmentManager().beginTransaction().replace(R.id.container,trackFragment).commit();
     }
 }

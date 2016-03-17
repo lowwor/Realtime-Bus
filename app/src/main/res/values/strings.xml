@@ -4,4 +4,25 @@
 
     <string name="error_connection">Connection error！</string>
     <string name="try_again">Try again, please!</string>
+    <string name="menu_settings_title">Settings</string>
+    <string name="settings_toolbar_title">Settings</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="menu_auto_refresh_title">Auto Refresh</string>
+
+    <!--Preferences-->
+    <string name="preferences_settings_key_auto_refresh_interval">preferences_settings_key_auto_refresh_interval</string>
+    <string name="preferences_settings_title_auto_refresh_interval">Auto refresh time interval (seconde=s)</string>
+    <string name="preferences_settings_key_notification">preferences_settings_key_notification</string>
+    <string name="preferences_settings_title_notification">Notification</string>
+    <string name="preferences_settings_summary_notification">Show notification when bus arrived</string>
+    <string name="preferences_settings_key_pop_up_notification">preferences_settings_key_pop_up_notification</string>
+    <string name="preferences_settings_title_pop_up_notification">Popup notification</string>
+    <string name="preferences_settings_summary_pop_up_notification">Show popup notification when bus arrived</string>
+
+
+    <!--All-->
+    <string name="preferences_settings_summary_on">On</string>
+    <string name="preferences_settings_summary_off">Off</string>
 </resources>

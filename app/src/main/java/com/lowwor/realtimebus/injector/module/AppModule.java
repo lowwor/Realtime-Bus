@@ -37,8 +37,8 @@ public class AppModule {
 
     @Singleton
     @Provides
-    RxTrackService provideRxTrackService(BusApplication busApplication){
-        return new RxTrackServiceImpl(busApplication);
+    RxTrackService provideRxTrackService(BusApplication busApplication,PreferencesHelper preferencesHelper){
+        return new RxTrackServiceImpl(busApplication,preferencesHelper);
     }
 
 

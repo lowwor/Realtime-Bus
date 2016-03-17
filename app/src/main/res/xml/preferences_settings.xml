@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <EditTextPreference
+        android:defaultValue="3"
+        android:key="@string/preferences_settings_key_auto_refresh_interval"
+        android:title="@string/preferences_settings_title_auto_refresh_interval"
+        android:inputType="number"
+        />
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="@string/preferences_settings_key_notification"
+        android:title="@string/preferences_settings_title_notification"
+        android:summary=""
+        />
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="@string/preferences_settings_key_pop_up_notification"
+        android:title="@string/preferences_settings_title_pop_up_notification" />
+
+</PreferenceScreen>

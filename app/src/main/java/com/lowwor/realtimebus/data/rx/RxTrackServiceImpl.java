@@ -9,11 +9,14 @@ import android.os.RemoteException;
 
 import com.lowwor.realtimebus.ITrackCallback;
 import com.lowwor.realtimebus.ITrackService;
+import com.lowwor.realtimebus.data.local.PreferencesHelper;
 import com.lowwor.realtimebus.data.model.Bus;
 import com.lowwor.realtimebus.data.service.TrackService;
 import com.orhanobut.logger.Logger;
 
 import java.util.List;
+
+import javax.inject.Inject;
 
 import rx.Observable;
 import rx.Subscription;
@@ -28,15 +31,19 @@ import rx.subscriptions.CompositeSubscription;
 public class RxTrackServiceImpl implements RxTrackService {
 
     private final Context mContext;
+    private final PreferencesHelper mPreferencesHelper;
     private BehaviorSubject<ITrackService> trackServiceSubject = BehaviorSubject.create();
     private final PublishSubject<List<Bus>> mBusSubject = PublishSubject.create();
     private ITrackService mService;
     private CompositeSubscription compositeSubscription;
 
-    public RxTrackServiceImpl(Context context) {
+    @Inject
+    public RxTrackServiceImpl(Context context, PreferencesHelper preferencesHelper) {
         mContext = context;
+        mPreferencesHelper = preferencesHelper;
         compositeSubscription = new CompositeSubscription();
     }
+
 
     private ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
@@ -68,13 +75,13 @@ public class RxTrackServiceImpl implements RxTrackService {
     private ITrackCallback mCallback = new ITrackCallback.Stub() {
         @Override
         public void onBusArrived(List<Bus> buses) throws RemoteException {
-            Logger.d("onBusArrived() called with: " + "buses = [" + buses + "]");
+//            Logger.d("onBusArrived() called with: " + "buses = [" + buses + "]");
             mBusSubject.onNext(buses);
         }
 
         @Override
         public void onFail(String errorMessage) throws RemoteException {
-            Logger.d("onFail() called with: " + "errorMessage = [" + errorMessage + "]");
+//            Logger.d("onFail() called with: " + "errorMessage = [" + errorMessage + "]");
             mBusSubject.onError(new Exception(errorMessage));
         }
     };
@@ -110,7 +117,9 @@ public class RxTrackServiceImpl implements RxTrackService {
                     @Override
                     public void call(ITrackService trackService) {
                         try {
-                            mService.startAutoRefresh(lineName, fromStation);
+                            mService.setShowNotificatoin(mPreferencesHelper.getShowNotification());
+                            mService.setShowPopupNotification(mPreferencesHelper.getShowPopupNotification());
+                            mService.startAutoRefresh(lineName, fromStation,mPreferencesHelper.getAutoRefreshInterval());
                         } catch (RemoteException e) {
                             e.printStackTrace();
                         }

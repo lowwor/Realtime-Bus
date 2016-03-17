@@ -1,5 +1,6 @@
 package com.lowwor.realtimebus.ui.track;
 
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -29,6 +30,7 @@ import com.lowwor.realtimebus.data.rx.RxTrackService;
 import com.lowwor.realtimebus.databinding.FragmentTrackBinding;
 import com.lowwor.realtimebus.ui.MainActivity;
 import com.lowwor.realtimebus.ui.base.BaseFragment;
+import com.lowwor.realtimebus.ui.settings.SettingsActivity;
 import com.lowwor.realtimebus.ui.widget.LimitArrayAdapter;
 import com.lowwor.realtimebus.utils.NetworkUtils;
 import com.lowwor.realtimebus.utils.RxUtils;
@@ -105,7 +107,7 @@ public class TrackFragment extends BaseFragment   {
 
             @Override
             public void onNext(List<Bus> buses) {
-                Logger.d("onNext() called with: " + "buses = [" + buses + "]");
+//                Logger.d("onNext() called with: " + "buses = [" + buses + "]");
                 setIsLoading(false);
                 trackViewModel.setBuses(buses);
             }
@@ -119,8 +121,8 @@ public class TrackFragment extends BaseFragment   {
         Subscription autoRefreshSubscription = mRxTrackService.getBusObservable().subscribe(
                 subscriber);
         mSubscriptions.add(autoRefreshSubscription);
-    }
 
+    }
 
     @OnClick(R.id.btn_query)
     public void onQuery() {
@@ -382,6 +384,9 @@ public class TrackFragment extends BaseFragment   {
                         saveAutoRefresh(!item.isChecked());
                         item.setChecked(!item.isChecked());
                         executeAutoRefresh();
+                        break;
+                    case R.id.settings:
+                     startActivity(new Intent(getActivity(),SettingsActivity.class));
                         break;
                 }
                 return true;
