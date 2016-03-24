@@ -34,6 +34,7 @@ import com.lowwor.realtimebus.ui.settings.SettingsActivity;
 import com.lowwor.realtimebus.ui.widget.LimitArrayAdapter;
 import com.lowwor.realtimebus.utils.NetworkUtils;
 import com.lowwor.realtimebus.utils.RxUtils;
+import com.lowwor.realtimebus.utils.ShareUtils;
 import com.lowwor.realtimebus.viewmodel.TrackViewModel;
 import com.orhanobut.logger.Logger;
 
@@ -387,6 +388,9 @@ public class TrackFragment extends BaseFragment   {
                         break;
                     case R.id.settings:
                      startActivity(new Intent(getActivity(),SettingsActivity.class));
+                        break;
+                    case R.id.share:
+                        ShareUtils.share(getActivity());
                         break;
                 }
                 return true;

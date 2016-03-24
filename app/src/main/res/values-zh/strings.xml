@@ -7,6 +7,7 @@
     <string name="error_connection">网络连接错误！</string>
     <string name="try_again">再试一次!</string>
     <string name="menu_settings_title">设置</string>
+    <string name="menu_share_title">分享</string>
     <string name="hello_blank_fragment"></string>
     <string name="menu_auto_refresh_title">自动刷新</string>
     <string name="settings_toolbar_title">设置</string>
@@ -17,4 +18,10 @@
     <string name="preferences_settings_summary_on">打开</string>
     <string name="preferences_settings_summary_pop_up_notification">公交到站时，弹出对话框提醒</string>
     <string name="preferences_settings_summary_notification">公交到站时，在下拉通知栏提醒</string>
+
+
+    <string name="action_share">分享</string>
+
+    <!--share-->
+    <string name="share_text">发现了一款可以实时跟踪珠海公交位置的App「珠海公交」，还有到站提醒等功能，太赞了! 推荐~~~ 下载地址：http://fir.im/2feu </string>
 </resources>

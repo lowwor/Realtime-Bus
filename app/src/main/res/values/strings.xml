@@ -25,4 +25,8 @@
     <!--All-->
     <string name="preferences_settings_summary_on">On</string>
     <string name="preferences_settings_summary_off">Off</string>
+    <string name="menu_share_title">Share</string>
+    <string name="action_share">Share</string>
+    <string name="share_text">  Just found a excellent App to track bus status in Zhuhai 「Zhuhai Bus」，and it can inform you when bus arrive，awesome! Download it here：http://fir.im/2feu </string>
+
 </resources>
