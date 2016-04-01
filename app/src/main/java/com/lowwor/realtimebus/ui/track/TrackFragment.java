@@ -33,7 +33,6 @@ import com.lowwor.realtimebus.ui.base.BaseFragment;
 import com.lowwor.realtimebus.ui.settings.SettingsActivity;
 import com.lowwor.realtimebus.ui.widget.LimitArrayAdapter;
 import com.lowwor.realtimebus.utils.NetworkUtils;
-import com.lowwor.realtimebus.utils.RxUtils;
 import com.lowwor.realtimebus.utils.ShareUtils;
 import com.lowwor.realtimebus.viewmodel.TrackViewModel;
 import com.orhanobut.logger.Logger;
@@ -359,7 +358,6 @@ public class TrackFragment extends BaseFragment   {
     @Override
     public void onStart() {
         super.onStart();
-        mSubscriptions = RxUtils.getNewCompositeSubIfUnsubscribed(mSubscriptions);
         initTrackService();
         loadStationsIfNetworkConnected();
     }
@@ -367,7 +365,7 @@ public class TrackFragment extends BaseFragment   {
     @Override
     public void onPause() {
         super.onPause();
-        RxUtils.unsubscribeIfNotNull(mSubscriptions);
+        mSubscriptions.clear();
     }
 
     private void initToolbar(Toolbar toolbar) {

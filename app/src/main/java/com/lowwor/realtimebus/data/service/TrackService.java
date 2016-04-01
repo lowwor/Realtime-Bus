@@ -25,7 +25,6 @@ import com.lowwor.realtimebus.data.api.BusApiRepository;
 import com.lowwor.realtimebus.data.model.Bus;
 import com.lowwor.realtimebus.data.model.wrapper.BusWrapper;
 import com.lowwor.realtimebus.ui.MainActivity;
-import com.lowwor.realtimebus.utils.RxUtils;
 import com.orhanobut.logger.Logger;
 
 import java.util.ArrayList;
@@ -77,13 +76,12 @@ public class TrackService extends Service {
         @Override
         public void stopAutoRefresh() throws RemoteException {
             Logger.d("stopAutoRefresh() called with: " + "");
-            RxUtils.unsubscribeIfNotNull(compositeSubscription);
+            compositeSubscription.clear();
         }
 
         @Override
         public void startAutoRefresh(final String lineName, final String fromStation,int interval) throws RemoteException {
             Logger.d("startAutoRefresh() called with: " + "lineName = [" + lineName + "], fromStation = [" + fromStation + "]");
-            compositeSubscription = RxUtils.getNewCompositeSubIfUnsubscribed(compositeSubscription);
             Subscription autoRefreshSupscription = Observable.interval(interval, TimeUnit.SECONDS).timeInterval()
                     .flatMap(new Func1<TimeInterval<Long>, Observable<BusWrapper>>() {
                         @Override
