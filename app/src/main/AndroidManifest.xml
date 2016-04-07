@@ -15,6 +15,7 @@
         <meta-data android:value="${CHANNEL_NAME}" android:name="UMENG_CHANNEL"/>
         <activity
             android:name=".ui.MainActivity"
+            android:launchMode="singleTask"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

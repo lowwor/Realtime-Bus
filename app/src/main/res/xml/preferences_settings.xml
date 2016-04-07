@@ -7,14 +7,21 @@
         android:inputType="number"
         />
     <SwitchPreference
+        android:defaultValue="false"
+        android:key="@string/preferences_settings_key_track_background"
+        android:title="@string/preferences_settings_title_track_background"
+        android:summary="@string/preferences_settings_summary_track_background"
+        />
+    <SwitchPreference
         android:defaultValue="true"
         android:key="@string/preferences_settings_key_notification"
         android:title="@string/preferences_settings_title_notification"
-        android:summary=""
+        android:summary="@string/preferences_settings_summary_notification"
         />
     <SwitchPreference
         android:defaultValue="true"
         android:key="@string/preferences_settings_key_pop_up_notification"
-        android:title="@string/preferences_settings_title_pop_up_notification" />
+        android:title="@string/preferences_settings_title_pop_up_notification"
+        android:summary="@string/preferences_settings_summary_pop_up_notification" />
 
 </PreferenceScreen>

@@ -83,6 +83,10 @@ public class PreferencesHelper {
         return mSettingsPref.getBoolean(mResources.getString(R.string.preferences_settings_key_notification), true);
     }
 
+    public boolean getTrackBackground() {
+        return mSettingsPref.getBoolean(mResources.getString(R.string.preferences_settings_key_track_background), true);
+    }
+
     public boolean getShowPopupNotification() {
         return mSettingsPref.getBoolean(mResources.getString(R.string.preferences_settings_key_pop_up_notification), true);
     }

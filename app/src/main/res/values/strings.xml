@@ -20,6 +20,9 @@
     <string name="preferences_settings_key_pop_up_notification">preferences_settings_key_pop_up_notification</string>
     <string name="preferences_settings_title_pop_up_notification">Popup notification</string>
     <string name="preferences_settings_summary_pop_up_notification">Show popup notification when bus arrived</string>
+    <string name="preferences_settings_key_track_background">preferences_settings_key_track_background</string>
+    <string name="preferences_settings_title_track_background">Track background</string>
+    <string name="preferences_settings_summary_track_background">Track bus position when app is closed</string>
 
 
     <!--All-->
@@ -28,5 +31,7 @@
     <string name="menu_share_title">Share</string>
     <string name="action_share">Share</string>
     <string name="share_text">  Just found a excellent App to track bus status in Zhuhai 「Zhuhai Bus」，and it can inform you when bus arrive，awesome! Download it here：http://fir.im/2feu </string>
+    <string name="service_track_notification_text">Tracking bus position for you</string>
+    <string name="service_stop_track_text">Stop</string>
 
 </resources>

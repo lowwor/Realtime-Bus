@@ -180,8 +180,8 @@ public class RxTrackServiceImpl implements RxTrackService {
 
     @Override
     public Observable<List<Bus>> getBusObservable() {
+
         Intent intent = new Intent(mContext, TrackService.class);
-        mContext.startService(intent);
         mContext.bindService(intent, mServiceConnection,
                 Context.BIND_AUTO_CREATE);
         return mBusSubject.asObservable();
@@ -196,6 +196,7 @@ public class RxTrackServiceImpl implements RxTrackService {
             e.printStackTrace();
         }
         mContext.unbindService(mServiceConnection);
+
         if (compositeSubscription != null && !compositeSubscription.isUnsubscribed()) {
             compositeSubscription.unsubscribe();
         }
