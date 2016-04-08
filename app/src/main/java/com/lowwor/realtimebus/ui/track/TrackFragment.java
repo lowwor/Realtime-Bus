@@ -146,6 +146,7 @@ public class TrackFragment extends BaseFragment   {
             searchLine();
         } else {
             setIsOffline(true);
+            setIsLoading(false);
         }
     }
 
@@ -155,6 +156,7 @@ public class TrackFragment extends BaseFragment   {
             getBus();
         } else {
             setIsOffline(true);
+            setIsLoading(false);
         }
     }
 
