@@ -204,11 +204,6 @@ public class TrackService extends Service {
         return START_NOT_STICKY;
     }
 
-    @Override
-    public void onStart(Intent intent, int startId) {
-        super.onStart(intent, startId);
-        Logger.d("onStart() called with: " + "intent = [" + intent + "], startId = [" + startId + "]");
-    }
 
     void callbackSuccess(List<Bus> buses) {
 //        Logger.d("callbackSuccess() called with: " + "buses = [" + buses.size() + "]");
@@ -321,7 +316,14 @@ public class TrackService extends Service {
 
     @Override
     public void onDestroy() {
+        Logger.d("onDestroy() called with: " + "");
         super.onDestroy();
+        try {
+            mBinder.stopAutoRefresh();
+        } catch (RemoteException e) {
+            // The RemoteCallbackList will take care of removing
+            // the dead object for us.
+        }
         stopForeground(true);
     }
 }
