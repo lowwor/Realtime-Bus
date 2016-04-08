@@ -28,4 +28,5 @@
     <string name="preferences_settings_summary_track_background">当应用关闭时，是否在后台跟踪公交位置</string>
     <string name="preferences_settings_title_track_background">后台跟踪</string>
     <string name="service_stop_track_text">停止</string>
+    <string name="error_get_bus">获取路线上的公交错误！</string>
 </resources>

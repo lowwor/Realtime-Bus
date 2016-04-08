@@ -3,6 +3,7 @@
     <string name="query">Query</string>
 
     <string name="error_connection">Connection error！</string>
+    <string name="error_get_bus">Get bus on line error！</string>
     <string name="try_again">Try again, please!</string>
     <string name="menu_settings_title">Settings</string>
     <string name="settings_toolbar_title">Settings</string>
