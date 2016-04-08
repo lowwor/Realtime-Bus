@@ -6,7 +6,6 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.BitmapFactory;
 import android.os.IBinder;
 import android.os.RemoteCallbackList;
 import android.os.RemoteException;
@@ -15,7 +14,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.RemoteViews;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -57,8 +55,8 @@ public class TrackService extends Service {
 
     final RemoteCallbackList<ITrackCallback> mCallbacks = new RemoteCallbackList<>();
     private static final int NOTIFICATION_FLAG = 1;
-    private static final int BACKGROUND_FLAG = 2;
-    private static final int ACTION_STOP_FLAG = 3;
+    public static final int BACKGROUND_NOTIFICATION_FLAG = 2;
+    public static final int ACTION_STOP_FLAG = 3;
     private Toast toast;
     private List<String> mAlarmStations = new ArrayList<>();
     private boolean shouldShowNotification = true;
@@ -195,6 +193,8 @@ public class TrackService extends Service {
         Logger.d("onStartCommand() called with: " + "intent = [" + intent + "], flags = [" + flags + "], startId = [" + startId + "]");
         if (intent != null && intent.getExtras() != null) {
             if (intent.getBooleanExtra(EXTRA_STOP_KEY, false)) {
+                Logger.i("onStartCommand: stopSelf");
+
                 stopSelf();
             }
 
@@ -293,24 +293,15 @@ public class TrackService extends Service {
                 showTaskIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
 
-        Intent stopIntent = new Intent(this, TrackService.class);
-        stopIntent.putExtra(EXTRA_STOP_KEY, true);
-        PendingIntent pendingIntentStop = PendingIntent.getService(this, ACTION_STOP_FLAG, stopIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        RemoteViews remoteViews = new RemoteViews(getPackageName(),
-                R.layout.notification_track_service);
-        remoteViews.setOnClickPendingIntent(R.id.button, pendingIntentStop);
 
         Notification notification = new Notification.Builder(getApplicationContext())
                 .setContentTitle(getString(R.string.app_name))
                 .setContentText(getResources().getText(R.string.service_track_notification_text))
-                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setWhen(System.currentTimeMillis())
                 .setContentIntent(contentIntent)
-                .setContent(remoteViews)
                 .build();
-        startForeground(BACKGROUND_FLAG, notification);
+        startForeground(BACKGROUND_NOTIFICATION_FLAG, notification);
     }
 
 
