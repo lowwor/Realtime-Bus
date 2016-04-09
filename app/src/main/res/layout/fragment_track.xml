@@ -14,7 +14,9 @@
 
     <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:id="@+id/track_content"
+        >
 
         <android.support.design.widget.AppBarLayout
             android:id="@+id/appbar"
@@ -167,10 +169,10 @@
             android:clickable="true"
             android:visibility="@{trackViewModel.isOffline ? View.GONE: View.VISIBLE}"
             android:src="@drawable/ic_swap_vert_white_48dp"
+            app:layout_behavior="com.lowwor.realtimebus.ui.widget.ScrollAwareFABBehavior"
             app:backgroundTint="@color/accent"
-            app:layout_anchor="@id/recyclerview"
+            app:layout_anchor="@id/track_content"
             app:layout_anchorGravity="bottom|right|end"
-
             />
     </android.support.design.widget.CoordinatorLayout>
 </LinearLayout>
