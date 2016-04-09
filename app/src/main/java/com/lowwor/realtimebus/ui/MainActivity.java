@@ -82,7 +82,10 @@ public class MainActivity extends BaseActivity {
                 .setContent(remoteViews)
                 .build();
         NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        mNotificationManager.notify(TrackService.BACKGROUND_NOTIFICATION_FLAG, notification);
+
+        if (mPreferencesHelper.getTrackBackground()) {
+            mNotificationManager.notify(TrackService.BACKGROUND_NOTIFICATION_FLAG, notification);
+        }
 
     }
 
