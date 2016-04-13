@@ -12,4 +12,9 @@
     <color name="icons">#FFFFFF</color>
     <color name="divider">#B6B6B6</color>
 
+
+    <color name="update_ok_button">#FF6600</color>
+
+
+
 </resources>
