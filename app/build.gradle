@@ -20,7 +20,7 @@ android {
         minSdkVersion 16
         targetSdkVersion 23
         versionCode gitCommitCount()
-        versionName "1.06." + gitSha()
+        versionName "1.08." + gitSha()
         manifestPlaceholders = [CHANNEL_NAME: "Unspecified"]
         setProperty("archivesBaseName", "RealTimeBus_v-$versionName-${releaseTime()}")
 

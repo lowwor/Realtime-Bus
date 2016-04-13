@@ -92,7 +92,7 @@ public class PreferencesHelper {
     }
 
     public int getAutoRefreshInterval() {
-        return Integer.valueOf(mSettingsPref.getString(mResources.getString(R.string.preferences_settings_key_auto_refresh_interval), null));
+        return Integer.valueOf(mSettingsPref.getString(mResources.getString(R.string.preferences_settings_key_auto_refresh_interval), "3"));
     }
 
 }
