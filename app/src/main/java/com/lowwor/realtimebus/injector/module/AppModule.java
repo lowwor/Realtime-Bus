@@ -2,8 +2,6 @@ package com.lowwor.realtimebus.injector.module;
 
 import com.lowwor.realtimebus.BusApplication;
 import com.lowwor.realtimebus.data.local.PreferencesHelper;
-import com.lowwor.realtimebus.data.rx.RxTrackService;
-import com.lowwor.realtimebus.viewmodel.TrackViewModel;
 
 import javax.inject.Singleton;
 

@@ -7,7 +7,12 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.widget.EditText;
 
 import com.lowwor.realtimebus.R;
+import com.lowwor.realtimebus.ui.widget.InstantAutoComplete;
+import com.lowwor.realtimebus.ui.widget.LimitArrayAdapter;
 import com.lowwor.realtimebus.ui.widget.TextWatcherAdapter;
+import com.orhanobut.logger.Logger;
+
+import java.util.List;
 
 /**
  * Created by lowworker on 2016/3/2 0002.
@@ -15,10 +20,26 @@ import com.lowwor.realtimebus.ui.widget.TextWatcherAdapter;
 public class BindingUtils {
 
 
-    @BindingAdapter("bind:isRefreshing")
+    @BindingAdapter("app:isRefreshing")
     public static void bindRefresh(SwipeRefreshLayout swipeRefreshLayout, boolean isLoading) {
         if (!isLoading) {
             swipeRefreshLayout.setRefreshing(isLoading);
+        }
+    }
+
+    @BindingAdapter("app:items")
+    public static <T>  void bindAutoCompleteAdapter(InstantAutoComplete autoCompleteTextView, List<T> lineNameItems) {
+//        Logger.d("bindAutoCompleteAdapter() called with: " + "autoCompleteTextView = [" + autoCompleteTextView + "], lineNameItems = [" + lineNameItems + "]");
+        LimitArrayAdapter<T> adapter = (LimitArrayAdapter<T>) autoCompleteTextView.getAdapter();
+        if (adapter == null) {
+            adapter = new LimitArrayAdapter<>(autoCompleteTextView.getContext(), R.layout.item_auto_complete, lineNameItems);
+            autoCompleteTextView.setAdapter(adapter);
+            Logger.i("bindAutoCompleteAdapter: setAdapter");
+        } else {
+            adapter.clear();
+            adapter.addAll(lineNameItems);
+            adapter.notifyDataSetChanged();
+//            Logger.i("bindAutoCompleteAdapter: not null");
         }
     }
 
@@ -54,6 +75,8 @@ public class BindingUtils {
             BindableString bindableString) {
         return bindableString.get();
     }
+
+
 
 
 }

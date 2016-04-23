@@ -5,7 +5,7 @@
     <data>
         <import type="android.view.View"/>
         <import type="me.tatarka.bindingcollectionadapter.LayoutManagers" />
-        <variable name="trackViewModel" type="com.lowwor.realtimebus.viewmodel.TrackViewModel"/>/>
+        <variable name="trackViewModel" type="com.lowwor.realtimebus.ui.track.TrackViewModel"/>/>
     </data>
 <LinearLayout
     android:layout_width="match_parent"
@@ -78,6 +78,8 @@
                                 android:dropDownAnchor = "@id/auto_text"
                                 android:singleLine="true"
                                 app:textChange="@{trackViewModel.text}"
+                                app:items="@{trackViewModel.lineNameItems}"
+
                                 />
                         </android.support.design.widget.TextInputLayout>
 

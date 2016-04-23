@@ -1,4 +1,4 @@
-package com.lowwor.realtimebus.viewmodel;
+package com.lowwor.realtimebus.ui.track;
 
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
@@ -39,7 +39,7 @@ public class TrackViewModel extends BaseObservable {
     }
 
     public void setItems(List<BusStation> busStations) {
-        Logger.i("setItems: " + busStations);
+//        Logger.i("setItems: " + busStations);
         mBusStations.clear();
         for (BusStation busStation : busStations) {
             mBusStations.add(new BusStationItemViewModel(busStation,rxTrackService));
@@ -65,7 +65,16 @@ public class TrackViewModel extends BaseObservable {
     public final ItemView itemViewStation = ItemView.of(BR.busStationItemViewModel, R.layout.item_station);
 
 
+
+
     public final ObservableList<String> lineNameItems = new ObservableArrayList<>();
+
+    public void setAutoCompleteItems(List<String> historyItems) {
+//        Logger.i("setAutoCompleteItems: " + historyItems);
+        lineNameItems.clear();
+        lineNameItems.addAll(historyItems);
+    }
+
 
     public void setText(String text) {
         this.text.set(text);

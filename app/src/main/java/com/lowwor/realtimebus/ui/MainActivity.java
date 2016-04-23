@@ -13,9 +13,11 @@ import com.lowwor.realtimebus.BusApplication;
 import com.lowwor.realtimebus.R;
 import com.lowwor.realtimebus.data.local.PreferencesHelper;
 import com.lowwor.realtimebus.data.service.TrackService;
+import com.lowwor.realtimebus.injector.component.ActivityComponent;
+import com.lowwor.realtimebus.injector.component.DaggerActivityComponent;
 import com.lowwor.realtimebus.injector.component.DaggerTrackComponent;
 import com.lowwor.realtimebus.injector.component.TrackComponent;
-import com.lowwor.realtimebus.injector.module.FragmentModule;
+import com.lowwor.realtimebus.injector.module.ActivityModule;
 import com.lowwor.realtimebus.injector.module.TrackModule;
 import com.lowwor.realtimebus.ui.base.BaseActivity;
 import com.lowwor.realtimebus.ui.track.TrackFragment;
@@ -33,10 +35,11 @@ public class MainActivity extends BaseActivity {
 
     @Inject
     PreferencesHelper mPreferencesHelper;
+    private ActivityComponent activityComponent;
 
 
     @Override
-    public void onCreate(Bundle savedInstanceState ) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         Logger.i("onCreate activity");
@@ -89,12 +92,12 @@ public class MainActivity extends BaseActivity {
 
     }
 
-    private void initService(){
+    private void initService() {
         Intent intent = new Intent(this, TrackService.class);
         startService(intent);
     }
 
-    private void stopService(){
+    private void stopService() {
         if (!mPreferencesHelper.getTrackBackground()) {
             Intent intent = new Intent(this, TrackService.class);
             stopService(intent);
@@ -102,23 +105,29 @@ public class MainActivity extends BaseActivity {
     }
 
     private void initDependencyInjector() {
-      trackComponent().inject(this);
+        trackComponent().inject(this);
     }
 
-  public TrackComponent trackComponent(){
-       if (mTrackComponent == null) {
-           mTrackComponent = DaggerTrackComponent.builder()
-                   .appComponent(((BusApplication) getApplication()).getAppComponent())
-                   .fragmentModule(new FragmentModule())
-                   .trackModule(new TrackModule())
-                   .build();
-       }
-       return mTrackComponent;
+    public TrackComponent trackComponent() {
+        if (activityComponent == null) {
+            activityComponent = DaggerActivityComponent.builder()
+                    .activityModule(new ActivityModule(this))
+                    .appComponent(((BusApplication) getApplication()).getAppComponent())
+                    .build();
+        }
+
+        if (mTrackComponent == null) {
+            mTrackComponent = DaggerTrackComponent.builder()
+                    .activityComponent(activityComponent)
+                    .trackModule(new TrackModule())
+                    .build();
+        }
+        return mTrackComponent;
     }
 
-    void replaceTrackFragment(){
+    void replaceTrackFragment() {
 
         TrackFragment trackFragment = new TrackFragment();
-        getFragmentManager().beginTransaction().replace(R.id.container,trackFragment).commit();
+        getFragmentManager().beginTransaction().replace(R.id.container, trackFragment).commit();
     }
 }

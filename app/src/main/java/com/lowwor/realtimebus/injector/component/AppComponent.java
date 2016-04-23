@@ -6,7 +6,6 @@ import com.lowwor.realtimebus.data.local.PreferencesHelper;
 import com.lowwor.realtimebus.data.service.TrackService;
 import com.lowwor.realtimebus.injector.module.AppModule;
 import com.lowwor.realtimebus.injector.module.RepositoryModule;
-import com.lowwor.realtimebus.viewmodel.TrackViewModel;
 
 import javax.inject.Singleton;
 
@@ -21,7 +20,9 @@ import dagger.Component;
 public interface AppComponent {
 
     BusApplication app();
+
     BusApiRepository busApiRepository();
+
     PreferencesHelper preferencesHelper();
 
     void inject(TrackService trackService);

@@ -1,11 +1,16 @@
 package com.lowwor.realtimebus.injector.module;
 
+import android.content.Context;
+
 import com.lowwor.realtimebus.BusApplication;
+import com.lowwor.realtimebus.data.api.BusApiRepository;
 import com.lowwor.realtimebus.data.local.PreferencesHelper;
 import com.lowwor.realtimebus.data.rx.RxTrackService;
 import com.lowwor.realtimebus.data.rx.RxTrackServiceImpl;
-import com.lowwor.realtimebus.injector.ActivityScope;
-import com.lowwor.realtimebus.viewmodel.TrackViewModel;
+import com.lowwor.realtimebus.injector.TrackScope;
+import com.lowwor.realtimebus.ui.track.TrackPresenter;
+import com.lowwor.realtimebus.ui.track.TrackPresenterImp;
+import com.lowwor.realtimebus.ui.track.TrackViewModel;
 
 import dagger.Module;
 import dagger.Provides;
@@ -15,14 +20,19 @@ import dagger.Provides;
  */
 @Module
 public class TrackModule {
-    @ActivityScope
+    @TrackScope
     @Provides
     RxTrackService provideRxTrackService(BusApplication busApplication, PreferencesHelper preferencesHelper){
         return new RxTrackServiceImpl(busApplication,preferencesHelper);
     }
-    @ActivityScope
+    @TrackScope
     @Provides
     TrackViewModel provideTrackViewModel(RxTrackService rxTrackService){
         return new TrackViewModel(rxTrackService);
+    }
+    @TrackScope
+    @Provides
+    TrackPresenter provideTrackPresenter(Context context, RxTrackService rxTrackService, TrackViewModel trackViewModel, PreferencesHelper preferencesHelper, BusApiRepository busApiRepository){
+        return new TrackPresenterImp(context,trackViewModel,busApiRepository,preferencesHelper,rxTrackService);
     }
 }

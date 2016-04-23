@@ -16,11 +16,12 @@
     </style>
 
 
-    <style name="TextLabel" parent="TextAppearance.AppCompat">
-        //hint color And Label Color in False State
+    <!--http://stackoverflow.com/questions/35956609/textinputlayout-runtimeexception-failed-to-resolve-attribute-at-index-24-->
+    <style name="TextLabel" parent="Widget.Design.TextInputLayout">
+        <!--hint color And Label Color in False State-->
         <item name="android:textColorHint">@color/primary_light</item>
         <item name="android:textSize">20sp</item>
-        //Label color in True State And Bar Color False And True State
+        <!--Label color in True State And Bar Color False And True State-->
         <item name="colorAccent">@color/icons</item>
         <item name="colorControlNormal">@color/primary_light</item>
         <item name="colorControlActivated">@color/icons</item>
