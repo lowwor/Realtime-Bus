@@ -1,0 +1,4 @@
+STORE_FILE = store_file_path_here
+STORE_PASSWORD = store_password_here
+KEY_ALIAS = key_alias_here
+KEY_PASSWORD = key_password_here
