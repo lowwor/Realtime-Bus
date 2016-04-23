@@ -10,7 +10,8 @@ import com.orhanobut.logger.LogLevel;
 import com.orhanobut.logger.Logger;
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
-import com.umeng.update.UmengUpdateAgent;
+import com.tencent.bugly.Bugly;
+import com.tencent.bugly.crashreport.CrashReport;
 
 /**
  * Created by lowworker on 2015/9/19.
@@ -19,6 +20,7 @@ public class BusApplication extends Application {
 
     private AppComponent mAppComponent;
     private RefWatcher refWatcher;
+    public static final String BUGLY_APPID = "900027065";
 
     @Override
     public void onCreate() {
@@ -29,8 +31,12 @@ public class BusApplication extends Application {
         initStetho();
         initLogger();
         initLeakCanary();
+        initBugly();
+    }
 
-        UmengUpdateAgent.update(this);
+    private void initBugly() {
+        Bugly.init(getApplicationContext(), BUGLY_APPID, false);
+        CrashReport.initCrashReport(getApplicationContext());
     }
 
     private void initLeakCanary() {
@@ -53,7 +59,6 @@ public class BusApplication extends Application {
                 .build();
 
     }
-
 
 
     public AppComponent getAppComponent() {
