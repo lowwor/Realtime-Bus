@@ -37,6 +37,8 @@ public class TrackFragment extends BaseFragment {
     @Inject
     TrackPresenter trackPresenter;
 
+    private boolean isFirstIn = true;
+
 
     @Nullable
     @Override
@@ -85,7 +87,13 @@ public class TrackFragment extends BaseFragment {
     public void onStart() {
         super.onStart();
         trackPresenter.onStart();
-        trackPresenter.loadStationsIfNetworkConnected();
+        if (isFirstIn) {
+            isFirstIn = false;
+            trackPresenter.loadStationsIfNetworkConnected();
+        } else {
+            trackPresenter.loadBusIfNetworkConnected();
+        }
+
     }
 
     @Override
