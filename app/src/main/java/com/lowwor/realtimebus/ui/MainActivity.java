@@ -77,7 +77,7 @@ public class MainActivity extends BaseActivity {
 
         Notification notification = new Notification.Builder(getApplicationContext())
                 .setContentTitle(getString(R.string.app_name))
-                .setContentText(getResources().getText(R.string.service_track_notification_text))
+                .setContentText(getResources().getText(R.string.service_track_background_notification_text))
                 .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setWhen(System.currentTimeMillis())

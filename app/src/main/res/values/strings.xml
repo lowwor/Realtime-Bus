@@ -29,7 +29,10 @@
     <string name="menu_share_title">Share</string>
     <string name="action_share">Share</string>
     <string name="share_text">  Just found a excellent App to track bus status in Zhuhai 「Zhuhai Bus」，and it can inform you when bus arrive，awesome! Download it here：http://fir.im/2feu </string>
-    <string name="service_track_notification_text">Tracking bus position for you</string>
+
+    <!--Service-->
+    <string name="service_track_notification_text">Bus tracking service is running</string>
+    <string name="service_track_background_notification_text">Background bus tracking service is running</string>
     <string name="service_stop_track_text">Stop</string>
 
 </resources>

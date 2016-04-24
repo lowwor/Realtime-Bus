@@ -21,11 +21,12 @@
 
     <string name="action_share">分享</string>
 
-    <string name="service_track_notification_text">正在为你追踪公交位置</string>
+    <string name="service_track_notification_text">公交追踪服务正在运行</string>
     <!--share-->
     <string name="share_text">发现了一款可以实时跟踪珠海公交位置的App「珠海公交」，还有到站提醒等功能，太赞了! 推荐~~~ 下载地址：http://fir.im/2feu </string>
     <string name="preferences_settings_summary_track_background">当应用关闭时，是否在后台跟踪公交位置</string>
     <string name="preferences_settings_title_track_background">后台跟踪</string>
     <string name="service_stop_track_text">停止</string>
     <string name="error_get_bus">获取路线上的公交错误！</string>
+    <string name="service_track_background_notification_text">后台公交追踪服务正在运行</string>
 </resources>
