@@ -6,7 +6,6 @@
         android:id="@+id/auto_refresh"
         android:title="@string/menu_auto_refresh_title"
         android:checkable="true"
-        android:icon="@drawable/ic_time_to_leave"
         app:showAsAction="collapseActionView"/>
     <item
         android:id="@+id/settings"

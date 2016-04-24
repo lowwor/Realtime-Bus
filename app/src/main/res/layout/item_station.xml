@@ -1,66 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:card_view="http://schemas.android.com/apk/res-auto"
-    xmlns:app="http://schemas.android.com/tools">
-<data>
-    <variable name="busStationItemViewModel" type="com.lowwor.realtimebus.ui.track.BusStationItemViewModel" />
-</data>
-<android.support.v7.widget.CardView
-    android:id="@+id/card_view"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    app:cardUseCompatPadding="true"
-    android:layout_gravity="center_horizontal"
-    app:cardBackgroundColor="@android:color/white"
-    android:layout_marginTop="8dp"
-    android:layout_marginLeft="12dp"
-    android:layout_marginRight="12dp">
-<RelativeLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="16dp"
-    android:layout_marginBottom="16dp"
-    android:layout_marginLeft="20dp"
-    android:layout_marginRight="20dp"
-    >
-    <ImageView
-        android:id="@+id/alarm"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
-        android:layout_alignParentLeft="true"
-        android:layout_centerVertical="true"
-        android:layout_marginRight="16dp"
-        android:scaleType="fitCenter"
-        android:src="@{busStationItemViewModel.isAlarm?@drawable/ic_alarm_on:@drawable/ic_alarm_add}"
-        android:alpha="@{busStationItemViewModel.isAlarm?100:30}"
-        android:onClick="@{busStationItemViewModel.onClickAlarm}"
-        />
+    xmlns:app="http://schemas.android.com/tools"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto">
 
-    <TextView
-        android:id="@+id/tv_station_name"
-        android:layout_width="wrap_content"
+    <data>
+
+        <variable
+            name="busStationItemViewModel"
+            type="com.lowwor.realtimebus.ui.track.BusStationItemViewModel" />
+    </data>
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/card_view"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/alarm"
-        android:layout_centerVertical="true"
-        android:text="@{busStationItemViewModel.busStationName}"
-        />
+        android:layout_gravity="center_horizontal"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginTop="8dp"
+        app:cardBackgroundColor="@android:color/white"
+        app:cardUseCompatPadding="true">
 
-    <TextView
-        android:id="@+id/tv_bus_number"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="16dp"
-        android:textColor="@color/primary"
-        android:layout_centerVertical="true"
-        android:text="@{busStationItemViewModel.busNumber !=0 ?String.valueOf(busStationItemViewModel.busNumber):null}"
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="16dp">
 
-        />
-</RelativeLayout>
+            <ImageView
+                android:id="@+id/alarm"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_alignParentLeft="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="16dp"
+                android:alpha="@{busStationItemViewModel.isAlarm?100:30}"
+                android:onClick="@{busStationItemViewModel.onClickAlarm}"
+                android:scaleType="fitCenter"
+                android:src="@{busStationItemViewModel.isAlarm?@drawable/ic_alarm_on:@drawable/ic_alarm_add}" />
 
-</android.support.v7.widget.CardView>
+            <TextView
+                android:id="@+id/tv_station_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@id/alarm"
+                android:text="@{busStationItemViewModel.busStationName}" />
 
+            <TextView
+                android:id="@+id/tv_bus_number"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="16dp"
+                android:text="@{busStationItemViewModel.busNumber !=0 ?String.valueOf(busStationItemViewModel.busNumber):null}"
+                android:textColor="@color/primary"
+
+                />
+        </RelativeLayout>
+
+    </android.support.v7.widget.CardView>
 
 
 </layout>

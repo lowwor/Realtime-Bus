@@ -255,7 +255,7 @@ public class TrackService extends Service {
                 .setContentIntent(pendingIntent)
                 .setContentTitle(busStationName + "的公交到站了")
                 .setContentText(busStationName + "的公交到站了")
-                .setSmallIcon(R.drawable.ic_time_to_leave)
+                .setSmallIcon(R.drawable.ic_directions_bus)
                 .setWhen(System.currentTimeMillis())
                 .setAutoCancel(true);
 
