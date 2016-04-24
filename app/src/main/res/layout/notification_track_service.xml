@@ -30,7 +30,7 @@
         android:layout_marginTop="4dip"
         android:layout_toLeftOf="@+id/button"
         android:layout_toRightOf="@id/image"
-        android:text="@string/service_track_notification_text"
+        android:text="@string/service_track_background_notification_text"
         android:textColor="#A4A4A4"
         android:textSize="14sp" />
 
