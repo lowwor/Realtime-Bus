@@ -18,10 +18,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action0;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 import rx.subscriptions.Subscriptions;
 
@@ -115,6 +117,16 @@ public class TrackPresenterImp extends TrackPresenter {
                     }
                 })
                 .subscribeOn(Schedulers.io())
+                .flatMap(new Func1<BusLineWrapper, Observable<BusLineWrapper>>() {
+                    @Override
+                    public Observable<BusLineWrapper> call(BusLineWrapper busLineWrapper) {
+                        if (busLineWrapper.getData().isEmpty()) {
+                            return Observable.error(new IndexOutOfBoundsException());
+                        } else {
+                            return Observable.just(busLineWrapper);
+                        }
+                    }
+                })
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<BusLineWrapper>() {
                     @Override
@@ -124,11 +136,15 @@ public class TrackPresenterImp extends TrackPresenter {
 
                     @Override
                     public void onError(Throwable e) {
+                        Logger.d("onError() called with: " + "e = [" + e + "]");
+                        trackViewModel.setIsLoading(false);
+                        Toast.makeText(context, "找不到线路,请重试！", Toast.LENGTH_SHORT).show();
                         e.printStackTrace();
                     }
 
                     @Override
                     public void onNext(BusLineWrapper busLineWrapper) {
+                        Logger.d("onNext() called with: " + "busLineWrapper = [" + busLineWrapper + "]");
                         mLineName = busLineWrapper.getData().get(0).name;
                         preferencesHelper.saveLastQueryLine(mLineName);
 
@@ -182,7 +198,6 @@ public class TrackPresenterImp extends TrackPresenter {
                 .subscribeOn(Schedulers.io())
                 .subscribe(getBusSubscriber()));
     }
-
 
 
     private Subscriber<BusWrapper> getBusSubscriber() {
@@ -300,7 +315,6 @@ public class TrackPresenterImp extends TrackPresenter {
 //        Logger.i("save auto");
         preferencesHelper.saveAutoCompleteItem(mLineName);
     }
-
 
 
 }
