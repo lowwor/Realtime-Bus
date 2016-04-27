@@ -19,4 +19,12 @@ public abstract class TrackPresenter extends BasePresenter<TrackViewModel> {
 
     public abstract void saveAutoRefresh(boolean isAutoRefresh);
 
+    public abstract void addAlarmStation(String stationName);
+
+    public abstract void removeAlarmStation(String stationName);
+
+    public abstract void gotoSettings();
+
+    public abstract void showShare();
+
 }

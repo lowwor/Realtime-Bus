@@ -17,7 +17,7 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginLeft="12dp"
         android:layout_marginRight="12dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="4dp"
         app:cardBackgroundColor="@android:color/white"
         app:cardUseCompatPadding="true">
 

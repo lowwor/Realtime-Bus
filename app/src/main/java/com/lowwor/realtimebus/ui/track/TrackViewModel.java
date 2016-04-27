@@ -4,12 +4,15 @@ import android.databinding.BaseObservable;
 import android.databinding.Bindable;
 import android.databinding.ObservableArrayList;
 import android.databinding.ObservableList;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
+import android.view.View;
 
 import com.lowwor.realtimebus.BR;
 import com.lowwor.realtimebus.R;
 import com.lowwor.realtimebus.data.model.Bus;
 import com.lowwor.realtimebus.data.model.BusStation;
-import com.lowwor.realtimebus.data.rx.RxTrackService;
 import com.lowwor.realtimebus.utils.BindableString;
 import com.orhanobut.logger.Logger;
 
@@ -23,26 +26,27 @@ import me.tatarka.bindingcollectionadapter.ItemView;
 public class TrackViewModel extends BaseObservable {
 
 
-    private final RxTrackService rxTrackService;
+    private TrackPresenter trackPresenter;
     @Bindable
     private boolean isOffline;
     @Bindable
     private boolean isLoading = true;
 
 
+
     @Bindable
     public BindableString text = new BindableString();
     public ObservableList<BusStationItemViewModel> mBusStations = new ObservableArrayList<>();
 
-    public TrackViewModel(RxTrackService rxTrackService) {
-        this.rxTrackService = rxTrackService;
+    public TrackViewModel(TrackPresenter trackPresenter) {
+        this.trackPresenter = trackPresenter;
     }
 
     public void setItems(List<BusStation> busStations) {
 //        Logger.i("setItems: " + busStations);
         mBusStations.clear();
         for (BusStation busStation : busStations) {
-            mBusStations.add(new BusStationItemViewModel(busStation,rxTrackService));
+            mBusStations.add(new BusStationItemViewModel(busStation,trackPresenter));
         }
     }
 
@@ -75,6 +79,68 @@ public class TrackViewModel extends BaseObservable {
         lineNameItems.addAll(historyItems);
     }
 
+
+    public View.OnClickListener onQueryClick() {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                trackPresenter.loadStationsIfNetworkConnected();
+            }
+        };
+    }
+
+
+    public View.OnClickListener  onTryAgainClick() {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                trackPresenter.loadStationsIfNetworkConnected();
+            }
+        };
+    }
+
+
+    public View.OnClickListener  onFabSwitchClick() {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                trackPresenter.switchDirection();
+                trackPresenter.loadBusIfNetworkConnected();
+            }
+        };
+    }
+
+    public SwipeRefreshLayout.OnRefreshListener onRefresh(){
+        return new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                Logger.d("onRefresh() called with: " + "");
+                trackPresenter.loadBusIfNetworkConnected();
+            }
+        };
+    }
+
+    public Toolbar.OnMenuItemClickListener onMenuItemClick(){
+        return new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.auto_refresh:
+                        trackPresenter.saveAutoRefresh(!item.isChecked());
+                        item.setChecked(trackPresenter.getAutoRefresh());
+                        trackPresenter.executeAutoRefresh();
+                        break;
+                    case R.id.settings:
+                        trackPresenter.gotoSettings();
+                        break;
+                    case R.id.share:
+                        trackPresenter.showShare();
+                        break;
+                }
+                return true;
+            }
+        };
+    }
 
     public void setText(String text) {
         this.text.set(text);

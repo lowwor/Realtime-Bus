@@ -8,7 +8,7 @@ import rx.subscriptions.CompositeSubscription;
 public abstract class BasePresenter<VM extends Observable> {
 
     protected CompositeSubscription subscriptions;
-    private VM viewModel;
+    protected VM viewModel;
 
     public final void attachViewModel(VM viewModel) {
         if (this.viewModel == null) {

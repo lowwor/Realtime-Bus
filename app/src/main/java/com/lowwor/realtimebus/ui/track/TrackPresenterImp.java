@@ -1,6 +1,7 @@
 package com.lowwor.realtimebus.ui.track;
 
 import android.content.Context;
+import android.content.Intent;
 import android.widget.Toast;
 
 import com.lowwor.realtimebus.data.api.BusApiRepository;
@@ -11,7 +12,9 @@ import com.lowwor.realtimebus.data.model.wrapper.BusLineWrapper;
 import com.lowwor.realtimebus.data.model.wrapper.BusStationWrapper;
 import com.lowwor.realtimebus.data.model.wrapper.BusWrapper;
 import com.lowwor.realtimebus.data.rx.RxTrackService;
+import com.lowwor.realtimebus.ui.settings.SettingsActivity;
 import com.lowwor.realtimebus.utils.NetworkUtils;
+import com.lowwor.realtimebus.utils.ShareUtils;
 import com.orhanobut.logger.Logger;
 
 import java.util.ArrayList;
@@ -33,7 +36,6 @@ import rx.subscriptions.Subscriptions;
 public class TrackPresenterImp extends TrackPresenter {
 
     private Context context;
-    private TrackViewModel trackViewModel;
     private BusApiRepository busApiRepository;
     private PreferencesHelper preferencesHelper;
     private RxTrackService rxTrackService;
@@ -44,10 +46,10 @@ public class TrackPresenterImp extends TrackPresenter {
     private String fromStation;
     private String firstStation;
     private String lastStation;
+    private boolean isFirstIn = true;
 
-    public TrackPresenterImp(Context context, TrackViewModel trackViewModel, BusApiRepository busApiRepository, PreferencesHelper preferencesHelper, RxTrackService rxTrackService) {
+    public TrackPresenterImp(Context context,  BusApiRepository busApiRepository, PreferencesHelper preferencesHelper, RxTrackService rxTrackService) {
         this.context = context;
-        this.trackViewModel = trackViewModel;
         this.busApiRepository = busApiRepository;
         this.preferencesHelper = preferencesHelper;
         this.rxTrackService = rxTrackService;
@@ -56,36 +58,40 @@ public class TrackPresenterImp extends TrackPresenter {
     @Override
     public void onStart() {
         super.onStart();
-        attachViewModel(trackViewModel);
         initTrackService();
         initAutoComplete();
+        if (isFirstIn) {
+            isFirstIn = false;
+            loadStationsIfNetworkConnected();
+        } else {
+            loadBusIfNetworkConnected();
+        }
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        detachViewModel();
     }
 
     @Override
     public void loadBusIfNetworkConnected() {
         if (NetworkUtils.isNetworkAvailable(context)) {
-            trackViewModel.setIsOffline(false);
+            viewModel.setIsOffline(false);
             getBus();
         } else {
-            trackViewModel.setIsOffline(true);
-            trackViewModel.setIsLoading(false);
+            viewModel.setIsOffline(true);
+            viewModel.setIsLoading(false);
         }
     }
 
     @Override
     public void loadStationsIfNetworkConnected() {
         if (NetworkUtils.isNetworkAvailable(context)) {
-            trackViewModel.setIsOffline(false);
+            viewModel.setIsOffline(false);
             searchLine();
         } else {
-            trackViewModel.setIsOffline(true);
-            trackViewModel.setIsLoading(false);
+            viewModel.setIsOffline(true);
+            viewModel.setIsLoading(false);
         }
     }
 
@@ -108,12 +114,32 @@ public class TrackPresenterImp extends TrackPresenter {
         preferencesHelper.saveAutoRefresh(isAutoRefresh);
     }
 
+    @Override
+    public void addAlarmStation(String stationName) {
+        rxTrackService.addAlarmStation(stationName);
+    }
+
+    @Override
+    public void removeAlarmStation(String stationName) {
+        rxTrackService.removeAlarmStation(stationName);
+    }
+
+    @Override
+    public void gotoSettings() {
+       context.startActivity(new Intent(context, SettingsActivity.class));
+    }
+
+    @Override
+    public void showShare() {
+        ShareUtils.share(context);
+    }
+
     private void searchLine() {
-        busApiRepository.searchLine(trackViewModel.text.get())
+        busApiRepository.searchLine(viewModel.text.get())
                 .doOnSubscribe(new Action0() {
                     @Override
                     public void call() {
-                        trackViewModel.setIsLoading(true);
+                        viewModel.setIsLoading(true);
                     }
                 })
                 .subscribeOn(Schedulers.io())
@@ -137,7 +163,7 @@ public class TrackPresenterImp extends TrackPresenter {
                     @Override
                     public void onError(Throwable e) {
                         Logger.d("onError() called with: " + "e = [" + e + "]");
-                        trackViewModel.setIsLoading(false);
+                        viewModel.setIsLoading(false);
                         Toast.makeText(context, "找不到线路,请重试！", Toast.LENGTH_SHORT).show();
                         e.printStackTrace();
                     }
@@ -176,12 +202,12 @@ public class TrackPresenterImp extends TrackPresenter {
                                 Logger.e("There was a problem loading the top stories " + e);
                                 e.printStackTrace();
                                 Toast.makeText(context, "找不到线路,请重试！", Toast.LENGTH_SHORT).show();
-                                trackViewModel.setIsLoading(false);
+                                viewModel.setIsLoading(false);
                             }
 
                             @Override
                             public void onNext(BusStationWrapper busStationWrapper) {
-                                trackViewModel.setIsLoading(false);
+                                viewModel.setIsLoading(false);
                                 setupBusStations(busStationWrapper.getData());
                                 saveAutoComplete();
                                 refreshAutoComplete();
@@ -213,14 +239,14 @@ public class TrackPresenterImp extends TrackPresenter {
 
                 Logger.e("There was a problem loading bus on line " + e);
                 e.printStackTrace();
-                trackViewModel.setIsLoading(false);
+                viewModel.setIsLoading(false);
             }
 
             @Override
             public void onNext(BusWrapper busWrapper) {
 //                Logger.i("onNext");
-                trackViewModel.setIsLoading(false);
-                trackViewModel.setBuses(busWrapper.getData());
+                viewModel.setIsLoading(false);
+                viewModel.setBuses(busWrapper.getData());
             }
         };
     }
@@ -246,7 +272,7 @@ public class TrackPresenterImp extends TrackPresenter {
                         // TODO: 2016/3/3 0003 move to view model
 //                        Logger.i("auto onNext" + strings.toString());
 
-                        trackViewModel.setAutoCompleteItems(new ArrayList<String>(strings));
+                        viewModel.setAutoCompleteItems(new ArrayList<String>(strings));
                     }
                 }));
     }
@@ -269,8 +295,8 @@ public class TrackPresenterImp extends TrackPresenter {
             @Override
             public void onNext(List<Bus> buses) {
 //                Logger.d("onNext() called with: " + "buses = [" + buses + "]");
-                trackViewModel.setIsLoading(false);
-                trackViewModel.setBuses(buses);
+                viewModel.setIsLoading(false);
+                viewModel.setBuses(buses);
             }
         };
         subscriber.add(Subscriptions.create(new Action0() {
@@ -286,7 +312,7 @@ public class TrackPresenterImp extends TrackPresenter {
     }
 
     private void initAutoComplete() {
-        trackViewModel.setText(preferencesHelper.getLastQueryLine());
+        viewModel.setText(preferencesHelper.getLastQueryLine());
         refreshAutoComplete();
     }
 
@@ -308,7 +334,7 @@ public class TrackPresenterImp extends TrackPresenter {
 
 
     private void setupBusStations(List<BusStation> busStations) {
-        trackViewModel.setItems(busStations);
+        viewModel.setItems(busStations);
     }
 
     private void saveAutoComplete() {

@@ -27,12 +27,12 @@ public class TrackModule {
     }
     @TrackScope
     @Provides
-    TrackViewModel provideTrackViewModel(RxTrackService rxTrackService){
-        return new TrackViewModel(rxTrackService);
+    TrackViewModel provideTrackViewModel(TrackPresenter trackPresenter){
+        return new TrackViewModel(trackPresenter);
     }
     @TrackScope
     @Provides
-    TrackPresenter provideTrackPresenter(Context context, RxTrackService rxTrackService, TrackViewModel trackViewModel, PreferencesHelper preferencesHelper, BusApiRepository busApiRepository){
-        return new TrackPresenterImp(context,trackViewModel,busApiRepository,preferencesHelper,rxTrackService);
+    TrackPresenter provideTrackPresenter(Context context, RxTrackService rxTrackService,  PreferencesHelper preferencesHelper, BusApiRepository busApiRepository){
+        return new TrackPresenterImp(context,busApiRepository,preferencesHelper,rxTrackService);
     }
 }

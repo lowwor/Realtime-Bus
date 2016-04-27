@@ -2,6 +2,8 @@ package com.lowwor.realtimebus.utils;
 
 import android.databinding.BindingAdapter;
 import android.databinding.BindingConversion;
+import android.support.annotation.ColorRes;
+import android.support.annotation.NonNull;
 import android.support.v4.util.Pair;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.widget.EditText;
@@ -27,8 +29,13 @@ public class BindingUtils {
         }
     }
 
+    @BindingAdapter("app:colorSchemeResources")
+    public static void bindRefreshColor(SwipeRefreshLayout swipeRefreshLayout, @ColorRes @NonNull int colorResIds) {
+            swipeRefreshLayout.setColorSchemeColors(colorResIds);
+    }
+
     @BindingAdapter("app:items")
-    public static <T>  void bindAutoCompleteAdapter(InstantAutoComplete autoCompleteTextView, List<T> lineNameItems) {
+    public static <T> void bindAutoCompleteAdapter(InstantAutoComplete autoCompleteTextView, List<T> lineNameItems) {
 //        Logger.d("bindAutoCompleteAdapter() called with: " + "autoCompleteTextView = [" + autoCompleteTextView + "], lineNameItems = [" + lineNameItems + "]");
         LimitArrayAdapter<T> adapter = (LimitArrayAdapter<T>) autoCompleteTextView.getAdapter();
         if (adapter == null) {
