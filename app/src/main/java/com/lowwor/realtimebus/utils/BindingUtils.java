@@ -2,8 +2,6 @@ package com.lowwor.realtimebus.utils;
 
 import android.databinding.BindingAdapter;
 import android.databinding.BindingConversion;
-import android.support.annotation.ColorRes;
-import android.support.annotation.NonNull;
 import android.support.v4.util.Pair;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.widget.EditText;
@@ -30,8 +28,8 @@ public class BindingUtils {
     }
 
     @BindingAdapter("app:colorSchemeResources")
-    public static void bindRefreshColor(SwipeRefreshLayout swipeRefreshLayout, @ColorRes @NonNull int colorResIds) {
-            swipeRefreshLayout.setColorSchemeColors(colorResIds);
+    public static void bindRefreshColor(SwipeRefreshLayout swipeRefreshLayout,  int colorResId) {
+            swipeRefreshLayout.setColorSchemeColors(colorResId);
     }
 
     @BindingAdapter("app:items")
