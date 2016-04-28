@@ -2,8 +2,10 @@ package com.lowwor.realtimebus.ui.track;
 
 import android.content.Context;
 import android.content.Intent;
-import android.widget.Toast;
+import android.view.MenuItem;
+import android.view.View;
 
+import com.lowwor.realtimebus.R;
 import com.lowwor.realtimebus.data.api.BusApiRepository;
 import com.lowwor.realtimebus.data.local.PreferencesHelper;
 import com.lowwor.realtimebus.data.model.Bus;
@@ -48,7 +50,7 @@ public class TrackPresenterImp extends TrackPresenter {
     private String lastStation;
     private boolean isFirstIn = true;
 
-    public TrackPresenterImp(Context context,  BusApiRepository busApiRepository, PreferencesHelper preferencesHelper, RxTrackService rxTrackService) {
+    public TrackPresenterImp(Context context, BusApiRepository busApiRepository, PreferencesHelper preferencesHelper, RxTrackService rxTrackService) {
         this.context = context;
         this.busApiRepository = busApiRepository;
         this.preferencesHelper = preferencesHelper;
@@ -62,7 +64,7 @@ public class TrackPresenterImp extends TrackPresenter {
         initAutoComplete();
         if (isFirstIn) {
             isFirstIn = false;
-            loadStationsIfNetworkConnected();
+            loadStationsIfNetworkConnected(vista.getLineName());
         } else {
             loadBusIfNetworkConnected();
         }
@@ -73,30 +75,26 @@ public class TrackPresenterImp extends TrackPresenter {
         super.onStop();
     }
 
-    @Override
     public void loadBusIfNetworkConnected() {
         if (NetworkUtils.isNetworkAvailable(context)) {
-            viewModel.setIsOffline(false);
+            vista.showOffline(false);
             getBus();
         } else {
-            viewModel.setIsOffline(true);
-            viewModel.setIsLoading(false);
+            vista.showOffline(true);
+            vista.showLoading(false);
         }
     }
 
-    @Override
-    public void loadStationsIfNetworkConnected() {
+    public void loadStationsIfNetworkConnected(String lineName) {
         if (NetworkUtils.isNetworkAvailable(context)) {
-            viewModel.setIsOffline(false);
-            searchLine();
+            vista.showOffline(false);
+            searchLine(lineName);
         } else {
-            viewModel.setIsOffline(true);
-            viewModel.setIsLoading(false);
+            vista.showOffline(true);
+            vista.showLoading(false);
         }
     }
 
-
-    @Override
     public void executeAutoRefresh() {
         rxTrackService.stopAutoRefresh();
         if (getAutoRefresh()) {
@@ -109,7 +107,6 @@ public class TrackPresenterImp extends TrackPresenter {
         return preferencesHelper.getAutoRefresh();
     }
 
-    @Override
     public void saveAutoRefresh(boolean isAutoRefresh) {
         preferencesHelper.saveAutoRefresh(isAutoRefresh);
     }
@@ -124,22 +121,62 @@ public class TrackPresenterImp extends TrackPresenter {
         rxTrackService.removeAlarmStation(stationName);
     }
 
-    @Override
     public void gotoSettings() {
-       context.startActivity(new Intent(context, SettingsActivity.class));
+        context.startActivity(new Intent(context, SettingsActivity.class));
     }
 
-    @Override
     public void showShare() {
         ShareUtils.share(context);
     }
 
-    private void searchLine() {
-        busApiRepository.searchLine(viewModel.text.get())
+    @Override
+    public void onQueryClick(View view) {
+        loadStationsIfNetworkConnected(vista.getLineName());
+
+    }
+
+    @Override
+    public void onTryAgainClick(View view) {
+        loadStationsIfNetworkConnected(vista.getLineName());
+    }
+
+    @Override
+    public void onFabSwitchClick(View view) {
+        switchDirection();
+        loadBusIfNetworkConnected();
+    }
+
+    @Override
+    public void onRefresh() {
+        Logger.d("onRefresh() called with: " + "");
+        loadBusIfNetworkConnected();
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.auto_refresh:
+                        saveAutoRefresh(!item.isChecked());
+                        item.setChecked(getAutoRefresh());
+                        executeAutoRefresh();
+                        break;
+                    case R.id.settings:
+                        gotoSettings();
+                        break;
+                    case R.id.share:
+                        showShare();
+                        break;
+                }
+                return true;
+
+    }
+
+    private void searchLine(String name) {
+        busApiRepository.searchLine(name)
                 .doOnSubscribe(new Action0() {
                     @Override
                     public void call() {
-                        viewModel.setIsLoading(true);
+                        vista.showLoading(true);
                     }
                 })
                 .subscribeOn(Schedulers.io())
@@ -163,8 +200,8 @@ public class TrackPresenterImp extends TrackPresenter {
                     @Override
                     public void onError(Throwable e) {
                         Logger.d("onError() called with: " + "e = [" + e + "]");
-                        viewModel.setIsLoading(false);
-                        Toast.makeText(context, "找不到线路,请重试！", Toast.LENGTH_SHORT).show();
+                        vista.showLoading(false);
+                        vista.showError("找不到线路,请重试！");
                         e.printStackTrace();
                     }
 
@@ -189,9 +226,15 @@ public class TrackPresenterImp extends TrackPresenter {
     private void getStations() {
         subscriptions.add(
                 busApiRepository.getStationByLineId(mLineId)
-                        .observeOn(AndroidSchedulers.mainThread())
+                        .map(new Func1<BusStationWrapper, List<BusStation>>() {
+                            @Override
+                            public List<BusStation> call(BusStationWrapper busStationWrapper) {
+                                return busStationWrapper.getData();
+                            }
+                        })
                         .subscribeOn(Schedulers.io())
-                        .subscribe(new Subscriber<BusStationWrapper>() {
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Subscriber<List<BusStation>>() {
                             @Override
                             public void onCompleted() {
 
@@ -201,14 +244,14 @@ public class TrackPresenterImp extends TrackPresenter {
                             public void onError(Throwable e) {
                                 Logger.e("There was a problem loading the top stories " + e);
                                 e.printStackTrace();
-                                Toast.makeText(context, "找不到线路,请重试！", Toast.LENGTH_SHORT).show();
-                                viewModel.setIsLoading(false);
+                                vista.showError("找不到线路,请重试！");
+                                vista.showLoading(false);
                             }
 
                             @Override
-                            public void onNext(BusStationWrapper busStationWrapper) {
-                                viewModel.setIsLoading(false);
-                                setupBusStations(busStationWrapper.getData());
+                            public void onNext(List<BusStation> busStations) {
+                                vista.showLoading(false);
+                                vista.showStations(busStations);
                                 saveAutoComplete();
                                 refreshAutoComplete();
                                 loadBusIfNetworkConnected();
@@ -220,14 +263,20 @@ public class TrackPresenterImp extends TrackPresenter {
     private void getBus() {
 //        Logger.i("getBus" + fromStation);
         subscriptions.add(busApiRepository.getBusListOnRoad(mLineName, fromStation)
-                .observeOn(AndroidSchedulers.mainThread())
+                .map(new Func1<BusWrapper, List<Bus>>() {
+                    @Override
+                    public List<Bus> call(BusWrapper busWrapper) {
+                        return busWrapper.getData();
+                    }
+                })
                 .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(getBusSubscriber()));
     }
 
 
-    private Subscriber<BusWrapper> getBusSubscriber() {
-        return new Subscriber<BusWrapper>() {
+    private Subscriber<List<Bus>> getBusSubscriber() {
+        return new Subscriber<List<Bus>>() {
             @Override
             public void onCompleted() {
 
@@ -239,14 +288,14 @@ public class TrackPresenterImp extends TrackPresenter {
 
                 Logger.e("There was a problem loading bus on line " + e);
                 e.printStackTrace();
-                viewModel.setIsLoading(false);
+                vista.showLoading(false);
             }
 
             @Override
-            public void onNext(BusWrapper busWrapper) {
+            public void onNext(List<Bus> buses) {
 //                Logger.i("onNext");
-                viewModel.setIsLoading(false);
-                viewModel.setBuses(busWrapper.getData());
+                vista.showLoading(false);
+                vista.showBuses(buses);
             }
         };
     }
@@ -269,10 +318,8 @@ public class TrackPresenterImp extends TrackPresenter {
 
                     @Override
                     public void onNext(Set<String> strings) {
-                        // TODO: 2016/3/3 0003 move to view model
-//                        Logger.i("auto onNext" + strings.toString());
-
-                        viewModel.setAutoCompleteItems(new ArrayList<String>(strings));
+                        Logger.d("onNext() called with: " + "strings = [" + strings + "]");
+                        vista.showSearchLineHistory(new ArrayList<>(strings));
                     }
                 }));
     }
@@ -281,24 +328,7 @@ public class TrackPresenterImp extends TrackPresenter {
     private void initTrackService() {
         Logger.d("initTrackService() called with: " + "");
 
-        Subscriber<List<Bus>> subscriber = new Subscriber<List<Bus>>() {
-            @Override
-            public void onCompleted() {
-                Logger.d("onCompleted() called with: " + "");
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                Logger.d("onError() called with: " + "e = [" + e + "]");
-            }
-
-            @Override
-            public void onNext(List<Bus> buses) {
-//                Logger.d("onNext() called with: " + "buses = [" + buses + "]");
-                viewModel.setIsLoading(false);
-                viewModel.setBuses(buses);
-            }
-        };
+        Subscriber<List<Bus>> subscriber = getBusSubscriber();
         subscriber.add(Subscriptions.create(new Action0() {
             @Override
             public void call() {
@@ -312,7 +342,7 @@ public class TrackPresenterImp extends TrackPresenter {
     }
 
     private void initAutoComplete() {
-        viewModel.setText(preferencesHelper.getLastQueryLine());
+        vista.showInitLineName(preferencesHelper.getLastQueryLine());
         refreshAutoComplete();
     }
 
@@ -330,11 +360,6 @@ public class TrackPresenterImp extends TrackPresenter {
     public void switchDirection() {
         switchStartFrom();
         getStations();
-    }
-
-
-    private void setupBusStations(List<BusStation> busStations) {
-        viewModel.setItems(busStations);
     }
 
     private void saveAutoComplete() {

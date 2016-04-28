@@ -27,8 +27,8 @@ public class TrackModule {
     }
     @TrackScope
     @Provides
-    TrackViewModel provideTrackViewModel(TrackPresenter trackPresenter){
-        return new TrackViewModel(trackPresenter);
+    TrackViewModel provideTrackViewModel(Context context,TrackPresenter trackPresenter){
+        return new TrackViewModel(context,trackPresenter);
     }
     @TrackScope
     @Provides

@@ -1,34 +1,24 @@
 package com.lowwor.realtimebus.ui.base;
 
-import android.databinding.Observable;
 import android.support.annotation.CallSuper;
 
 import rx.subscriptions.CompositeSubscription;
 
-public abstract class BasePresenter<VM extends Observable> {
+public abstract class BasePresenter<V extends Vista> {
 
     protected CompositeSubscription subscriptions;
-    protected VM viewModel;
+    protected V vista;
 
-    public final void attachViewModel(VM viewModel) {
-        if (this.viewModel == null) {
-            this.viewModel = viewModel;
+    public final void attachView(V vista) {
+        if (this.vista == null) {
+            this.vista = vista;
         }
     }
 
 
-    public final void detachViewModel() {
-        this.viewModel = null;
+    public final void detachView() {
+        this.vista = null;
     }
-
-    protected final boolean hasViewModel() {
-        return viewModel != null;
-    }
-
-    public final VM getViewModel() {
-        return viewModel;
-    }
-
 
     @CallSuper
     public  void onStart(){

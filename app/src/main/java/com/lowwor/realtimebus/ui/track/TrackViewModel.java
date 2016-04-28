@@ -1,21 +1,19 @@
 package com.lowwor.realtimebus.ui.track;
 
+import android.content.Context;
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
 import android.databinding.ObservableArrayList;
 import android.databinding.ObservableList;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.Toolbar;
-import android.view.MenuItem;
-import android.view.View;
+import android.widget.Toast;
 
 import com.lowwor.realtimebus.BR;
 import com.lowwor.realtimebus.R;
 import com.lowwor.realtimebus.data.model.Bus;
 import com.lowwor.realtimebus.data.model.BusStation;
 import com.lowwor.realtimebus.utils.BindableString;
-import com.orhanobut.logger.Logger;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import me.tatarka.bindingcollectionadapter.ItemView;
@@ -23,9 +21,10 @@ import me.tatarka.bindingcollectionadapter.ItemView;
 /**
  * Created by lowworker on 2016/3/2 0002.
  */
-public class TrackViewModel extends BaseObservable {
+public class TrackViewModel extends BaseObservable implements TrackVista {
 
 
+    private Context context;
     private TrackPresenter trackPresenter;
     @Bindable
     private boolean isOffline;
@@ -38,7 +37,8 @@ public class TrackViewModel extends BaseObservable {
     public BindableString text = new BindableString();
     public ObservableList<BusStationItemViewModel> mBusStations = new ObservableArrayList<>();
 
-    public TrackViewModel(TrackPresenter trackPresenter) {
+    public TrackViewModel(Context context, TrackPresenter trackPresenter) {
+        this.context = context;
         this.trackPresenter = trackPresenter;
     }
 
@@ -80,67 +80,6 @@ public class TrackViewModel extends BaseObservable {
     }
 
 
-    public View.OnClickListener onQueryClick() {
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                trackPresenter.loadStationsIfNetworkConnected();
-            }
-        };
-    }
-
-
-    public View.OnClickListener  onTryAgainClick() {
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                trackPresenter.loadStationsIfNetworkConnected();
-            }
-        };
-    }
-
-
-    public View.OnClickListener  onFabSwitchClick() {
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                trackPresenter.switchDirection();
-                trackPresenter.loadBusIfNetworkConnected();
-            }
-        };
-    }
-
-    public SwipeRefreshLayout.OnRefreshListener onRefresh(){
-        return new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                Logger.d("onRefresh() called with: " + "");
-                trackPresenter.loadBusIfNetworkConnected();
-            }
-        };
-    }
-
-    public Toolbar.OnMenuItemClickListener onMenuItemClick(){
-        return new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.auto_refresh:
-                        trackPresenter.saveAutoRefresh(!item.isChecked());
-                        item.setChecked(trackPresenter.getAutoRefresh());
-                        trackPresenter.executeAutoRefresh();
-                        break;
-                    case R.id.settings:
-                        trackPresenter.gotoSettings();
-                        break;
-                    case R.id.share:
-                        trackPresenter.showShare();
-                        break;
-                }
-                return true;
-            }
-        };
-    }
 
     public void setText(String text) {
         this.text.set(text);
@@ -165,5 +104,45 @@ public class TrackViewModel extends BaseObservable {
 
     public boolean getIsLoading() {
         return isLoading;
+    }
+
+    @Override
+    public String getLineName() {
+        return text.get();
+    }
+
+    @Override
+    public void showLoading(boolean isLoading) {
+        setIsLoading(isLoading);
+    }
+
+    @Override
+    public void showError(String erroMsg) {
+        Toast.makeText(context,erroMsg, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void showBuses(List<Bus> buses) {
+        setBuses(buses);
+    }
+
+    @Override
+    public void showStations(List<BusStation> busStations) {
+        setItems(busStations);
+    }
+
+    @Override
+    public void showOffline(boolean isOffline) {
+        setIsOffline(isOffline);
+    }
+
+    @Override
+    public void showSearchLineHistory(List<String> items) {
+        setAutoCompleteItems(new ArrayList<String>(items));
+    }
+
+    @Override
+    public void showInitLineName(String lineName) {
+        setText(lineName);
     }
 }

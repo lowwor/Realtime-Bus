@@ -6,7 +6,7 @@
         <import type="android.view.View"/>
         <import type="me.tatarka.bindingcollectionadapter.LayoutManagers" />
         <variable name="trackViewModel" type="com.lowwor.realtimebus.ui.track.TrackViewModel"/>
-        <variable name="listener" type="com.lowwor.realtimebus.ui.track.TrackFragment"/>
+        <variable name="presenter" type="com.lowwor.realtimebus.ui.track.TrackPresenter"/>
     </data>
 <LinearLayout
     android:layout_width="match_parent"
@@ -57,7 +57,7 @@
                             android:background="@color/accent"
                             android:text="@string/query"
                             android:textColor="@color/icons"
-                            app:onClickListener="@{trackViewModel.onQueryClick}"
+                            app:onClickListener="@{presenter.onQueryClick}"
                             />
 
                         <android.support.design.widget.TextInputLayout
@@ -105,7 +105,7 @@
                 android:layout_height="match_parent"
                 android:visibility="@{trackViewModel.isOffline  ? View.GONE : View.VISIBLE}"
                 app:isRefreshing ="@{trackViewModel.isLoading}"
-                app:onRefreshListener ="@{trackViewModel.onRefresh}"
+                app:onRefreshListener ="@{presenter.onRefresh}"
                 app:colorSchemeResources ="@{@color/primary}"
                 >
 
@@ -150,7 +150,7 @@
                     android:enabled="true"
                     android:text="@string/try_again"
                     android:textColor="@color/icons"
-                    app:onClickListener="@{trackViewModel.onTryAgainClick}"
+                    app:onClickListener="@{presenter.onTryAgainClick}"
                     />
 
             </LinearLayout>
@@ -165,7 +165,7 @@
             app:layout_anchor="@id/title"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
             app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            app:OnMenuItemClickListener="@{trackViewModel.onMenuItemClick}"
+            app:OnMenuItemClickListener="@{presenter.onMenuItemClick}"
             >
 
         </android.support.v7.widget.Toolbar>
@@ -182,7 +182,7 @@
             app:backgroundTint="@color/accent"
             app:layout_anchor="@id/track_content"
             app:layout_anchorGravity="bottom|right|end"
-            app:onClickListener="@{trackViewModel.onFabSwitchClick}"
+            app:onClickListener="@{presenter.onFabSwitchClick}"
             />
     </android.support.design.widget.CoordinatorLayout>
 </LinearLayout>

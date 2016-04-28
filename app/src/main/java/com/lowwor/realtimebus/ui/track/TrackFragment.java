@@ -37,6 +37,7 @@ public class TrackFragment extends BaseFragment {
         FragmentTrackBinding fragmentTrackBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_track, container, false);
         initDependencyInjector();
         fragmentTrackBinding.setTrackViewModel(trackViewModel);
+        fragmentTrackBinding.setPresenter(trackPresenter);
         initToolbar(fragmentTrackBinding.toolbar);
         fragmentTrackBinding.executePendingBindings();
         return fragmentTrackBinding.getRoot();
@@ -50,14 +51,14 @@ public class TrackFragment extends BaseFragment {
     @Override
     public void onStart() {
         super.onStart();
-        trackPresenter.attachViewModel(trackViewModel);
+        trackPresenter.attachView(trackViewModel);
         trackPresenter.onStart();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        trackPresenter.detachViewModel();
+        trackPresenter.detachView();
         trackPresenter.onStop();
     }
 
