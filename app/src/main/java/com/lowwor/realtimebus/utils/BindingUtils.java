@@ -20,19 +20,19 @@ import java.util.List;
 public class BindingUtils {
 
 
-    @BindingAdapter("app:isRefreshing")
+    @BindingAdapter("isRefreshing")
     public static void bindRefresh(SwipeRefreshLayout swipeRefreshLayout, boolean isLoading) {
         if (!isLoading) {
             swipeRefreshLayout.setRefreshing(isLoading);
         }
     }
 
-    @BindingAdapter("app:colorSchemeResources")
     public static void bindRefreshColor(SwipeRefreshLayout swipeRefreshLayout,  int colorResId) {
             swipeRefreshLayout.setColorSchemeColors(colorResId);
+    @BindingAdapter("colorSchemeResources")
     }
 
-    @BindingAdapter("app:items")
+    @BindingAdapter("items")
     public static <T> void bindAutoCompleteAdapter(InstantAutoComplete autoCompleteTextView, List<T> lineNameItems) {
 //        Logger.d("bindAutoCompleteAdapter() called with: " + "autoCompleteTextView = [" + autoCompleteTextView + "], lineNameItems = [" + lineNameItems + "]");
         LimitArrayAdapter<T> adapter = (LimitArrayAdapter<T>) autoCompleteTextView.getAdapter();
@@ -50,7 +50,7 @@ public class BindingUtils {
 
     //can't use ObservableField to bind directly
 //    https://medium.com/@fabioCollini/android-data-binding-f9f9d3afc761#.m2yxintjl
-    @BindingAdapter({"app:textChange"})
+    @BindingAdapter({"textChange"})
     public static void bindEditText(EditText view,
                                     final BindableString bindableString) {
         Pair<BindableString, TextWatcherAdapter> pair =

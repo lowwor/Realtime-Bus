@@ -3,7 +3,6 @@ package com.lowwor.realtimebus.ui.track;
 import android.content.Context;
 import android.content.Intent;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.lowwor.realtimebus.R;
 import com.lowwor.realtimebus.data.api.BusApiRepository;
@@ -74,7 +73,7 @@ public class TrackPresenterImp extends TrackPresenter {
     public void onStop() {
         super.onStop();
     }
-
+    @Override
     public void loadBusIfNetworkConnected() {
         if (NetworkUtils.isNetworkAvailable(context)) {
             vista.showOffline(false);
@@ -84,7 +83,7 @@ public class TrackPresenterImp extends TrackPresenter {
             vista.showLoading(false);
         }
     }
-
+    @Override
     public void loadStationsIfNetworkConnected(String lineName) {
         if (NetworkUtils.isNetworkAvailable(context)) {
             vista.showOffline(false);
@@ -130,29 +129,6 @@ public class TrackPresenterImp extends TrackPresenter {
     }
 
     @Override
-    public void onQueryClick(View view) {
-        loadStationsIfNetworkConnected(vista.getLineName());
-
-    }
-
-    @Override
-    public void onTryAgainClick(View view) {
-        loadStationsIfNetworkConnected(vista.getLineName());
-    }
-
-    @Override
-    public void onFabSwitchClick(View view) {
-        switchDirection();
-        loadBusIfNetworkConnected();
-    }
-
-    @Override
-    public void onRefresh() {
-        Logger.d("onRefresh() called with: " + "");
-        loadBusIfNetworkConnected();
-    }
-
-    @Override
     public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.auto_refresh:
@@ -167,9 +143,15 @@ public class TrackPresenterImp extends TrackPresenter {
                         showShare();
                         break;
                 }
-                return true;
-
+        return true;
     }
+
+    @Override
+    public void switchDirection() {
+        switchStartFrom();
+        getStations();
+    }
+
 
     private void searchLine(String name) {
         busApiRepository.searchLine(name)
@@ -357,10 +339,6 @@ public class TrackPresenterImp extends TrackPresenter {
         return preferencesHelper.getIsStartFromFirst();
     }
 
-    public void switchDirection() {
-        switchStartFrom();
-        getStations();
-    }
 
     private void saveAutoComplete() {
 //        Logger.i("save auto");
