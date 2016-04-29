@@ -105,8 +105,8 @@
                 android:layout_height="match_parent"
                 android:visibility="@{trackViewModel.isOffline  ? View.GONE : View.VISIBLE}"
                 app:isRefreshing ="@{trackViewModel.isLoading}"
-                app:colorSchemeResources ="@{@color/primary}"
                 app:onRefreshListener ="@{()-> presenter.loadBusIfNetworkConnected()}"
+                app:colorSchemeResources ="@{@intArray/color_scheme}"
                 >
 
                 <android.support.v7.widget.RecyclerView

@@ -27,9 +27,10 @@ public class BindingUtils {
         }
     }
 
-    public static void bindRefreshColor(SwipeRefreshLayout swipeRefreshLayout,  int colorResId) {
-            swipeRefreshLayout.setColorSchemeColors(colorResId);
+    //Binding array
     @BindingAdapter("colorSchemeResources")
+    public static void bindRefreshColor(SwipeRefreshLayout swipeRefreshLayout,   int[] colors) {
+            swipeRefreshLayout.setColorSchemeColors(colors);
     }
 
     @BindingAdapter("items")
