@@ -107,11 +107,6 @@ public class TrackViewModel extends BaseObservable implements TrackVista {
     }
 
     @Override
-    public String getLineName() {
-        return text.get();
-    }
-
-    @Override
     public void showLoading(boolean isLoading) {
         setIsLoading(isLoading);
     }

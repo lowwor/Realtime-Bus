@@ -11,8 +11,6 @@ import java.util.List;
  */
 public interface TrackVista extends Vista {
 
-    String getLineName();
-
     void showLoading(boolean isLoading);
 
     void showOffline(boolean isOffline);

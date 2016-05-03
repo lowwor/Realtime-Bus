@@ -63,7 +63,7 @@ public class TrackPresenterImp extends TrackPresenter {
         initAutoComplete();
         if (isFirstIn) {
             isFirstIn = false;
-            loadStationsIfNetworkConnected(vista.getLineName());
+            loadStationsIfNetworkConnected(preferencesHelper.getLastQueryLine());
         } else {
             loadBusIfNetworkConnected();
         }
