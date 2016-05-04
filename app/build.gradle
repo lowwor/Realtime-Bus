@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.neenbedankt.android-apt'
 
 
-def preDexEnabled = "true".equals(System.getProperty("pre-dex", "true"))
+def preDexEnabled = "true".equals(System.getProperty("pre_dex", "true"))
 def isCi = "true".equals(System.getenv("CI"))
 
 android {
