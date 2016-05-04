@@ -42,9 +42,6 @@ android {
     }
 
     productFlavors {
-        umeng {
-            manifestPlaceholders = [UMENG_CHANNEL_NAME: "UMENG",BUGLY_APP_CHANNEL: "UMENG"]
-        }
         fir {
             manifestPlaceholders = [UMENG_CHANNEL_NAME: "FIR.IM",BUGLY_APP_CHANNEL: "FIR.IM"]
         }
@@ -53,9 +50,6 @@ android {
         }
         yingyongbao {
             manifestPlaceholders = [UMENG_CHANNEL_NAME: "YingYongBao",BUGLY_APP_CHANNEL: "YingYongBao"]
-        }
-        coolapk {
-            manifestPlaceholders = [UMENG_CHANNEL_NAME: "CoolApk",BUGLY_APP_CHANNEL: "CoolApk"]
         }
     }
 
