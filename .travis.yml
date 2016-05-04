@@ -1,5 +1,6 @@
-# Disabling sudo moves build to the Container Based Infrastructure on Travis CI
-sudo: false
+# Try out the new trusty build env on travisci since the container-based infrastructure always runs out of memory and fails the build
+sudo: required
+dist: trusty
 
 language: android
 
