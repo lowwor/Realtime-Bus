@@ -16,6 +16,13 @@ before_script:
 - echo no | android create avd --force -n test -t android-19 --abi armeabi-v7a
 
 before_install:
+  # Disable services enabled by default
+  # http://docs.travis-ci.com/user/database-setup/#MySQL
+  - sudo /etc/init.d/mysql stop
+  - sudo /etc/init.d/postgresql stop
+  # The following did not work reliable
+  # - sudo service mysql stop
+  # - sudo service postgresql stop
 - openssl aes-256-cbc -K $encrypted_27d2053e4dd2_key -iv $encrypted_27d2053e4dd2_iv
   -in lowwor.jks.enc -out lowwor.jks -d
 #fix for ./gradlew Permission Denied. Reference: http://stackoverflow.com/questions/33820638/travis-yml-gradlew-permission-denied
