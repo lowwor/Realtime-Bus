@@ -1,6 +1,10 @@
 language: android
 
 jdk: oraclejdk8
+# Turn off caching to avoid any caching problems
+cache: false
+# Don't use the Travis Container-Based Infrastructure - See #476
+sudo: true
 
 android:
   components:
@@ -14,6 +18,7 @@ android:
 
 before_script:
 - echo no | android create avd --force -n test -t android-19 --abi armeabi-v7a
+- echo no | android create avd --force -n test -t android-19 --abi armeabi-v7a
 - emulator -avd test -no-audio -no-window &
 - android-wait-for-emulator
 - adb shell settings put global window_animation_scale 0 &
@@ -22,16 +27,16 @@ before_script:
 - adb shell input keyevent 82 &
 
 before_install:
-- openssl aes-256-cbc -K $encrypted_27d2053e4dd2_key -iv $encrypted_27d2053e4dd2_iv
-  -in lowwor.jks.enc -out lowwor.jks -d
+  - openssl aes-256-cbc -K $encrypted_27d2053e4dd2_key -iv $encrypted_27d2053e4dd2_iv
+    -in lowwor.jks.enc -out lowwor.jks -d
 #fix for ./gradlew Permission Denied. Reference: http://stackoverflow.com/questions/33820638/travis-yml-gradlew-permission-denied
-- chmod +x gradlew
+  - chmod +x gradlew
 
 notifications:
   email: false
 
-before_cache:
-  - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
-cache:
-  directories:
-  - $HOME/.m2
+# before_cache:
+#   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
+# cache:
+#   directories:
+#   - $HOME/.m2
