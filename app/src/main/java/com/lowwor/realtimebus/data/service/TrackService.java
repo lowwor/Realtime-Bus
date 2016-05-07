@@ -92,20 +92,17 @@ public class TrackService extends Service {
                         @Override
                         public Observable<BusWrapper> call(TimeInterval<Long> longTimeInterval) {
                             return busApiRepository.getBusListOnRoad(lineName, fromStation)
+                                    .observeOn(AndroidSchedulers.mainThread())
                                     .doOnError(new Action1<Throwable>() {
                                         @Override
                                         public void call(Throwable throwable) {
                                             Toast.makeText(getApplicationContext(), R.string.error_get_bus, Toast.LENGTH_SHORT).show();
                                             callbackFailed(throwable.getMessage());
                                         }
-                                    }).onErrorResumeNext(new Func1<Throwable, Observable<? extends BusWrapper>>() {
-                                @Override
-                                public Observable<? extends BusWrapper> call(Throwable throwable) {
-                                    return Observable.empty();
-                                }
-                            });
+                                    });
                         }
                     })
+                    .retry()
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeOn(Schedulers.io())
                     .subscribe(new Subscriber<BusWrapper>() {
