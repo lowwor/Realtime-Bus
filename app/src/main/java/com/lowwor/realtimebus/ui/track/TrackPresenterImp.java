@@ -1,7 +1,5 @@
 package com.lowwor.realtimebus.ui.track;
 
-import android.content.Context;
-import android.content.Intent;
 import android.view.MenuItem;
 
 import com.lowwor.realtimebus.R;
@@ -13,9 +11,7 @@ import com.lowwor.realtimebus.data.model.wrapper.BusLineWrapper;
 import com.lowwor.realtimebus.data.model.wrapper.BusStationWrapper;
 import com.lowwor.realtimebus.data.model.wrapper.BusWrapper;
 import com.lowwor.realtimebus.data.rx.RxTrackService;
-import com.lowwor.realtimebus.ui.settings.SettingsActivity;
-import com.lowwor.realtimebus.utils.NetworkUtils;
-import com.lowwor.realtimebus.utils.ShareUtils;
+import com.lowwor.realtimebus.domain.NetworkManager;
 import com.orhanobut.logger.Logger;
 
 import java.util.ArrayList;
@@ -36,7 +32,7 @@ import rx.subscriptions.Subscriptions;
  */
 public class TrackPresenterImp extends TrackPresenter {
 
-    private Context context;
+    private NetworkManager networkManager;
     private BusApiRepository busApiRepository;
     private PreferencesHelper preferencesHelper;
     private RxTrackService rxTrackService;
@@ -49,8 +45,8 @@ public class TrackPresenterImp extends TrackPresenter {
     private String lastStation;
     private boolean isFirstIn = true;
 
-    public TrackPresenterImp(Context context, BusApiRepository busApiRepository, PreferencesHelper preferencesHelper, RxTrackService rxTrackService) {
-        this.context = context;
+    public TrackPresenterImp(NetworkManager networkManager, BusApiRepository busApiRepository, PreferencesHelper preferencesHelper, RxTrackService rxTrackService) {
+        this.networkManager = networkManager;
         this.busApiRepository = busApiRepository;
         this.preferencesHelper = preferencesHelper;
         this.rxTrackService = rxTrackService;
@@ -75,7 +71,7 @@ public class TrackPresenterImp extends TrackPresenter {
     }
     @Override
     public void loadBusIfNetworkConnected() {
-        if (NetworkUtils.isNetworkAvailable(context)) {
+        if (networkManager.isNetworkAvailable()) {
             vista.showOffline(false);
             getBus();
         } else {
@@ -85,7 +81,7 @@ public class TrackPresenterImp extends TrackPresenter {
     }
     @Override
     public void loadStationsIfNetworkConnected(String lineName) {
-        if (NetworkUtils.isNetworkAvailable(context)) {
+        if (networkManager.isNetworkAvailable()) {
             vista.showOffline(false);
             searchLine(lineName);
         } else {
@@ -120,13 +116,6 @@ public class TrackPresenterImp extends TrackPresenter {
         rxTrackService.removeAlarmStation(stationName);
     }
 
-    public void gotoSettings() {
-        context.startActivity(new Intent(context, SettingsActivity.class));
-    }
-
-    public void showShare() {
-        ShareUtils.share(context);
-    }
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
@@ -136,11 +125,11 @@ public class TrackPresenterImp extends TrackPresenter {
                         item.setChecked(getAutoRefresh());
                         executeAutoRefresh();
                         break;
-                    case R.id.settings:
-                        gotoSettings();
+                  case R.id.settings:
+                      vista.gotoSettings();
                         break;
                     case R.id.share:
-                        showShare();
+                        vista.showShare();
                         break;
                 }
         return true;

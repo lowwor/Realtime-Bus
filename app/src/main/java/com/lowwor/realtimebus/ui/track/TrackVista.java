@@ -25,4 +25,8 @@ public interface TrackVista extends Vista {
 
     void showSearchLineHistory(List<String> items);
 
+    void showShare();
+
+    void gotoSettings();
+
 }

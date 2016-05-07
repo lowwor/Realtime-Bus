@@ -1,6 +1,7 @@
 package com.lowwor.realtimebus.ui.track;
 
 import android.content.Context;
+import android.content.Intent;
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
 import android.databinding.ObservableArrayList;
@@ -11,7 +12,9 @@ import com.lowwor.realtimebus.BR;
 import com.lowwor.realtimebus.R;
 import com.lowwor.realtimebus.data.model.Bus;
 import com.lowwor.realtimebus.data.model.BusStation;
+import com.lowwor.realtimebus.ui.settings.SettingsActivity;
 import com.lowwor.realtimebus.utils.BindableString;
+import com.lowwor.realtimebus.utils.ShareUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -139,5 +142,15 @@ public class TrackViewModel extends BaseObservable implements TrackVista {
     @Override
     public void showInitLineName(String lineName) {
         setText(lineName);
+    }
+
+    @Override
+    public void showShare() {
+        ShareUtils.share(context);
+    }
+
+    @Override
+    public void gotoSettings() {
+        context.startActivity(new Intent(context, SettingsActivity.class));
     }
 }

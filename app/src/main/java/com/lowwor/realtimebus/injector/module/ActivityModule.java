@@ -2,6 +2,7 @@ package com.lowwor.realtimebus.injector.module;
 
 import android.content.Context;
 
+import com.lowwor.realtimebus.domain.NetworkManager;
 import com.lowwor.realtimebus.injector.ActivityScope;
 
 import dagger.Module;
@@ -25,5 +26,11 @@ public class ActivityModule {
     @ActivityScope
     Context provideActivityContext() {
         return mContext;
+    }
+
+    @Provides
+    @ActivityScope
+    NetworkManager provideNetworkManager(Context context){
+        return new NetworkManager(context);
     }
 }

@@ -6,6 +6,7 @@ import android.content.Context;
 import com.lowwor.realtimebus.BusApplication;
 import com.lowwor.realtimebus.data.api.BusApiRepository;
 import com.lowwor.realtimebus.data.local.PreferencesHelper;
+import com.lowwor.realtimebus.domain.NetworkManager;
 import com.lowwor.realtimebus.injector.ActivityScope;
 import com.lowwor.realtimebus.injector.module.ActivityModule;
 
@@ -23,6 +24,8 @@ public interface ActivityComponent {
     BusApiRepository busApiRepository();
 
     PreferencesHelper preferencesHelper();
+
+    NetworkManager networkManager();
 
     Context context();
 }
