@@ -41,18 +41,36 @@ android {
         }
     }
 
+    flavorDimensions 'env','channel'
     productFlavors {
+        prod {
+            dimension  'env'
+        }
+        mock {
+            dimension  'env'
+            applicationIdSuffix = ".mock"
+        }
         fir {
+            dimension  'channel'
             manifestPlaceholders = [UMENG_CHANNEL_NAME: "FIR.IM",BUGLY_APP_CHANNEL: "FIR.IM"]
         }
         wandoujia {
+            dimension  'channel'
             manifestPlaceholders = [UMENG_CHANNEL_NAME: "WanDouJia",BUGLY_APP_CHANNEL: "WanDouJia"]
         }
         yingyongbao {
+            dimension  'channel'
             manifestPlaceholders = [UMENG_CHANNEL_NAME: "YingYongBao",BUGLY_APP_CHANNEL: "YingYongBao"]
         }
     }
 
+    // Remove mockRelease as it's not needed.
+    android.variantFilter { variant ->
+        if(variant.buildType.name.equals('release')
+                && variant.getFlavors().get(0).name.equals('mock')) {
+            variant.setIgnore(true);
+        }
+    }
     lintOptions {
         abortOnError false
     }
@@ -101,6 +119,7 @@ dependencies {
     compile 'com.squareup.retrofit2:retrofit:2.0.0-beta3'
     compile 'com.squareup.retrofit2:adapter-rxjava:2.0.0-beta3'
     compile 'com.squareup.retrofit2:converter-gson:2.0.0-beta3'
+    compile 'com.squareup.retrofit2:retrofit-mock:2.0.0-beta3'
     compile 'com.squareup.okhttp3:logging-interceptor:3.0.1'
     compile 'com.squareup.okhttp3:okhttp:3.0.1'
     //Stetho
