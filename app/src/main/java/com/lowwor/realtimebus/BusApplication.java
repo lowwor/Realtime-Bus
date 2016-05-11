@@ -1,17 +1,19 @@
 package com.lowwor.realtimebus;
 
 import android.app.Application;
+import android.support.annotation.NonNull;
 
-import com.facebook.stetho.Stetho;
+import com.lowwor.realtimebus.developer_settings.AnalyticsProxy;
+import com.lowwor.realtimebus.developer_settings.BugReportProxy;
+import com.lowwor.realtimebus.developer_settings.LeakCanaryProxy;
+import com.lowwor.realtimebus.developer_settings.StethoProxy;
 import com.lowwor.realtimebus.injector.component.AppComponent;
 import com.lowwor.realtimebus.injector.component.DaggerAppComponent;
 import com.lowwor.realtimebus.injector.module.AppModule;
 import com.orhanobut.logger.LogLevel;
 import com.orhanobut.logger.Logger;
-import com.squareup.leakcanary.LeakCanary;
-import com.squareup.leakcanary.RefWatcher;
-import com.tencent.bugly.Bugly;
-import com.tencent.bugly.crashreport.CrashReport;
+
+import javax.inject.Inject;
 
 /**
  * Created by lowworker on 2015/9/19.
@@ -19,8 +21,14 @@ import com.tencent.bugly.crashreport.CrashReport;
 public class BusApplication extends Application {
 
     private AppComponent mAppComponent;
-    private RefWatcher refWatcher;
-    public static final String BUGLY_APPID = "900027065";
+    @Inject
+    BugReportProxy bugReportProxy;
+    @Inject
+    LeakCanaryProxy leakCanaryProxy;
+    @Inject
+    AnalyticsProxy analyticsProxy;
+    @Inject
+    StethoProxy stethoProxy;
 
     @Override
     public void onCreate() {
@@ -31,16 +39,24 @@ public class BusApplication extends Application {
         initStetho();
         initLogger();
         initLeakCanary();
-        initBugly();
+        initBugReport();
+        initAnalytics();
     }
 
-    private void initBugly() {
-        Bugly.init(getApplicationContext(), BUGLY_APPID, false);
-        CrashReport.initCrashReport(getApplicationContext());
+    private void initBugReport() {
+        bugReportProxy.init();
     }
 
     private void initLeakCanary() {
-        refWatcher = LeakCanary.install(this);
+        leakCanaryProxy.init();
+    }
+
+    private void initAnalytics() {
+        analyticsProxy.init();
+    }
+
+    void initStetho() {
+        stethoProxy.init();
     }
 
     private void initLogger() {
@@ -52,26 +68,22 @@ public class BusApplication extends Application {
 
     }
 
-    private void initializeInjector() {
-
-        mAppComponent = DaggerAppComponent.builder()
-                .appModule(new AppModule(this))
-                .build();
+    protected void initializeInjector() {
+        mAppComponent = prepareApplicationComponent().build();
+        mAppComponent.inject(this);
 
     }
 
+    @NonNull
+    protected DaggerAppComponent.Builder prepareApplicationComponent() {
+        return DaggerAppComponent.builder()
+                .appModule(new AppModule(this));
+    }
 
     public AppComponent getAppComponent() {
 
         return mAppComponent;
     }
 
-    void initStetho() {
-        Stetho.initialize(
-                Stetho.newInitializerBuilder(this)
-                        .enableDumpapp(Stetho.defaultDumperPluginsProvider(this))
-                        .enableWebKitInspector(Stetho.defaultInspectorModulesProvider(this))
-                        .build());
-    }
 
 }
