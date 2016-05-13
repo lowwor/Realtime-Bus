@@ -70,6 +70,11 @@ android {
                 && variant.getFlavors().get(0).name.equals('mock')) {
             variant.setIgnore(true);
         }
+        if (isCi) {
+            if(variant.getFlavors().get(1).name.equals('fir')||variant.getFlavors().get(1).name.equals('wandoujia')) {
+                variant.setIgnore(true);
+            }
+        }
     }
 
     // Always show the result of every unit test, even if it passes.
