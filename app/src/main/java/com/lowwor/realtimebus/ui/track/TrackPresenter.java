@@ -17,7 +17,7 @@ public abstract class TrackPresenter extends BasePresenter<TrackVista> {
 
     public abstract boolean onMenuItemClick(MenuItem item);
 
-    public abstract void  loadStationsIfNetworkConnected(String lineName);
+    public abstract void searchLineIfNetworkConnected(String lineName);
 
     public abstract void  loadBusIfNetworkConnected();
 

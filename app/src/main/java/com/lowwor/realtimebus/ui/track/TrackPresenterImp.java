@@ -59,7 +59,7 @@ public class TrackPresenterImp extends TrackPresenter {
         initAutoComplete();
         if (isFirstIn) {
             isFirstIn = false;
-            loadStationsIfNetworkConnected(preferencesHelper.getLastQueryLine());
+            searchLineIfNetworkConnected(preferencesHelper.getLastQueryLine());
         } else {
             loadBusIfNetworkConnected();
         }
@@ -69,6 +69,7 @@ public class TrackPresenterImp extends TrackPresenter {
     public void onStop() {
         super.onStop();
     }
+
     @Override
     public void loadBusIfNetworkConnected() {
         if (networkManager.isNetworkAvailable()) {
@@ -79,11 +80,22 @@ public class TrackPresenterImp extends TrackPresenter {
             vista.showLoading(false);
         }
     }
+
     @Override
-    public void loadStationsIfNetworkConnected(String lineName) {
+    public void searchLineIfNetworkConnected(String lineName) {
         if (networkManager.isNetworkAvailable()) {
             vista.showOffline(false);
             searchLine(lineName);
+        } else {
+            vista.showOffline(true);
+            vista.showLoading(false);
+        }
+    }
+
+    private void loadStationsIfNetworkConnected() {
+        if (networkManager.isNetworkAvailable()) {
+            vista.showOffline(false);
+            getStations();
         } else {
             vista.showOffline(true);
             vista.showLoading(false);
@@ -119,26 +131,26 @@ public class TrackPresenterImp extends TrackPresenter {
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.auto_refresh:
-                        saveAutoRefresh(!item.isChecked());
-                        item.setChecked(getAutoRefresh());
-                        executeAutoRefresh();
-                        break;
-                  case R.id.settings:
-                      vista.gotoSettings();
-                        break;
-                    case R.id.share:
-                        vista.showShare();
-                        break;
-                }
+        switch (item.getItemId()) {
+            case R.id.auto_refresh:
+                saveAutoRefresh(!item.isChecked());
+                item.setChecked(getAutoRefresh());
+                executeAutoRefresh();
+                break;
+            case R.id.settings:
+                vista.gotoSettings();
+                break;
+            case R.id.share:
+                vista.showShare();
+                break;
+        }
         return true;
     }
 
     @Override
     public void switchDirection() {
         switchStartFrom();
-        getStations();
+        loadStationsIfNetworkConnected();
     }
 
 
@@ -197,6 +209,12 @@ public class TrackPresenterImp extends TrackPresenter {
     private void getStations() {
         subscriptions.add(
                 busApiRepository.getStationByLineId(mLineId)
+                        .doOnSubscribe(new Action0() {
+                            @Override
+                            public void call() {
+                                vista.showLoading(true);
+                            }
+                        })
                         .map(new Func1<BusStationWrapper, List<BusStation>>() {
                             @Override
                             public List<BusStation> call(BusStationWrapper busStationWrapper) {

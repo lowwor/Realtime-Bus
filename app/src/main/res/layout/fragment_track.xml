@@ -57,7 +57,7 @@
                             android:background="@color/accent"
                             android:text="@string/query"
                             android:textColor="@color/icons"
-                            android:onClick="@{(v) -> presenter.loadStationsIfNetworkConnected(trackViewModel.text.get())}"
+                            android:onClick="@{(v) -> presenter.searchLineIfNetworkConnected(trackViewModel.text.get())}"
                             />
 
                         <android.support.design.widget.TextInputLayout
@@ -150,7 +150,7 @@
                     android:enabled="true"
                     android:text="@string/try_again"
                     android:textColor="@color/icons"
-                    app:onClickListener="@{(v)->presenter.loadStationsIfNetworkConnected(trackViewModel.text.get())}"
+                    app:onClickListener="@{(v)->presenter.searchLineIfNetworkConnected(trackViewModel.text.get())}"
                     />
 
             </LinearLayout>
