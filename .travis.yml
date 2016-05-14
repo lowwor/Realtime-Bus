@@ -1,8 +1,6 @@
 language: android
 
 jdk: oraclejdk8
-# Turn off caching to avoid any caching problems
-cache: false
 # Don't use the Travis Container-Based Infrastructure - See #476
 sudo: true
 
@@ -35,8 +33,8 @@ before_install:
 notifications:
   email: false
 
-# before_cache:
-#   - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
-# cache:
-#   directories:
-#   - $HOME/.m2
+before_cache:
+ - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
+cache:
+ directories:
+ - $HOME/.m2

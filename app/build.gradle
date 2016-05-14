@@ -70,6 +70,7 @@ android {
                 && variant.getFlavors().get(0).name.equals('mock')) {
             variant.setIgnore(true);
         }
+        //Remove flavor not needed in CI
         if (isCi) {
             if(variant.getFlavors().get(1).name.equals('fir')||variant.getFlavors().get(1).name.equals('wandoujia')) {
                 variant.setIgnore(true);
@@ -91,6 +92,8 @@ android {
     dexOptions {
         // Skip pre-dexing when running on Travis CI or when disabled via -Dpre-dex=false.
         preDexLibraries = preDexEnabled && !isCi
+        incremental true
+        javaMaxHeapSize "4g"
     }
 }
 
@@ -114,21 +117,8 @@ dependencies {
     compile 'org.glassfish:javax.annotation:10.0-b28'
     //Gson
     compile 'com.google.code.gson:gson:2.4'
-    //Glide
-    compile 'com.github.bumptech.glide:glide:3.6.1'
     //Logger
     compile 'com.orhanobut:logger:1.11'
-    //Umeng analytics
-    compile 'com.umeng.analytics:analytics:latest.integration'
-    //Storio
-
-    // If you need StorIO for SQLite
-    compile 'com.pushtorefresh.storio:sqlite:1.4.0'
-    // If you need StorIO for ContentResolver
-    compile 'com.pushtorefresh.storio:content-resolver:1.4.0'
-    compile 'com.pushtorefresh.storio:sqlite-annotations:1.4.0'
-    // We recommend to use Android Gradle Apt plugin: https://bitbucket.org/hvisser/android-apt
-    apt 'com.pushtorefresh.storio:sqlite-annotations-processor:1.4.0'
     //Retrofit
     compile 'com.squareup.retrofit2:retrofit:2.0.0-beta3'
     compile 'com.squareup.retrofit2:adapter-rxjava:2.0.0-beta3'
@@ -153,15 +143,6 @@ dependencies {
     compile 'com.tencent.bugly:crashreport_upgrade:1.0.0'
     //其中latest.release指代最新版本号，也可以指定明确的版本号，例如1.0.0
 
-    //Search View
-    compile 'com.github.arimorty:floatingsearchview:1.1.2'
-    androidTestCompile 'junit:junit:4.12'
-    androidTestCompile 'org.mockito:mockito-core:1.10.19'
-    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.1'
-    // TODO https://code.google.com/p/android-test-kit/issues/detail?id=157
-
-    //androidTestCompile 'com.android.support.test.espresso:espresso-contrib:2.2'
-    androidTestCompile 'org.robolectric:robolectric:3.0'
     testCompile 'junit:junit:4.12'
     testCompile 'org.mockito:mockito-core:1.10.19'
     testCompile 'com.google.truth:truth:0.28'
