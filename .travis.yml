@@ -27,9 +27,6 @@ before_script:
 - adb shell input keyevent 82 &
 
 before_install:
-  - sudo rm /etc/mavenrc
-  - export M2_HOME=/usr/local/maven
-  - export MAVEN_OPTS="-Dmaven.repo.local=$HOME/.m2/repository -Xms1024m -Xmx3072m -XX:PermSize=512m"
   - openssl aes-256-cbc -K $encrypted_27d2053e4dd2_key -iv $encrypted_27d2053e4dd2_iv
     -in lowwor.jks.enc -out lowwor.jks -d
 #fix for ./gradlew Permission Denied. Reference: http://stackoverflow.com/questions/33820638/travis-yml-gradlew-permission-denied
@@ -38,8 +35,8 @@ before_install:
 notifications:
   email: false
 
-#before_cache:
-# - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
-# cache:
-#  directories:
-#  - $HOME/.m2
+before_cache:
+ - rm -f $HOME/.gradle/caches/modules-2/modules-2.lock
+cache:
+ directories:
+ - $HOME/.m2
