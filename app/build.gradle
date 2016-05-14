@@ -70,6 +70,7 @@ android {
                 && variant.getFlavors().get(0).name.equals('mock')) {
             variant.setIgnore(true);
         }
+        //Remove flavor not needed in CI
         if (isCi) {
             if(variant.getFlavors().get(1).name.equals('fir')||variant.getFlavors().get(1).name.equals('wandoujia')) {
                 variant.setIgnore(true);
