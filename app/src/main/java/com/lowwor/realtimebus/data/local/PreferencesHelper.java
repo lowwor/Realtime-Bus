@@ -6,22 +6,27 @@ import android.content.res.Resources;
 import android.preference.PreferenceManager;
 
 import com.f2prateek.rx.preferences.RxSharedPreferences;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.lowwor.realtimebus.R;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import rx.Observable;
+import rx.functions.Func1;
+
+import static com.lowwor.realtimebus.utils.CollectionUtils.removeDuplicateWithOrder;
 
 @Singleton
 public class PreferencesHelper {
 
     public static final String PREF_FILE_APP = "pref_file_app";
 
-    private static final String PREF_KEY_AUTO_COMPLETE = "PREF_KEY_AUTO_COMPLETE";
+    private static final String PREF_KEY_AUTO_COMPLETE_LIST = "PREF_KEY_AUTO_COMPLETE_LIST";
     private static final String PREF_KEY_START_FROM = "PREF_KEY_START_FROM";
     private static final String PREF_KEY_AUTO_REFRESH = "PREF_KEY_AUTO_REFRESH";
     private static final String PREF_KEY_LAST_QUERY = "PREF_KEY_LAST_QUERY";
@@ -30,6 +35,7 @@ public class PreferencesHelper {
     private final SharedPreferences mSettingsPref;
     private final RxSharedPreferences mRxSharedPreferences;
     private final Resources mResources;
+    private final Gson gson;
 
     @Inject
     public PreferencesHelper(Context context) {
@@ -37,10 +43,12 @@ public class PreferencesHelper {
         mSettingsPref = PreferenceManager.getDefaultSharedPreferences(context);
         mRxSharedPreferences = RxSharedPreferences.create(mPref);
         mResources = context.getResources();
+        gson = new Gson();
     }
 
     public void clear() {
         mPref.edit().clear().apply();
+        mSettingsPref.edit().clear().apply();
     }
 
     public void saveStartFromFirst(boolean isStartFromFirst) {
@@ -51,14 +59,33 @@ public class PreferencesHelper {
         return mPref.getBoolean(PREF_KEY_START_FROM, true);
     }
 
-    public Observable<Set<String>> getAutoCompleteAsObservable() {
-        return mRxSharedPreferences.getStringSet(PREF_KEY_AUTO_COMPLETE).asObservable();
+    public Observable<List<String>> getAutoCompleteAsObservable() {
+
+        return mRxSharedPreferences.getString(PREF_KEY_AUTO_COMPLETE_LIST).asObservable().map(new Func1<String, List<String>>() {
+            @Override
+            public List<String> call(String s) {
+                List<String> items = new ArrayList<>();
+                if (s != null) {
+                    String json = mPref.getString(PREF_KEY_AUTO_COMPLETE_LIST, "");
+                    items = gson.fromJson(json, new TypeToken<List<String>>() {
+                    }.getType());
+                }
+                return items;
+            }
+        });
     }
 
     public void saveAutoCompleteItem(String item) {
-        Set<String> mbuses = mPref.getStringSet(PREF_KEY_AUTO_COMPLETE, new HashSet<String>());
-        mbuses.add(item);
-        mPref.edit().putStringSet(PREF_KEY_AUTO_COMPLETE, mbuses).apply();
+        String json = mPref.getString(PREF_KEY_AUTO_COMPLETE_LIST, null);
+        List<String> items = new ArrayList<>();
+        if (json != null) {
+            items = gson.fromJson(json, new TypeToken<List<String>>() {
+            }.getType());
+        }
+        items.add(item);
+
+        removeDuplicateWithOrder(items);
+        mPref.edit().putString(PREF_KEY_AUTO_COMPLETE_LIST, gson.toJson(items)).apply();
     }
 
     public void saveLastQueryLine(String lastQueryStation) {

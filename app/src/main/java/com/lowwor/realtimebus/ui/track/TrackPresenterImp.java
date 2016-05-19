@@ -14,9 +14,7 @@ import com.lowwor.realtimebus.data.rx.RxTrackService;
 import com.lowwor.realtimebus.domain.NetworkManager;
 import com.orhanobut.logger.Logger;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -242,7 +240,6 @@ public class TrackPresenterImp extends TrackPresenter {
                                 vista.showLoading(false);
                                 vista.showStations(busStations);
                                 saveAutoComplete();
-                                refreshAutoComplete();
                                 loadBusIfNetworkConnected();
                                 executeAutoRefresh();
                             }
@@ -289,31 +286,6 @@ public class TrackPresenterImp extends TrackPresenter {
         };
     }
 
-    private void refreshAutoComplete() {
-        //don't know why didn't auto refresh
-        subscriptions.add(preferencesHelper.getAutoCompleteAsObservable()
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<Set<String>>() {
-                    @Override
-                    public void onCompleted() {
-                        Logger.i("auto onCompleted");
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Logger.i(" auto e");
-
-                    }
-
-                    @Override
-                    public void onNext(Set<String> strings) {
-                        Logger.d("onNext() called with: " + "strings = [" + strings + "]");
-                        vista.showSearchLineHistory(new ArrayList<>(strings));
-                    }
-                }));
-    }
-
-
     private void initTrackService() {
         Logger.d("initTrackService() called with: " + "");
 
@@ -332,7 +304,26 @@ public class TrackPresenterImp extends TrackPresenter {
 
     private void initAutoComplete() {
         vista.showInitLineName(preferencesHelper.getLastQueryLine());
-        refreshAutoComplete();
+        subscriptions.add(preferencesHelper.getAutoCompleteAsObservable()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Subscriber<List<String>>() {
+                    @Override
+                    public void onCompleted() {
+                        Logger.i("auto onCompleted");
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        Logger.d("onError() called with: " + "e = [" + e + "]");
+
+                    }
+
+                    @Override
+                    public void onNext(List<String> strings) {
+                        Logger.d("onNext() called with: " + "strings = [" + strings + "]");
+                        vista.showSearchLineHistory(strings);
+                    }
+                }));
     }
 
     private void switchStartFrom() {
