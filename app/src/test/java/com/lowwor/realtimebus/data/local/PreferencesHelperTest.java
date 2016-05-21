@@ -106,17 +106,6 @@ public class PreferencesHelperTest {
     }
 
     @Test
-    public void putAndGetAutoRefresh() throws Exception {
-        mPreferencesHelper.saveAutoRefresh(true);
-        assertThat(mPreferencesHelper.getAutoRefresh()).isEqualTo(true);
-    }
-
-    @Test
-    public void getAutoRefresh_whenEmpty() throws Exception {
-        assertThat(mPreferencesHelper.getAutoRefresh()).isEqualTo(false);
-    }
-
-    @Test
     public void getShowNotification_whenEmpty() throws Exception {
         assertThat(mPreferencesHelper.getShowNotification()).isEqualTo(true);
     }

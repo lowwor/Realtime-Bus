@@ -3,12 +3,7 @@ package com.lowwor.realtimebus.ui.track;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -38,7 +33,6 @@ public class TrackFragment extends BaseFragment {
         initDependencyInjector();
         fragmentTrackBinding.setTrackViewModel(trackViewModel);
         fragmentTrackBinding.setPresenter(trackPresenter);
-        initToolbar(fragmentTrackBinding.toolbar);
         fragmentTrackBinding.executePendingBindings();
         return fragmentTrackBinding.getRoot();
     }
@@ -62,27 +56,7 @@ public class TrackFragment extends BaseFragment {
         trackPresenter.onStop();
     }
 
-    private void initToolbar(Toolbar toolbar) {
-        setHasOptionsMenu(true);
-        ((AppCompatActivity) getActivity()).setSupportActionBar(toolbar);
-        ActionBar actionBar = ((AppCompatActivity) getActivity()).getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(false);
-        }
+    public static TrackFragment newInstance() {
+        return new TrackFragment();
     }
-
-
-    @Override
-    public void onPrepareOptionsMenu(Menu menu) {
-        super.onPrepareOptionsMenu(menu);
-        // TODO: 2016/4/27 0027 hide presenter 
-        menu.findItem(R.id.auto_refresh).setChecked(trackPresenter.getAutoRefresh());
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.track_menu, menu);
-    }
-
-
 }

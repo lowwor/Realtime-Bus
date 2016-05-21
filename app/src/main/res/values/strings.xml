@@ -9,6 +9,10 @@
     <string name="settings_toolbar_title">Settings</string>
     <string name="menu_auto_refresh_title">Auto Refresh</string>
 
+
+    <string name="bottom_track">Track</string>
+    <string name="bottom_profile">My</string>
+
     <!--Preferences-->
     <string name="preferences_settings_key_auto_refresh_interval" translatable="false">preferences_settings_key_auto_refresh_interval</string>
     <string name="preferences_settings_title_auto_refresh_interval">Auto refresh time interval (seconde=s)</string>

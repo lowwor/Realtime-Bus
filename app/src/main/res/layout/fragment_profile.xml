@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <data >
+
+        <variable
+            name="profileViewModel"
+            type="com.lowwor.realtimebus.ui.profile.ProfileViewModel"/>
+    </data>
+
+
+
+
+    <android.support.design.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+        <android.support.design.widget.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="230dp"
+
+                >
+                <ImageView
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
+                    android:layout_centerInParent="true"
+                    android:src="@drawable/ic_account_circle"
+                    />
+
+            </RelativeLayout>
+
+        </android.support.design.widget.AppBarLayout>
+
+
+
+
+
+    </android.support.design.widget.CoordinatorLayout>
+</layout>

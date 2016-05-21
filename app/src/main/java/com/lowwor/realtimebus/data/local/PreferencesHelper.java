@@ -28,7 +28,6 @@ public class PreferencesHelper {
 
     private static final String PREF_KEY_AUTO_COMPLETE_LIST = "PREF_KEY_AUTO_COMPLETE_LIST";
     private static final String PREF_KEY_START_FROM = "PREF_KEY_START_FROM";
-    private static final String PREF_KEY_AUTO_REFRESH = "PREF_KEY_AUTO_REFRESH";
     private static final String PREF_KEY_LAST_QUERY = "PREF_KEY_LAST_QUERY";
 
     private final SharedPreferences mPref;
@@ -95,15 +94,6 @@ public class PreferencesHelper {
 
     public String getLastQueryLine() {
         return mPref.getString(PREF_KEY_LAST_QUERY, "3A");
-    }
-
-    public boolean getAutoRefresh() {
-        return mPref.getBoolean(PREF_KEY_AUTO_REFRESH, false);
-
-    }
-
-    public void saveAutoRefresh(boolean isAutoRefresh) {
-        mPref.edit().putBoolean(PREF_KEY_AUTO_REFRESH, isAutoRefresh).apply();
     }
 
     public boolean getShowNotification() {

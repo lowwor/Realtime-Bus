@@ -1,15 +1,21 @@
 package com.lowwor.realtimebus.utils;
 
+import android.content.Context;
 import android.databinding.BindingAdapter;
 import android.databinding.BindingConversion;
 import android.support.v4.util.Pair;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.view.KeyEvent;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.lowwor.realtimebus.R;
 import com.lowwor.realtimebus.ui.widget.InstantAutoComplete;
 import com.lowwor.realtimebus.ui.widget.LimitArrayAdapter;
 import com.lowwor.realtimebus.ui.widget.TextWatcherAdapter;
+import com.lowwor.realtimebus.utils.bindinghelper.OnSearchActionListener;
 import com.orhanobut.logger.Logger;
 
 import java.util.List;
@@ -74,6 +80,26 @@ public class BindingUtils {
         if (!view.getText().toString().equals(newValue)) {
             view.setText(newValue);
         }
+    }
+
+    @BindingAdapter({"searchAction"})
+    public static void bindEditorAction(final EditText view,
+                                        final OnSearchActionListener onSearchActionListener) {
+        view.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    onSearchActionListener.onSearch();
+                    //hide keyboard
+                    InputMethodManager imm = (InputMethodManager) view.getContext().getSystemService(
+                            Context.INPUT_METHOD_SERVICE
+                    );
+                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                    return true;
+                }
+                return false;
+            }
+        });
     }
 
     @BindingConversion

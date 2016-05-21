@@ -102,19 +102,9 @@ public class TrackPresenterImp extends TrackPresenter {
 
     public void executeAutoRefresh() {
         rxTrackService.stopAutoRefresh();
-        if (getAutoRefresh()) {
-            rxTrackService.startAutoRefresh(mLineName, fromStation);
-        }
+        rxTrackService.startAutoRefresh(mLineName, fromStation);
     }
 
-    @Override
-    public boolean getAutoRefresh() {
-        return preferencesHelper.getAutoRefresh();
-    }
-
-    public void saveAutoRefresh(boolean isAutoRefresh) {
-        preferencesHelper.saveAutoRefresh(isAutoRefresh);
-    }
 
     @Override
     public void addAlarmStation(String stationName) {
@@ -130,11 +120,6 @@ public class TrackPresenterImp extends TrackPresenter {
     @Override
     public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.auto_refresh:
-                saveAutoRefresh(!item.isChecked());
-                item.setChecked(getAutoRefresh());
-                executeAutoRefresh();
-                break;
             case R.id.settings:
                 vista.gotoSettings();
                 break;
