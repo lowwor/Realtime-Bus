@@ -58,7 +58,7 @@ public class BindingUtils {
     //can't use ObservableField to bind directly
 //    https://medium.com/@fabioCollini/android-data-binding-f9f9d3afc761#.m2yxintjl
     @BindingAdapter({"textChange"})
-    public static void bindEditText(EditText view,
+    public static void bindEditText(final EditText view,
                                     final BindableString bindableString) {
         Pair<BindableString, TextWatcherAdapter> pair =
                 (Pair) view.getTag(R.id.bound_observable);
@@ -78,7 +78,7 @@ public class BindingUtils {
         }
         String newValue = bindableString.get();
         if (!view.getText().toString().equals(newValue)) {
-            view.setText(newValue);
+            view.append(newValue);
         }
     }
 
