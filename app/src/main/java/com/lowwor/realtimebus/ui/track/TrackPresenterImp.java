@@ -1,8 +1,5 @@
 package com.lowwor.realtimebus.ui.track;
 
-import android.view.MenuItem;
-
-import com.lowwor.realtimebus.R;
 import com.lowwor.realtimebus.data.api.BusApiRepository;
 import com.lowwor.realtimebus.data.local.PreferencesHelper;
 import com.lowwor.realtimebus.data.model.Bus;
@@ -116,19 +113,6 @@ public class TrackPresenterImp extends TrackPresenter {
         rxTrackService.removeAlarmStation(stationName);
     }
 
-
-    @Override
-    public boolean onMenuItemClick(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.settings:
-                vista.gotoSettings();
-                break;
-            case R.id.share:
-                vista.showShare();
-                break;
-        }
-        return true;
-    }
 
     @Override
     public void switchDirection() {

@@ -1,7 +1,5 @@
 package com.lowwor.realtimebus.ui.track;
 
-import android.view.MenuItem;
-
 import com.lowwor.realtimebus.ui.base.BasePresenter;
 
 /**
@@ -12,8 +10,6 @@ public abstract class TrackPresenter extends BasePresenter<TrackVista> {
     public abstract void addAlarmStation(String stationName);
 
     public abstract void removeAlarmStation(String stationName);
-
-    public abstract boolean onMenuItemClick(MenuItem item);
 
     public abstract void searchLineIfNetworkConnected(String lineName);
 
