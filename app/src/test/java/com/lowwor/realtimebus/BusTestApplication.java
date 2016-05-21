@@ -1,8 +1,7 @@
-package com.lowwor.realtimebus.ui.track;
+package com.lowwor.realtimebus;
 
 import android.support.annotation.NonNull;
 
-import com.lowwor.realtimebus.BusApplication;
 import com.lowwor.realtimebus.developer_settings.AnalyticsProxy;
 import com.lowwor.realtimebus.developer_settings.BugReportProxy;
 import com.lowwor.realtimebus.developer_settings.LeakCanaryProxy;

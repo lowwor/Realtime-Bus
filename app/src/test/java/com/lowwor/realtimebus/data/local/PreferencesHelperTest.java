@@ -1,7 +1,7 @@
 package com.lowwor.realtimebus.data.local;
 
 import com.lowwor.realtimebus.BuildConfig;
-import com.lowwor.realtimebus.ui.track.BusRobolectricTestRunner;
+import com.lowwor.realtimebus.BusRobolectricTestRunner;
 
 import org.junit.Before;
 import org.junit.Test;

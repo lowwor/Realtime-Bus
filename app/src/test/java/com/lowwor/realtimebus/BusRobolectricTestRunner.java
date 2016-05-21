@@ -1,8 +1,6 @@
-package com.lowwor.realtimebus.ui.track;
+package com.lowwor.realtimebus;
 
 import android.support.annotation.NonNull;
-
-import com.lowwor.realtimebus.BuildConfig;
 
 import org.robolectric.RobolectricGradleTestRunner;
 import org.robolectric.RuntimeEnvironment;

@@ -1,4 +1,4 @@
-package com.lowwor.realtimebus.ui.track.util;
+package com.lowwor.realtimebus;
 
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
