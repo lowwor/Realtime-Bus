@@ -6,6 +6,9 @@ import android.databinding.BindingConversion;
 import android.support.v4.util.Pair;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.KeyEvent;
+import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -35,8 +38,8 @@ public class BindingUtils {
 
     //Binding array
     @BindingAdapter("colorSchemeResources")
-    public static void bindRefreshColor(SwipeRefreshLayout swipeRefreshLayout,   int[] colors) {
-            swipeRefreshLayout.setColorSchemeColors(colors);
+    public static void bindRefreshColor(SwipeRefreshLayout swipeRefreshLayout, int[] colors) {
+        swipeRefreshLayout.setColorSchemeColors(colors);
     }
 
     @BindingAdapter("items")
@@ -109,6 +112,21 @@ public class BindingUtils {
     }
 
 
+    @BindingAdapter("busNumberAnimation")
+    public static void bindBusNumberAnimation(final View view, int busNumber) {
+        Animation animation = view.getAnimation();
+        if (busNumber != 0 && animation == null) {
+            view.startAnimation(getAnimation(view));
+        } else if (animation != null) {
+            animation.cancel();
+            view.setAnimation(null);
+        }
+
+    }
+
+    private static Animation getAnimation(View view) {
+        return  AnimationUtils.loadAnimation(view.getContext(), R.anim.bus_working);
+    }
 
 
 }

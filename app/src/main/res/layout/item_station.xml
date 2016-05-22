@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
 
+        <import type="android.view.View" />
         <variable
             name="busStationItemViewModel"
             type="com.lowwor.realtimebus.ui.track.BusStationItemViewModel" />
@@ -48,7 +50,6 @@
                 android:layout_centerVertical="true"
                 android:layout_toRightOf="@id/alarm"
                 android:text="@{busStationItemViewModel.busStationName}" />
-
             <TextView
                 android:id="@+id/tv_bus_number"
                 android:layout_width="wrap_content"
@@ -56,10 +57,24 @@
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:layout_marginRight="16dp"
-                android:text="@{busStationItemViewModel.busNumber !=0 ?String.valueOf(busStationItemViewModel.busNumber):null}"
+                android:text='@{busStationItemViewModel.busNumber !=0 ? " x "+String.valueOf(busStationItemViewModel.busNumber):null}'
+                tools:text="x  3"
                 android:textColor="@color/primary"
-
                 />
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toLeftOf="@id/tv_bus_number"
+                android:layout_marginRight="8dp"
+                android:visibility="@{busStationItemViewModel.busNumber !=0 ?View.VISIBLE:View.GONE}"
+                tools:visibility="visible"
+                android:src="@drawable/ic_directions_bus_black"
+                android:tint="@color/primary"
+                android:layout_centerVertical="true"
+                app:busNumberAnimation="@{busStationItemViewModel.busNumber}"
+                />
+
+
         </RelativeLayout>
 
     </android.support.v7.widget.CardView>

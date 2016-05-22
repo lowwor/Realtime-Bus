@@ -37,15 +37,10 @@ public class BusStationItemViewModel extends BaseObservable {
         return busNumber;
     }
 
-    public void resetBusNumber() {
-        if (busNumber!=0) {
-            busNumber = 0;
-            notifyPropertyChanged(BR.busNumber);
-        }
-    }
 
-    public void increaseBusNumber() {
-        busNumber++;
+
+    public void setBusNumber(int busNumber) {
+        this.busNumber = busNumber;
         notifyPropertyChanged(BR.busNumber);
     }
 

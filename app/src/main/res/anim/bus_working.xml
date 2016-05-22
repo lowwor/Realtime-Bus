@@ -1,0 +1,19 @@
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+    android:fillAfter="true"
+    android:fillEnabled="true"
+    android:ordering="sequentially"
+    android:shareInterpolator="false"
+
+    >
+    <translate
+        android:duration="800"
+        android:interpolator="@android:anim/decelerate_interpolator"
+        android:fromYDelta="-20"
+        android:toYDelta="0" />
+    <translate
+        android:duration="800"
+        android:interpolator="@android:anim/accelerate_interpolator"
+        android:fromYDelta="0"
+        android:startOffset="1600"
+        android:toYDelta="30" />
+</set>

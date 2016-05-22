@@ -35,7 +35,6 @@ public class TrackViewModel extends BaseObservable implements TrackVista {
     private boolean isLoading = true;
 
 
-
     @Bindable
     public BindableString text = new BindableString();
     public ObservableList<BusStationItemViewModel> mBusStations = new ObservableArrayList<>();
@@ -49,19 +48,26 @@ public class TrackViewModel extends BaseObservable implements TrackVista {
 //        Logger.i("setItems: " + busStations);
         mBusStations.clear();
         for (BusStation busStation : busStations) {
-            mBusStations.add(new BusStationItemViewModel(busStation,trackPresenter));
+            mBusStations.add(new BusStationItemViewModel(busStation, trackPresenter));
         }
     }
 
     public void setBuses(List<Bus> buses) {
         for (int i = 0; i < mBusStations.size(); i++) {
             BusStationItemViewModel busStationItemViewModel = mBusStations.get(i);
-            busStationItemViewModel.resetBusNumber();
+            int busNumber = 0;
             for (Bus bus : buses) {
                 if (bus.currentStation.equals(busStationItemViewModel.getBusStationName())) {
-                    busStationItemViewModel.increaseBusNumber();
+                    busNumber++;
                 }
             }
+            if (busStationItemViewModel.getBusNumber() != 0 && busNumber == 0) {
+                busStationItemViewModel.setBusNumber(0);
+            } else if (busNumber != 0) {
+                busStationItemViewModel.setBusNumber(busNumber);
+            }
+
+
         }
     }
 
@@ -72,8 +78,6 @@ public class TrackViewModel extends BaseObservable implements TrackVista {
     public final ItemView itemViewStation = ItemView.of(BR.busStationItemViewModel, R.layout.item_station);
 
 
-
-
     public final ObservableList<String> lineNameItems = new ObservableArrayList<>();
 
     public void setAutoCompleteItems(List<String> historyItems) {
@@ -81,7 +85,6 @@ public class TrackViewModel extends BaseObservable implements TrackVista {
         lineNameItems.clear();
         lineNameItems.addAll(historyItems);
     }
-
 
 
     public void setText(String text) {
@@ -116,7 +119,7 @@ public class TrackViewModel extends BaseObservable implements TrackVista {
 
     @Override
     public void showError(String erroMsg) {
-        Toast.makeText(context,erroMsg, Toast.LENGTH_SHORT).show();
+        Toast.makeText(context, erroMsg, Toast.LENGTH_SHORT).show();
     }
 
     @Override
