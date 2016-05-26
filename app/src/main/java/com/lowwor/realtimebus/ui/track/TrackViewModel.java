@@ -13,7 +13,6 @@ import com.lowwor.realtimebus.R;
 import com.lowwor.realtimebus.data.model.Bus;
 import com.lowwor.realtimebus.data.model.BusStation;
 import com.lowwor.realtimebus.ui.settings.SettingsActivity;
-import com.lowwor.realtimebus.utils.BindableString;
 import com.lowwor.realtimebus.utils.ShareUtils;
 
 import java.util.ArrayList;
@@ -35,8 +34,10 @@ public class TrackViewModel extends BaseObservable implements TrackVista {
     private boolean isLoading = true;
 
 
+
     @Bindable
-    public BindableString text = new BindableString();
+    public String text;
+
     public ObservableList<BusStationItemViewModel> mBusStations = new ObservableArrayList<>();
 
     public TrackViewModel(Context context, TrackPresenter trackPresenter) {
@@ -86,10 +87,13 @@ public class TrackViewModel extends BaseObservable implements TrackVista {
         lineNameItems.addAll(historyItems);
     }
 
+    public String getText() {
+        return text;
+    }
 
     public void setText(String text) {
-        this.text.set(text);
-        notifyPropertyChanged(BR.trackViewModel);
+        this.text = text;
+        notifyPropertyChanged(BR.text);
     }
 
     public void setIsOffline(boolean isOffline) {
