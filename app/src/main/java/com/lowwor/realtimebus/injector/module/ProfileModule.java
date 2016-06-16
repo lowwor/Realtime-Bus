@@ -1,5 +1,7 @@
 package com.lowwor.realtimebus.injector.module;
 
+import android.content.Context;
+
 import com.lowwor.realtimebus.injector.ProfileScope;
 import com.lowwor.realtimebus.ui.profile.ProfilePresenter;
 import com.lowwor.realtimebus.ui.profile.ProfilePresenterImpl;
@@ -16,8 +18,8 @@ public class ProfileModule {
 
     @ProfileScope
     @Provides
-    ProfileViewModel provideProfileViewModel(){
-        return new ProfileViewModel();
+    ProfileViewModel provideProfileViewModel(Context context){
+        return new ProfileViewModel(context);
     }
 
     @ProfileScope
