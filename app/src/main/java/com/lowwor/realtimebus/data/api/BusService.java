@@ -1,14 +1,11 @@
 package com.lowwor.realtimebus.data.api;
 
-import com.lowwor.realtimebus.data.model.postdata.PostGetBusListOnRoad;
-import com.lowwor.realtimebus.data.model.postdata.PostGetStationByLineId;
-import com.lowwor.realtimebus.data.model.postdata.PostSearchLine;
 import com.lowwor.realtimebus.data.model.wrapper.BusLineWrapper;
 import com.lowwor.realtimebus.data.model.wrapper.BusStationWrapper;
 import com.lowwor.realtimebus.data.model.wrapper.BusWrapper;
 
-import retrofit2.http.Body;
-import retrofit2.http.POST;
+import retrofit2.http.GET;
+import retrofit2.http.Query;
 import rx.Observable;
 
 /**
@@ -16,17 +13,17 @@ import rx.Observable;
  */
 public interface BusService {
 
-    public final String BASE_URL = "http://www.zhbuswx.com/BusLine/WS.asmx/";
+    String BASE_URL = "http://www.zhbuswx.com/Handlers/";
 
 
-    @POST("SearchLine")
-    Observable<BusLineWrapper> searchLine( @Body PostSearchLine postSearchLine);
+    @GET("BusQuery.ashx")
+    Observable<BusLineWrapper> searchLine(@Query("handlerName") String handlerName, @Query("key") String key);
 
 
-    @POST("LoadStationByLineId")
-    Observable<BusStationWrapper> getStationByLineId( @Body PostGetStationByLineId postGetStationByLineId);
+    @GET("BusQuery.ashx")
+    Observable<BusStationWrapper> getStationByLineId(@Query("handlerName") String handlerName, @Query("lineId") String lineId);
 
 
-    @POST("GetBusListOnRoad")
-    Observable<BusWrapper> getBusListOnRoad( @Body PostGetBusListOnRoad postGetBusListOnRoad);
+    @GET("BusQuery.ashx")
+    Observable<BusWrapper> getBusListOnRoad(@Query("handlerName") String handlerName, @Query("lineName") String lineName, @Query("fromStation") String fromStation);
 }

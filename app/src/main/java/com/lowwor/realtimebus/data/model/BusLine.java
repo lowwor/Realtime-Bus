@@ -12,7 +12,6 @@ import com.hannesdorfmann.parcelableplease.annotation.ParcelablePlease;
 @ParcelablePlease
 public class BusLine implements Parcelable {
     /**
-     * __type : Goophee.ZHGJ.Entity.Line
      * Id : 98eb0b59-bf91-4f4d-a504-28f7ae129c46
      * Name : 3A
      * LineNumber : 3A
@@ -27,8 +26,6 @@ public class BusLine implements Parcelable {
      * StationCount : 39
      */
 
-    @SerializedName("__type")
-    public String type;
     @SerializedName("Id")
     public String id;
     @SerializedName("Name")

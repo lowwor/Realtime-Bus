@@ -20,8 +20,6 @@ public class BusStation implements Parcelable {
      * Description :
      */
 
-    @SerializedName("__type")
-    public String type;
     @SerializedName("Id")
     public String id;
     @SerializedName("Name")

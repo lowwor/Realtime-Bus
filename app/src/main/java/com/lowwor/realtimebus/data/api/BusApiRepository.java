@@ -4,9 +4,6 @@ package com.lowwor.realtimebus.data.api;
  * Created by lowworker on 2015/10/14.
  */
 
-import com.lowwor.realtimebus.data.model.postdata.PostGetBusListOnRoad;
-import com.lowwor.realtimebus.data.model.postdata.PostGetStationByLineId;
-import com.lowwor.realtimebus.data.model.postdata.PostSearchLine;
 import com.lowwor.realtimebus.data.model.wrapper.BusLineWrapper;
 import com.lowwor.realtimebus.data.model.wrapper.BusStationWrapper;
 import com.lowwor.realtimebus.data.model.wrapper.BusWrapper;
@@ -19,26 +16,26 @@ import rx.Observable;
  */
 public class BusApiRepository {
     private BusService busService;
+    private static final String HANDLER_GET_STATION_LIST = "GetStationList";
+    private static final String HANDLER_GET_LINELIST_BY_LINENAME = "GetLineListByLineName";
+    private static final String HANDLER_GET_BUSLIST_ONROAD = "GetBusListOnRoad";
+
 
     public BusApiRepository(BusService busService) {
         this.busService = busService;
     }
 
     public Observable<BusLineWrapper> searchLine(String key) {
-        PostSearchLine postSearchLine = new PostSearchLine(key);
-        return busService.searchLine(postSearchLine);
+        return busService.searchLine(HANDLER_GET_LINELIST_BY_LINENAME,key);
     }
 
 
     public Observable<BusStationWrapper> getStationByLineId(String lineId) {
-
-        PostGetStationByLineId postGetStationByLineId = new PostGetStationByLineId(lineId);
-        return busService.getStationByLineId(postGetStationByLineId);
+        return busService.getStationByLineId(HANDLER_GET_STATION_LIST,lineId);
     }
 
     public Observable<BusWrapper> getBusListOnRoad(String lineName,String fromStation) {
-        PostGetBusListOnRoad postGetBusListOnRoad = new PostGetBusListOnRoad(lineName,fromStation);
-        return busService.getBusListOnRoad(postGetBusListOnRoad);
+        return busService.getBusListOnRoad(HANDLER_GET_BUSLIST_ONROAD,lineName,fromStation);
     }
 
 
