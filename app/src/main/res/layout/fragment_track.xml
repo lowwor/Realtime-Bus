@@ -54,7 +54,14 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="bottom"
                     android:layout_margin="16dp">
-
+                    <!-- Dummy item to prevent AutoCompleteTextView from receiving focus -->
+                    <LinearLayout
+                        android:focusable="true"
+                        android:focusableInTouchMode="true"
+                        android:layout_width="0px"
+                        android:layout_height="0px"/>
+                    <!-- :nextFocusUp and :nextFocusLeft have been set to the id of this component
+                    to prevent the dummy from receiving focus again -->
                     <com.lowwor.realtimebus.ui.widget.InstantAutoComplete
                         android:id="@+id/auto_text"
                         android:layout_width="match_parent"
@@ -72,6 +79,8 @@
                         app:searchAction="@{()->presenter.searchLineIfNetworkConnected(trackViewModel.text)}"
                         app:items="@{trackViewModel.lineNameItems}"
                         android:text="@={trackViewModel.text}"
+                        android:nextFocusUp="@id/auto_text"
+                        android:nextFocusLeft="@id/auto_text"
 
                         />
 

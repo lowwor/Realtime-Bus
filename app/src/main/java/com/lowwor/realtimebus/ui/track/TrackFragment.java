@@ -11,6 +11,7 @@ import com.lowwor.realtimebus.R;
 import com.lowwor.realtimebus.databinding.FragmentTrackBinding;
 import com.lowwor.realtimebus.ui.MainActivity;
 import com.lowwor.realtimebus.ui.base.BaseFragment;
+import com.lowwor.realtimebus.utils.KeyboardUtils;
 
 import javax.inject.Inject;
 
@@ -23,13 +24,13 @@ public class TrackFragment extends BaseFragment {
     TrackViewModel trackViewModel;
     @Inject
     TrackPresenter trackPresenter;
-
+    private FragmentTrackBinding fragmentTrackBinding;
 
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        FragmentTrackBinding fragmentTrackBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_track, container, false);
+        fragmentTrackBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_track, container, false);
         initDependencyInjector();
         fragmentTrackBinding.setTrackViewModel(trackViewModel);
         fragmentTrackBinding.setPresenter(trackPresenter);
@@ -52,6 +53,7 @@ public class TrackFragment extends BaseFragment {
     @Override
     public void onStop() {
         super.onStop();
+        KeyboardUtils.hideKeyboard(getActivity(),fragmentTrackBinding.autoText);
         trackPresenter.detachView();
         trackPresenter.onStop();
     }
