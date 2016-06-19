@@ -1,15 +1,9 @@
 package com.lowwor.realtimebus.ui;
 
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
 import android.support.v4.app.Fragment;
-import android.widget.RemoteViews;
 
 import com.lowwor.realtimebus.BusApplication;
 import com.lowwor.realtimebus.R;
@@ -113,43 +107,15 @@ public class MainActivity extends BaseActivity {
     protected void onDestroy() {
         super.onDestroy();
         stopService();
-        updateNotification();
+        updateNotificationIfAlarmStationNotNull();
     }
 
-    private void updateNotification() {
-        // Create intent that will bring our app to the front, as if it was tapped in the app
-        // launcher
-        Intent showTaskIntent = new Intent(getApplicationContext(), MainActivity.class);
-
-        PendingIntent contentIntent = PendingIntent.getActivity(
-                getApplicationContext(),
-                0,
-                showTaskIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT);
-
-        Intent stopIntent = new Intent(this, TrackService.class);
-        stopIntent.putExtra(TrackService.EXTRA_STOP_KEY, true);
-        PendingIntent pendingIntentStop = PendingIntent.getService(this, TrackService.ACTION_STOP_FLAG, stopIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        RemoteViews remoteViews = new RemoteViews(getPackageName(),
-                R.layout.notification_track_service);
-        remoteViews.setOnClickPendingIntent(R.id.button, pendingIntentStop);
-
-        Notification notification = new Notification.Builder(getApplicationContext())
-                .setContentTitle(getString(R.string.app_name))
-                .setContentText(getResources().getText(R.string.service_track_background_notification_text))
-                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setWhen(System.currentTimeMillis())
-                .setContentIntent(contentIntent)
-                .setContent(remoteViews)
-                .build();
-        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
+    private void updateNotificationIfAlarmStationNotNull() {
         if (mPreferencesHelper.getTrackBackground()) {
-            mNotificationManager.notify(TrackService.BACKGROUND_NOTIFICATION_FLAG, notification);
+            Intent intent = new Intent(this, TrackService.class);
+            intent.putExtra(TrackService.EXTRA_UPDATE_NOTIFICATION,true);
+            startService(intent);
         }
-
     }
 
     private void initService() {

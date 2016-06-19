@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.os.IBinder;
 import android.os.RemoteCallbackList;
 import android.os.RemoteException;
@@ -14,6 +15,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.RemoteViews;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -63,6 +65,7 @@ public class TrackService extends Service {
     private boolean shouldShowPopupNotification = true;
 
     public static final String EXTRA_STOP_KEY = "extra_stop_key";
+    public static final String EXTRA_UPDATE_NOTIFICATION = "extra_update_notification";
 
     @Nullable
     @Override
@@ -191,8 +194,14 @@ public class TrackService extends Service {
         if (intent != null && intent.getExtras() != null) {
             if (intent.getBooleanExtra(EXTRA_STOP_KEY, false)) {
                 Logger.i("onStartCommand: stopSelf");
-
                 stopSelf();
+            } else if (intent.getBooleanExtra(EXTRA_UPDATE_NOTIFICATION,false)) {
+                Logger.i("onStartCommand: updateNotification");
+                if (mAlarmStations != null && mAlarmStations.size() != 0) {
+                    updateNotification();
+                } else {
+                    stopSelf();
+                }
             }
 
         } else {
@@ -262,6 +271,40 @@ public class TrackService extends Service {
 
         ImageView iconView = new ImageView(getApplicationContext());
         iconView.setImageResource(R.mipmap.ic_launcher);
+    }
+
+    private void updateNotification() {
+        // Create intent that will bring our app to the front, as if it was tapped in the app
+        // launcher
+        Intent showTaskIntent = new Intent(getApplicationContext(), MainActivity.class);
+
+        PendingIntent contentIntent = PendingIntent.getActivity(
+                getApplicationContext(),
+                0,
+                showTaskIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Intent stopIntent = new Intent(this, TrackService.class);
+        stopIntent.putExtra(TrackService.EXTRA_STOP_KEY, true);
+        PendingIntent pendingIntentStop = PendingIntent.getService(this, TrackService.ACTION_STOP_FLAG, stopIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        RemoteViews remoteViews = new RemoteViews(getPackageName(),
+                R.layout.notification_track_service);
+        remoteViews.setOnClickPendingIntent(R.id.button, pendingIntentStop);
+
+        Notification notification = new Notification.Builder(getApplicationContext())
+                .setContentTitle(getString(R.string.app_name))
+                .setContentText(getResources().getText(R.string.service_track_background_notification_text))
+                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher))
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setWhen(System.currentTimeMillis())
+                .setContentIntent(contentIntent)
+                .setContent(remoteViews)
+                .build();
+        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        mNotificationManager.notify(TrackService.BACKGROUND_NOTIFICATION_FLAG, notification);
+
     }
 
     private void showToast(String busStationName) {
