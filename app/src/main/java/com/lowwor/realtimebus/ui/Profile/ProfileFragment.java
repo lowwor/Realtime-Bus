@@ -22,6 +22,8 @@ public class ProfileFragment extends Fragment {
 
     @Inject
     ProfileViewModel profileViewModel;
+    @Inject
+    ProfilePresenter profilePresenter;
 
     @Nullable
     @Override
@@ -42,12 +44,15 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-
+        profilePresenter.attachView(profileViewModel);
+        profilePresenter.onStart();
     }
 
     @Override
     public void onStop() {
         super.onStop();
+        profilePresenter.detachView();
+        profilePresenter.onStop();
     }
 
     public static Fragment newInstance() {
