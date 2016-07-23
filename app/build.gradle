@@ -20,7 +20,7 @@ android {
         minSdkVersion 16
         targetSdkVersion 23
         versionCode gitCommitCount()
-        versionName "2.0.1"
+        versionName "2.0.2"
         manifestPlaceholders = [UMENG_CHANNEL_NAME: "Unspecified",BUGLY_APP_CHANNEL: "Unspecified"]
         setProperty("archivesBaseName", "RealTimeBus_v-$versionName-${releaseTime()}")
         ndk {
