@@ -89,7 +89,7 @@ public class BindingUtils {
     }
 
     private static Animation getAnimation(View view) {
-        return  AnimationUtils.loadAnimation(view.getContext(), R.anim.bus_working);
+        return AnimationUtils.loadAnimation(view.getContext(), R.anim.bus_working);
     }
 
 

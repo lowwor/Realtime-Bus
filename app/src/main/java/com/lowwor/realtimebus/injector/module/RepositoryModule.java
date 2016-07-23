@@ -19,14 +19,14 @@ public class RepositoryModule {
 
     @Provides
     @Singleton
-    BusApiRepository provideBusApiRepository(BusService busService){
-        return  new BusApiRepository(busService);
+    BusApiRepository provideBusApiRepository(BusService busService) {
+        return new BusApiRepository(busService);
     }
-    
+
 
     @Singleton
     @Provides
-    BusService provideBusService(BusApplication busApplication){
+    BusService provideBusService(BusApplication busApplication) {
 
         return Injection.provideBusService(busApplication.getApplicationContext());
     }

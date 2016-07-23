@@ -21,7 +21,7 @@ public abstract class BasePresenter<V extends Vista> {
     }
 
     @CallSuper
-    public  void onStart(){
+    public void onStart() {
         if (subscriptions != null) {
             subscriptions.unsubscribe();
         }
@@ -30,7 +30,7 @@ public abstract class BasePresenter<V extends Vista> {
     }
 
     @CallSuper
-    public void onStop(){
+    public void onStop() {
         if (subscriptions != null) {
             subscriptions.unsubscribe();
         }

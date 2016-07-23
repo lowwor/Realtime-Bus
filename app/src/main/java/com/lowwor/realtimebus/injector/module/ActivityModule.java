@@ -30,7 +30,7 @@ public class ActivityModule {
 
     @Provides
     @ActivityScope
-    NetworkManager provideNetworkManager(Context context){
+    NetworkManager provideNetworkManager(Context context) {
         return new NetworkManager(context);
     }
 }

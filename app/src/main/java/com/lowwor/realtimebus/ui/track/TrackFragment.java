@@ -26,6 +26,9 @@ public class TrackFragment extends BaseFragment {
     TrackPresenter trackPresenter;
     private FragmentTrackBinding fragmentTrackBinding;
 
+    public static TrackFragment newInstance() {
+        return new TrackFragment();
+    }
 
     @Nullable
     @Override
@@ -37,7 +40,6 @@ public class TrackFragment extends BaseFragment {
         fragmentTrackBinding.executePendingBindings();
         return fragmentTrackBinding.getRoot();
     }
-
 
     private void initDependencyInjector() {
         ((MainActivity) getActivity()).trackComponent().inject(this);
@@ -53,12 +55,8 @@ public class TrackFragment extends BaseFragment {
     @Override
     public void onStop() {
         super.onStop();
-        KeyboardUtils.hideKeyboard(getActivity(),fragmentTrackBinding.autoText);
+        KeyboardUtils.hideKeyboard(getActivity(), fragmentTrackBinding.autoText);
         trackPresenter.detachView();
         trackPresenter.onStop();
-    }
-
-    public static TrackFragment newInstance() {
-        return new TrackFragment();
     }
 }

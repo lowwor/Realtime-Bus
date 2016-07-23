@@ -12,22 +12,6 @@ import com.hannesdorfmann.parcelableplease.annotation.ParcelablePlease;
  */
 @ParcelablePlease
 public class Bus implements Parcelable {
-    @SerializedName("BusNumber")
-    public String busNumber;
-    @SerializedName("CurrentStation")
-    public String currentStation;
-
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        BusParcelablePlease.writeToParcel(this, dest, flags);
-    }
-
     public static final Creator<Bus> CREATOR = new Creator<Bus>() {
         public Bus createFromParcel(Parcel source) {
             Bus target = new Bus();
@@ -39,4 +23,18 @@ public class Bus implements Parcelable {
             return new Bus[size];
         }
     };
+    @SerializedName("BusNumber")
+    public String busNumber;
+    @SerializedName("CurrentStation")
+    public String currentStation;
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        BusParcelablePlease.writeToParcel(this, dest, flags);
+    }
 }

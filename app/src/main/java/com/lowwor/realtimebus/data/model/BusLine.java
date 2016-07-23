@@ -11,6 +11,17 @@ import com.hannesdorfmann.parcelableplease.annotation.ParcelablePlease;
  */
 @ParcelablePlease
 public class BusLine implements Parcelable {
+    public static final Creator<BusLine> CREATOR = new Creator<BusLine>() {
+        public BusLine createFromParcel(Parcel source) {
+            BusLine target = new BusLine();
+            BusLineParcelablePlease.readFromParcel(target, source);
+            return target;
+        }
+
+        public BusLine[] newArray(int size) {
+            return new BusLine[size];
+        }
+    };
     /**
      * Id : 98eb0b59-bf91-4f4d-a504-28f7ae129c46
      * Name : 3A
@@ -51,7 +62,6 @@ public class BusLine implements Parcelable {
     @SerializedName("StationCount")
     public int stationCount;
 
-
     @Override
     public int describeContents() {
         return 0;
@@ -61,16 +71,4 @@ public class BusLine implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         BusLineParcelablePlease.writeToParcel(this, dest, flags);
     }
-
-    public static final Creator<BusLine> CREATOR = new Creator<BusLine>() {
-        public BusLine createFromParcel(Parcel source) {
-            BusLine target = new BusLine();
-            BusLineParcelablePlease.readFromParcel(target, source);
-            return target;
-        }
-
-        public BusLine[] newArray(int size) {
-            return new BusLine[size];
-        }
-    };
 }

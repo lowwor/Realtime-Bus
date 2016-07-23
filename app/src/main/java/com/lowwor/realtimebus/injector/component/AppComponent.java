@@ -20,7 +20,7 @@ import dagger.Component;
  */
 
 @Singleton
-@Component(modules = {AppModule.class, DeveloperSettingsModule.class,RepositoryModule.class})
+@Component(modules = {AppModule.class, DeveloperSettingsModule.class, RepositoryModule.class})
 public interface AppComponent {
 
     BusApplication app();

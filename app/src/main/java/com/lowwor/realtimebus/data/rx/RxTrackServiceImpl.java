@@ -32,19 +32,23 @@ public class RxTrackServiceImpl implements RxTrackService {
 
     private final Context mContext;
     private final PreferencesHelper mPreferencesHelper;
-    private BehaviorSubject<ITrackService> trackServiceSubject = BehaviorSubject.create();
     private final PublishSubject<List<Bus>> mBusSubject = PublishSubject.create();
+    private BehaviorSubject<ITrackService> trackServiceSubject = BehaviorSubject.create();
     private ITrackService mService;
     private CompositeSubscription compositeSubscription;
+    private ITrackCallback mCallback = new ITrackCallback.Stub() {
+        @Override
+        public void onBusArrived(List<Bus> buses) throws RemoteException {
+//            Logger.d("onBusArrived() called with: " + "buses = [" + buses + "]");
+            mBusSubject.onNext(buses);
+        }
 
-    @Inject
-    public RxTrackServiceImpl(Context context, PreferencesHelper preferencesHelper) {
-        mContext = context;
-        mPreferencesHelper = preferencesHelper;
-        compositeSubscription = new CompositeSubscription();
-    }
-
-
+        @Override
+        public void onFail(String errorMessage) throws RemoteException {
+//            Logger.d("onFail() called with: " + "errorMessage = [" + errorMessage + "]");
+            mBusSubject.onError(new Exception(errorMessage));
+        }
+    };
     private ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
@@ -72,19 +76,12 @@ public class RxTrackServiceImpl implements RxTrackService {
         }
     };
 
-    private ITrackCallback mCallback = new ITrackCallback.Stub() {
-        @Override
-        public void onBusArrived(List<Bus> buses) throws RemoteException {
-//            Logger.d("onBusArrived() called with: " + "buses = [" + buses + "]");
-            mBusSubject.onNext(buses);
-        }
-
-        @Override
-        public void onFail(String errorMessage) throws RemoteException {
-//            Logger.d("onFail() called with: " + "errorMessage = [" + errorMessage + "]");
-            mBusSubject.onError(new Exception(errorMessage));
-        }
-    };
+    @Inject
+    public RxTrackServiceImpl(Context context, PreferencesHelper preferencesHelper) {
+        mContext = context;
+        mPreferencesHelper = preferencesHelper;
+        compositeSubscription = new CompositeSubscription();
+    }
 
     @Override
     public void stopAutoRefresh() {
@@ -119,7 +116,7 @@ public class RxTrackServiceImpl implements RxTrackService {
                         try {
                             mService.setShowNotificatoin(mPreferencesHelper.getShowNotification());
                             mService.setShowPopupNotification(mPreferencesHelper.getShowPopupNotification());
-                            mService.startAutoRefresh(lineName, fromStation,mPreferencesHelper.getAutoRefreshInterval());
+                            mService.startAutoRefresh(lineName, fromStation, mPreferencesHelper.getAutoRefreshInterval());
                         } catch (RemoteException e) {
                             e.printStackTrace();
                         }

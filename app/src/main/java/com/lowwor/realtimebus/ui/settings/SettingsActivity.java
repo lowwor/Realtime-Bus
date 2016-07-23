@@ -77,7 +77,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity implements Sha
             // EditPreference
             if (key.equals(getString(R.string.preferences_settings_key_auto_refresh_interval))) {
                 // Set summary to be the user-description for the selected value
-                Logger.i("settingsAutoRefreshInterval: "+sharedPreferences.getString(key, ""));
+                Logger.i("settingsAutoRefreshInterval: " + sharedPreferences.getString(key, ""));
                 pref.setSummary(sharedPreferences.getString(key, ""));
             } else {
                 EditTextPreference editTextPref = (EditTextPreference) pref;

@@ -19,12 +19,12 @@ public class BusStationWrapper {
 
     private int flag;
 
-    public void setData(List<BusStation> data) {
-        this.data = data;
-    }
-
     public List<BusStation> getData() {
         return data;
+    }
+
+    public void setData(List<BusStation> data) {
+        this.data = data;
     }
 
 

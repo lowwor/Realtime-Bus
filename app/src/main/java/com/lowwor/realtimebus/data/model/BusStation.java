@@ -11,6 +11,17 @@ import com.hannesdorfmann.parcelableplease.annotation.ParcelablePlease;
  */
 @ParcelablePlease
 public class BusStation implements Parcelable {
+    public static final Creator<BusStation> CREATOR = new Creator<BusStation>() {
+        public BusStation createFromParcel(Parcel source) {
+            BusStation target = new BusStation();
+            BusStationParcelablePlease.readFromParcel(target, source);
+            return target;
+        }
+
+        public BusStation[] newArray(int size) {
+            return new BusStation[size];
+        }
+    };
     /**
      * __type : Goophee.ZHGJ.Entity.Station
      * Id : ee5dd05e-9332-48d1-bb21-b2e05391c35f
@@ -30,9 +41,7 @@ public class BusStation implements Parcelable {
     public String latitude;
     @SerializedName("Description")
     public String description;
-
     public boolean isAlarm = false;
-
 
     @Override
     public int describeContents() {
@@ -43,16 +52,4 @@ public class BusStation implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         BusStationParcelablePlease.writeToParcel(this, dest, flags);
     }
-
-    public static final Creator<BusStation> CREATOR = new Creator<BusStation>() {
-        public BusStation createFromParcel(Parcel source) {
-            BusStation target = new BusStation();
-            BusStationParcelablePlease.readFromParcel(target, source);
-            return target;
-        }
-
-        public BusStation[] newArray(int size) {
-            return new BusStation[size];
-        }
-    };
 }

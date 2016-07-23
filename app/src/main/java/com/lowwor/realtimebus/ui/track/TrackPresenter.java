@@ -13,7 +13,7 @@ public abstract class TrackPresenter extends BasePresenter<TrackVista> {
 
     public abstract void searchLineIfNetworkConnected(String lineName);
 
-    public abstract void  loadBusIfNetworkConnected();
+    public abstract void loadBusIfNetworkConnected();
 
     public abstract void switchDirection();
 

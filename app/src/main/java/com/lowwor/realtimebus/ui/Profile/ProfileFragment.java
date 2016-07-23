@@ -25,6 +25,10 @@ public class ProfileFragment extends Fragment {
     @Inject
     ProfilePresenter profilePresenter;
 
+    public static Fragment newInstance() {
+        return new ProfileFragment();
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -53,9 +57,5 @@ public class ProfileFragment extends Fragment {
         super.onStop();
         profilePresenter.detachView();
         profilePresenter.onStop();
-    }
-
-    public static Fragment newInstance() {
-        return new ProfileFragment();
     }
 }

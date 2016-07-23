@@ -11,7 +11,7 @@ import android.widget.EditText;
 public class KeyboardUtils {
     /**
      * Hide keyboard.
-     *
+     * <p>
      * <pre>
      * <code>KeyboardUtils.hideKeyboard(getActivity(), searchField);</code>
      * </pre>
@@ -27,7 +27,7 @@ public class KeyboardUtils {
 
     /**
      * Show keyboard with a 100ms delay.
-     *
+     * <p>
      * <pre>
      * <code>KeyboardUtils.showDelayedKeyboard(getActivity(), searchField);</code>
      * </pre>
@@ -35,13 +35,13 @@ public class KeyboardUtils {
      * @param context
      * @param view
      */
-    public static void showDelayedKeyboard (Context context, View view) {
+    public static void showDelayedKeyboard(Context context, View view) {
         showDelayedKeyboard(context, view, 100);
     }
 
     /**
      * Show keyboard with a custom delay.
-     *
+     * <p>
      * <pre>
      * <code>KeyboardUtils.showDelayedKeyboard(getActivity(), searchField, 500);</code>
      * </pre>
@@ -50,7 +50,7 @@ public class KeyboardUtils {
      * @param view
      * @param delay
      */
-    public static void showDelayedKeyboard (final Context context, final View view, final int delay) {
+    public static void showDelayedKeyboard(final Context context, final View view, final int delay) {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {

@@ -27,7 +27,6 @@ public class BusStationItemViewModel extends BaseObservable {
     }
 
 
-
     public String getBusStationName() {
         return busStation.name;
     }
@@ -38,12 +37,10 @@ public class BusStationItemViewModel extends BaseObservable {
     }
 
 
-
     public void setBusNumber(int busNumber) {
         this.busNumber = busNumber;
         notifyPropertyChanged(BR.busNumber);
     }
-
 
 
     @Bindable
@@ -52,13 +49,13 @@ public class BusStationItemViewModel extends BaseObservable {
     }
 
 
-    public View.OnClickListener onClickAlarm(){
+    public View.OnClickListener onClickAlarm() {
 
         return new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 busStation.isAlarm = !busStation.isAlarm;
-                if ( busStation.isAlarm) {
+                if (busStation.isAlarm) {
                     trackPresenter.addAlarmStation(busStation.name);
                 } else {
                     trackPresenter.removeAlarmStation(busStation.name);
@@ -68,9 +65,6 @@ public class BusStationItemViewModel extends BaseObservable {
             }
         };
     }
-
-
-
 
 
 }

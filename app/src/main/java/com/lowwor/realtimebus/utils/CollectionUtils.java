@@ -14,7 +14,7 @@ public class CollectionUtils {
     public static void removeDuplicateWithOrder(List list) {
         Set set = new HashSet();
         List newList = new ArrayList();
-        for (Iterator iter = list.iterator(); iter.hasNext();) {
+        for (Iterator iter = list.iterator(); iter.hasNext(); ) {
             Object element = iter.next();
             if (set.add(element))
                 newList.add(element);

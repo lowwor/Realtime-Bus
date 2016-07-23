@@ -50,31 +50,19 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class TrackService extends Service {
 
-    @Inject
-    BusApiRepository busApiRepository;
-
-    CompositeSubscription compositeSubscription = new CompositeSubscription();
-
-    final RemoteCallbackList<ITrackCallback> mCallbacks = new RemoteCallbackList<>();
-    private static final int NOTIFICATION_FLAG = 1;
     public static final int BACKGROUND_NOTIFICATION_FLAG = 2;
     public static final int ACTION_STOP_FLAG = 3;
+    public static final String EXTRA_STOP_KEY = "extra_stop_key";
+    public static final String EXTRA_UPDATE_NOTIFICATION = "extra_update_notification";
+    private static final int NOTIFICATION_FLAG = 1;
+    final RemoteCallbackList<ITrackCallback> mCallbacks = new RemoteCallbackList<>();
+    @Inject
+    BusApiRepository busApiRepository;
+    CompositeSubscription compositeSubscription = new CompositeSubscription();
     private Toast toast;
     private List<String> mAlarmStations = new ArrayList<>();
     private boolean shouldShowNotification = true;
     private boolean shouldShowPopupNotification = true;
-
-    public static final String EXTRA_STOP_KEY = "extra_stop_key";
-    public static final String EXTRA_UPDATE_NOTIFICATION = "extra_update_notification";
-
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-        Logger.d("onBind() called with: " + "intent = [" + intent + "]");
-        return mBinder;
-    }
-
-
     /**
      * 在AIDL文件中定义的接口实现。
      */
@@ -174,6 +162,12 @@ public class TrackService extends Service {
 
     };
 
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        Logger.d("onBind() called with: " + "intent = [" + intent + "]");
+        return mBinder;
+    }
 
     private void initDependencyInjector() {
         ((BusApplication) getApplication()).getAppComponent().inject(this);
@@ -195,7 +189,7 @@ public class TrackService extends Service {
             if (intent.getBooleanExtra(EXTRA_STOP_KEY, false)) {
                 Logger.i("onStartCommand: stopSelf");
                 stopSelf();
-            } else if (intent.getBooleanExtra(EXTRA_UPDATE_NOTIFICATION,false)) {
+            } else if (intent.getBooleanExtra(EXTRA_UPDATE_NOTIFICATION, false)) {
                 Logger.i("onStartCommand: updateNotification");
                 if (mAlarmStations != null && mAlarmStations.size() != 0) {
                     updateNotification();

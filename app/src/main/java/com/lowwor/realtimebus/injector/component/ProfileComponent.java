@@ -18,7 +18,7 @@ public interface ProfileComponent {
 
     ProfileViewModel profileViewModel();
 
-  ProfilePresenter trackPresenter();
+    ProfilePresenter trackPresenter();
 
     void inject(ProfileFragment profileFragment);
 

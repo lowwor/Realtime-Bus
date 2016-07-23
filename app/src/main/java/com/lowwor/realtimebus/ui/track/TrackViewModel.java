@@ -23,19 +23,20 @@ import me.tatarka.bindingcollectionadapter.ItemView;
 public class TrackViewModel extends BaseObservable implements TrackVista {
 
 
+    /**
+     * ItemView of a single type
+     */
+    public final ItemView itemViewStation = ItemView.of(BR.busStationItemViewModel, R.layout.item_station);
+    public final ObservableList<String> lineNameItems = new ObservableArrayList<>();
+    @Bindable
+    public String text;
+    public ObservableList<BusStationItemViewModel> mBusStations = new ObservableArrayList<>();
     private Context context;
     private TrackPresenter trackPresenter;
     @Bindable
     private boolean isOffline;
     @Bindable
     private boolean isLoading = true;
-
-
-
-    @Bindable
-    public String text;
-
-    public ObservableList<BusStationItemViewModel> mBusStations = new ObservableArrayList<>();
 
     public TrackViewModel(Context context, TrackPresenter trackPresenter) {
         this.context = context;
@@ -69,15 +70,6 @@ public class TrackViewModel extends BaseObservable implements TrackVista {
         }
     }
 
-
-    /**
-     * ItemView of a single type
-     */
-    public final ItemView itemViewStation = ItemView.of(BR.busStationItemViewModel, R.layout.item_station);
-
-
-    public final ObservableList<String> lineNameItems = new ObservableArrayList<>();
-
     public void setAutoCompleteItems(List<String> historyItems) {
 //        Logger.i("setAutoCompleteItems: " + historyItems);
         lineNameItems.clear();
@@ -93,24 +85,22 @@ public class TrackViewModel extends BaseObservable implements TrackVista {
         notifyPropertyChanged(BR.text);
     }
 
+    public boolean getIsOffline() {
+        return isOffline;
+    }
+
     public void setIsOffline(boolean isOffline) {
         this.isOffline = isOffline;
         notifyPropertyChanged(BR.isOffline);
     }
 
-    public boolean getIsOffline() {
-        return isOffline;
+    public boolean getIsLoading() {
+        return isLoading;
     }
-
 
     public void setIsLoading(boolean isLoading) {
         this.isLoading = isLoading;
         notifyPropertyChanged(BR.isLoading);
-    }
-
-
-    public boolean getIsLoading() {
-        return isLoading;
     }
 
     @Override

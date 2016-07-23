@@ -20,7 +20,6 @@ import javax.inject.Inject;
  */
 public class BusApplication extends Application {
 
-    private AppComponent mAppComponent;
     @Inject
     BugReportProxy bugReportProxy;
     @Inject
@@ -29,6 +28,7 @@ public class BusApplication extends Application {
     AnalyticsProxy analyticsProxy;
     @Inject
     StethoProxy stethoProxy;
+    private AppComponent mAppComponent;
 
     @Override
     public void onCreate() {

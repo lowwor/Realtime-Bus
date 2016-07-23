@@ -16,23 +16,21 @@ public class AppModule {
 
     private final BusApplication mBusApplication;
 
-    public AppModule(BusApplication busApplication){
+    public AppModule(BusApplication busApplication) {
         this.mBusApplication = busApplication;
     }
 
     @Provides
     @Singleton
-    BusApplication provideBusApplication(){
+    BusApplication provideBusApplication() {
         return mBusApplication;
     }
 
     @Singleton
     @Provides
-    PreferencesHelper providePreferencesHelper(BusApplication busApplication){
+    PreferencesHelper providePreferencesHelper(BusApplication busApplication) {
         return new PreferencesHelper(busApplication);
     }
-
-
 
 
 }

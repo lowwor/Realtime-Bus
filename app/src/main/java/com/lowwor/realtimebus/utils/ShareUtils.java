@@ -6,12 +6,12 @@ import android.content.Intent;
 import com.lowwor.realtimebus.R;
 
 public class ShareUtils {
- 
+
     public static void share(Context context) {
         share(context, context.getString(R.string.share_text));
-    } 
+    }
 
- 
+
     public static void share(Context context, String extraText) {
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.setType("text/plain");

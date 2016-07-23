@@ -9,6 +9,7 @@ public class BaseActivity extends AppCompatActivity {
     public void onResume() {
         super.onResume();
     }
+
     public void onPause() {
         super.onPause();
     }

@@ -9,8 +9,8 @@ import com.tencent.bugly.crashreport.CrashReport;
  */
 public class BugReportProxyImpl implements BugReportProxy {
 
-    private BusApplication busApplication;
     public static final String BUGLY_APPID = "900027065";
+    private BusApplication busApplication;
 
     public BugReportProxyImpl(BusApplication busApplication) {
         this.busApplication = busApplication;

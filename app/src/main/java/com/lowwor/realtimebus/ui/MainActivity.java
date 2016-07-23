@@ -37,14 +37,13 @@ import javax.inject.Inject;
  */
 public class MainActivity extends BaseActivity {
 
+    private final int INDEX_TRACK = FragNavController.TAB1;
+    private final int INDEX_PROFILE = FragNavController.TAB2;
     TrackComponent mTrackComponent;
-
     @Inject
     PreferencesHelper mPreferencesHelper;
     private ActivityComponent activityComponent;
     private BottomBar mBottomBar;
-    private final int INDEX_TRACK = FragNavController.TAB1;
-    private final int INDEX_PROFILE = FragNavController.TAB2;
     private FragNavController mNavController;
     private ProfileComponent mProfileComponent;
 
@@ -60,6 +59,7 @@ public class MainActivity extends BaseActivity {
         initBottomBar(savedInstanceState);
 
     }
+
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -77,7 +77,7 @@ public class MainActivity extends BaseActivity {
         fragments.add(ProfileFragment.newInstance());
 
         mNavController =
-                new FragNavController( getSupportFragmentManager(), R.id.container, fragments);
+                new FragNavController(getSupportFragmentManager(), R.id.container, fragments);
 
         mBottomBar = BottomBar.attach(this, savedInstanceState);
         mBottomBar.noTabletGoodness();
@@ -113,7 +113,7 @@ public class MainActivity extends BaseActivity {
     private void updateNotificationIfAlarmStationNotNull() {
         if (mPreferencesHelper.getTrackBackground()) {
             Intent intent = new Intent(this, TrackService.class);
-            intent.putExtra(TrackService.EXTRA_UPDATE_NOTIFICATION,true);
+            intent.putExtra(TrackService.EXTRA_UPDATE_NOTIFICATION, true);
             startService(intent);
         }
     }
@@ -167,7 +167,6 @@ public class MainActivity extends BaseActivity {
         }
         return mProfileComponent;
     }
-
 
 
 }

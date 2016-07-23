@@ -23,17 +23,19 @@ import dagger.Provides;
 public class TrackModule {
     @TrackScope
     @Provides
-    RxTrackService provideRxTrackService(BusApplication busApplication, PreferencesHelper preferencesHelper){
-        return new RxTrackServiceImpl(busApplication,preferencesHelper);
+    RxTrackService provideRxTrackService(BusApplication busApplication, PreferencesHelper preferencesHelper) {
+        return new RxTrackServiceImpl(busApplication, preferencesHelper);
     }
+
     @TrackScope
     @Provides
-    TrackViewModel provideTrackViewModel(Context context,TrackPresenter trackPresenter){
-        return new TrackViewModel(context,trackPresenter);
+    TrackViewModel provideTrackViewModel(Context context, TrackPresenter trackPresenter) {
+        return new TrackViewModel(context, trackPresenter);
     }
+
     @TrackScope
     @Provides
-    TrackPresenter provideTrackPresenter(NetworkManager networkManager, RxTrackService rxTrackService,  PreferencesHelper preferencesHelper, BusApiRepository busApiRepository){
-        return new TrackPresenterImp(networkManager,busApiRepository,preferencesHelper,rxTrackService);
+    TrackPresenter provideTrackPresenter(NetworkManager networkManager, RxTrackService rxTrackService, PreferencesHelper preferencesHelper, BusApiRepository busApiRepository) {
+        return new TrackPresenterImp(networkManager, busApiRepository, preferencesHelper, rxTrackService);
     }
 }

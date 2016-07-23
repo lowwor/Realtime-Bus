@@ -23,21 +23,21 @@ public class DeveloperSettingsModule {
 
     @Provides
     @Singleton
-    public  LeakCanaryProxy provideLeakCanaryProxy(BusApplication busApplication){
+    public LeakCanaryProxy provideLeakCanaryProxy(BusApplication busApplication) {
         return new LeakCanaryProxyImpl(busApplication);
 
     }
 
     @Provides
     @Singleton
-    public   BugReportProxy provideBugReportProxy(BusApplication busApplication){
+    public BugReportProxy provideBugReportProxy(BusApplication busApplication) {
         return new BugReportProxyImpl(busApplication);
 
     }
 
     @Provides
     @Singleton
-    public  AnalyticsProxy provideAnalyticsProxy(BusApplication busApplication){
+    public AnalyticsProxy provideAnalyticsProxy(BusApplication busApplication) {
         return new AnalyticsProxyImpl(busApplication);
 
     }
@@ -45,7 +45,7 @@ public class DeveloperSettingsModule {
 
     @Provides
     @Singleton
-    public StethoProxy provideStethoProxy(BusApplication busApplication){
+    public StethoProxy provideStethoProxy(BusApplication busApplication) {
         return new StethoProxyImpl(busApplication);
 
     }
