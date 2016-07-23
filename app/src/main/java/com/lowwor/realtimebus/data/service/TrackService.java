@@ -105,6 +105,7 @@ public class TrackService extends Service {
                         @Override
                         public void onError(Throwable e) {
                             Logger.d("onError() called with: " + "e = [" + e + "]");
+                            callbackFailed(e.getMessage());
                         }
 
                         @Override
