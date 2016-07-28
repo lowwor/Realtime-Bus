@@ -119,7 +119,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="珠海公交 v2.0.1"
+                android:text="@string/version_name"
                 android:textSize="22sp"
 
                 android:textColor="@android:color/white"/>
