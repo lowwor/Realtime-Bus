@@ -2,16 +2,28 @@
 An android app to track bus status of Zhuhai using RxJava and Android Data Binding library.
 
 
-======
-Under development.
-
-<img src="/art/track.png" alt="screenshot" title="screenshot" width="270" height="486" />
-<img src="/art/profile.png" alt="screenshot" title="screenshot" width="270" height="486" />
-
-Demo
+How it looks:
 ---------
 
-#[fir.im][1]
+<img src="/art/track.png" alt="screenshot" title="screenshot"  height="486" />&nbsp;
+<img src="/art/profile.png" alt="screenshot" title="screenshot" height="486" />&nbsp;
+<img src="/art/settings.png" alt="screenshot" title="screenshot" height="486" />
+
+Main features:
+---------
+* Search busline
+* Check the status of bus on line
+* Background tracking
+* Sound notifications
+* Popup notifications
+* Status bar notifications
+* English and Chinese languages
+
+Download
+---------
+
+**[fir.im](http://fir.im/2feu)**
+
 
 Libraries
 ---------
@@ -23,5 +35,3 @@ Libraries
  * OkHttp - http://square.github.io/okhttp
  * RxJava - https://github.com/ReactiveX/RxJava
 
-
-  [1]: http://fir.im/2feu
