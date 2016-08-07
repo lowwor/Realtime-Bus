@@ -41,7 +41,6 @@ public class BusStation implements Parcelable {
     public String latitude;
     @SerializedName("Description")
     public String description;
-    public boolean isAlarm = false;
 
     @Override
     public int describeContents() {

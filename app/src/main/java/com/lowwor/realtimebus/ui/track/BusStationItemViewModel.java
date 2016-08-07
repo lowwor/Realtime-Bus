@@ -6,7 +6,6 @@ package com.lowwor.realtimebus.ui.track;
 
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
-import android.view.View;
 
 import com.lowwor.realtimebus.BR;
 import com.lowwor.realtimebus.data.model.BusStation;
@@ -15,15 +14,15 @@ import com.lowwor.realtimebus.data.model.BusStation;
 public class BusStationItemViewModel extends BaseObservable {
 
 
-    private TrackPresenter trackPresenter;
     private BusStation busStation;
     @Bindable
     private int busNumber = 0;
+    @Bindable
+    private boolean isAlarm = false;
 
 
-    public BusStationItemViewModel(BusStation busStation, TrackPresenter trackPresenter) {
+    public BusStationItemViewModel(BusStation busStation) {
         this.busStation = busStation;
-        this.trackPresenter = trackPresenter;
     }
 
 
@@ -43,28 +42,15 @@ public class BusStationItemViewModel extends BaseObservable {
     }
 
 
-    @Bindable
     public boolean getIsAlarm() {
-        return busStation.isAlarm;
+        return isAlarm;
     }
 
-
-    public View.OnClickListener onClickAlarm() {
-
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                busStation.isAlarm = !busStation.isAlarm;
-                if (busStation.isAlarm) {
-                    trackPresenter.addAlarmStation(busStation.name);
-                } else {
-                    trackPresenter.removeAlarmStation(busStation.name);
-                }
-                notifyPropertyChanged(BR.isAlarm);
-
-            }
-        };
+    public void setIsAlarm(boolean isAlarm){
+        this.isAlarm = isAlarm;
+        notifyPropertyChanged(BR.isAlarm);
     }
+
 
 
 }

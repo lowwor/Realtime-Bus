@@ -138,8 +138,8 @@ dependencies {
     // or 1.4-beta1
 
     //RecyclerView Data Binding
-    compile 'me.tatarka.bindingcollectionadapter:bindingcollectionadapter:1.1.0'
-    compile 'me.tatarka.bindingcollectionadapter:bindingcollectionadapter-recyclerview:1.1.0'
+    compile 'me.tatarka.bindingcollectionadapter:bindingcollectionadapter:2.0.0-beta1'
+    compile 'me.tatarka.bindingcollectionadapter:bindingcollectionadapter-recyclerview:2.0.0-beta1'
     //Bugly
     compile 'com.tencent.bugly:crashreport_upgrade:1.0.0'
     //其中latest.release指代最新版本号，也可以指定明确的版本号，例如1.0.0

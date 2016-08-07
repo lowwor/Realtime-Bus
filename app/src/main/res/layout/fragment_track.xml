@@ -111,7 +111,7 @@
                     android:id="@+id/recyclerview"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    app:itemView="@{trackViewModel.itemViewStation}"
+                    app:itemBinding="@{trackViewModel.itemViewStation}"
                     app:items="@{trackViewModel.mBusStations}"
                     app:layoutManager="@{LayoutManagers.linear()}"
                     tools:listitem="@layout/item_station" />

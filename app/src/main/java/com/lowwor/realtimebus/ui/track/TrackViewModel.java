@@ -15,7 +15,7 @@ import com.lowwor.realtimebus.data.model.BusStation;
 import java.util.ArrayList;
 import java.util.List;
 
-import me.tatarka.bindingcollectionadapter.ItemView;
+import me.tatarka.bindingcollectionadapter.ItemBinding;
 
 /**
  * Created by lowworker on 2016/3/2 0002.
@@ -26,7 +26,6 @@ public class TrackViewModel extends BaseObservable implements TrackVista {
     /**
      * ItemView of a single type
      */
-    public final ItemView itemViewStation = ItemView.of(BR.busStationItemViewModel, R.layout.item_station);
     public final ObservableList<String> lineNameItems = new ObservableArrayList<>();
     @Bindable
     public String text;
@@ -38,6 +37,21 @@ public class TrackViewModel extends BaseObservable implements TrackVista {
     @Bindable
     private boolean isLoading = true;
 
+    public OnBusStationClickListener busStationListener = new OnBusStationClickListener() {
+        @Override
+        public void onAlarmClick(BusStationItemViewModel item) {
+
+            item.setIsAlarm(!item.getIsAlarm());
+            if (item.getIsAlarm()) {
+                trackPresenter.addAlarmStation(item.getBusStationName());
+            } else {
+                trackPresenter.removeAlarmStation(item.getBusStationName());
+            }
+        }
+    };
+
+    public ItemBinding<BusStationItemViewModel> itemViewStation = ItemBinding.<BusStationItemViewModel>of(BR.busStationItemViewModel, R.layout.item_station).bindExtra(BR.busStationListener, busStationListener);
+    
     public TrackViewModel(Context context, TrackPresenter trackPresenter) {
         this.context = context;
         this.trackPresenter = trackPresenter;
@@ -47,7 +61,7 @@ public class TrackViewModel extends BaseObservable implements TrackVista {
 //        Logger.i("setItems: " + busStations);
         mBusStations.clear();
         for (BusStation busStation : busStations) {
-            mBusStations.add(new BusStationItemViewModel(busStation, trackPresenter));
+            mBusStations.add(new BusStationItemViewModel(busStation));
         }
     }
 
