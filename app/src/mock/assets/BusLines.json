@@ -1,7 +1,7 @@
 {
-  "d": [
+  "flag": 1002,
+  "data": [
     {
-      "__type": "Goophee.ZHGJ.Entity.Line",
       "Id": "98eb0b59-bf91-4f4d-a504-28f7ae129c46",
       "Name": "3A",
       "LineNumber": "3A",
@@ -11,12 +11,11 @@
       "BeginTime": "06:15",
       "EndTime": "22:25",
       "Price": "3",
-      "Interval": "12",
+      "Interval": "19.5",
       "Description": "",
       "StationCount": 40
     },
     {
-      "__type": "Goophee.ZHGJ.Entity.Line",
       "Id": "a6231ab9-99af-4eba-914c-8104fd9aad3a",
       "Name": "3A",
       "LineNumber": "3A",
@@ -26,7 +25,7 @@
       "BeginTime": "06:10",
       "EndTime": "22:20",
       "Price": "3",
-      "Interval": "12",
+      "Interval": "19.5",
       "Description": "",
       "StationCount": 40
     }

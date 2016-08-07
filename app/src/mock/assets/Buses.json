@@ -1,20 +1,17 @@
 {
-  "d": [
-    {
-      "BusNumber": "粤C17887",
-      "CurrentStation": "海岸生活区"
-    },
+  "flag": 1002,
+  "data": [
     {
       "BusNumber": "粤C18274",
-      "CurrentStation": "九洲港"
+      "CurrentStation": "银星花园"
     },
     {
       "BusNumber": "粤C18308",
-      "CurrentStation": "白埔路口"
+      "CurrentStation": "官塘"
     },
     {
-      "BusNumber": "粤C18311",
-      "CurrentStation": "邮政大厦"
+      "BusNumber": "粤C18319",
+      "CurrentStation": "湾仔沙"
     }
   ]
 }
