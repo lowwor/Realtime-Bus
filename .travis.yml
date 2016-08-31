@@ -24,11 +24,18 @@ before_script:
 - adb shell settings put global animator_duration_scale 0 &
 - adb shell input keyevent 82 &
 
+script:
+- ./gradlew clean build connectedAndroidTest -PdisablePreDex -PwithDexcount
+
 before_install:
   - openssl aes-256-cbc -K $encrypted_27d2053e4dd2_key -iv $encrypted_27d2053e4dd2_iv
     -in lowwor.jks.enc -out lowwor.jks -d
 #fix for ./gradlew Permission Denied. Reference: http://stackoverflow.com/questions/33820638/travis-yml-gradlew-permission-denied
   - chmod +x gradlew
+
+# Code coverage
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
 
 notifications:
   email: false

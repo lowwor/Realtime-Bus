@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.neenbedankt.android-apt'
+apply from: '../code_quality_tools/jacoco.gradle'
 
 
 def preDexEnabled = "true".equals(System.getProperty("pre_dex", "true"))
@@ -22,7 +23,8 @@ android {
         versionCode gitCommitCount()
         versionName "2.0.2"
         manifestPlaceholders = [UMENG_CHANNEL_NAME: "Unspecified",BUGLY_APP_CHANNEL: "Unspecified"]
-        setProperty("archivesBaseName", "RealTimeBus_v-$versionName-${releaseTime()}")
+        // Make generated apks contain version name and release time.
+        archivesBaseName = "RealTimeBus_v-$versionName-${releaseTime()}"
         ndk {
             //设置支持的SO库架构
             abiFilters 'armeabi' ,  'armeabi-v7a' //'x86','x86_64', 'arm64-v8a'
@@ -34,7 +36,19 @@ android {
     }
 
     buildTypes {
+        debug {
+            applicationIdSuffix '.debug'
+
+            // Enables code coverage with Jacoco only for instrumentation tests.
+            // Coverage for JVM tests done by code_quality_tools/jacoco.gradle.
+            testCoverageEnabled true
+        }
+
         release {
+            // Enables code coverage with Jacoco only for instrumentation tests.
+            // Coverage for JVM tests done by code_quality_tools/jacoco.gradle.
+            testCoverageEnabled true
+
             signingConfig signingConfigs.release
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
