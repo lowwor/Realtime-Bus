@@ -22,7 +22,7 @@ import static com.google.common.truth.Truth.assertThat;
  * Created by lowworker on 2016/5/19 0019.
  */
 @RunWith(BusRobolectricTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 21)
+@Config(constants = BuildConfig.class, sdk = 21,packageName = "com.lowwor.realtimebus")
 public class PreferencesHelperTest {
     final PreferencesHelper mPreferencesHelper = new PreferencesHelper(RuntimeEnvironment.application);
 
