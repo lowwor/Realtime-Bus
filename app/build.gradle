@@ -22,7 +22,7 @@ android {
         targetSdkVersion 22
         versionCode gitCommitCount()
         versionName "2.0.3"
-        manifestPlaceholders = [UMENG_CHANNEL_NAME: "Unspecified",BUGLY_APP_CHANNEL: "Unspecified"]
+        manifestPlaceholders = [BUGLY_APP_CHANNEL: "Unspecified"]
         // Make generated apks contain version name and release time.
         archivesBaseName = "RealTimeBus_v-$versionName-${releaseTime()}"
         ndk {
@@ -67,15 +67,15 @@ android {
         }
         fir {
             dimension  'channel'
-            manifestPlaceholders = [UMENG_CHANNEL_NAME: "FIR.IM",BUGLY_APP_CHANNEL: "FIR.IM"]
+            manifestPlaceholders = [BUGLY_APP_CHANNEL: "FIR.IM"]
         }
         wandoujia {
             dimension  'channel'
-            manifestPlaceholders = [UMENG_CHANNEL_NAME: "WanDouJia",BUGLY_APP_CHANNEL: "WanDouJia"]
+            manifestPlaceholders = [BUGLY_APP_CHANNEL: "WanDouJia"]
         }
         yingyongbao {
             dimension  'channel'
-            manifestPlaceholders = [UMENG_CHANNEL_NAME: "YingYongBao",BUGLY_APP_CHANNEL: "YingYongBao"]
+            manifestPlaceholders = [BUGLY_APP_CHANNEL: "YingYongBao"]
         }
     }
 
@@ -212,19 +212,6 @@ if (isCi) {
     println("signing.properties not found: ")
     android.buildTypes.release.signingConfig = null
 }
-
-//使用独立的appkey.propreties保存appkey信息
-def File appkeyPropFile = file('appkey.properties');
-if (isCi) {
-    android.defaultConfig.manifestPlaceholders = [UMENG_APPKEY: System.getenv("UMENG_APPKEY")]
-} else if (appkeyPropFile.exists()) {
-    def Properties appkeyProps = new Properties()
-    appkeyProps.load(new FileInputStream(appkeyPropFile))
-    android.defaultConfig.manifestPlaceholders = [UMENG_APPKEY: appkeyProps['UMENG_APPKEY']]
-} else {
-    println("appkey file not found: " + props["KEYSTORE_FILE"])
-}
-
 
 def releaseTime() {
     return new Date().format("yyyy-MM-dd", TimeZone.getTimeZone("UTC"))

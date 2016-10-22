@@ -14,13 +14,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
-        <!--Umeng-->
         <meta-data
-            android:name="UMENG_APPKEY"
-            android:value="${UMENG_APPKEY}" />
-        <meta-data
-            android:name="UMENG_CHANNEL"
-            android:value="${UMENG_CHANNEL_NAME}" />
         <!--Bugly-->
         <!-- 配置APP ID -->
         <meta-data
