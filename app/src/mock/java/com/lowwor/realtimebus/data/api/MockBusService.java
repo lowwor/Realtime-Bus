@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-import retrofit2.http.Body;
 import retrofit2.http.Query;
 import retrofit2.mock.BehaviorDelegate;
 import rx.Observable;
@@ -34,7 +33,7 @@ public class MockBusService implements BusService {
     }
 
     @Override
-    public Observable<BusLineWrapper> searchLine(@Query("handlerName") String handlerName, @Query("key") String key) {
+    public Observable<BusLineWrapper> searchLine(@Query("handlerName") String handlerName, @Query("key") String key,@Query("_") long timestamp) {
         BusLineWrapper busLineWrapper = new BusLineWrapper();
         try {
             InputStream inputStream = context.getResources().getAssets().open("BusLines.json");
@@ -42,12 +41,12 @@ public class MockBusService implements BusService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return delegate.returningResponse(busLineWrapper).searchLine(handlerName, key);
+        return delegate.returningResponse(busLineWrapper).searchLine(handlerName, key,System.currentTimeMillis());
     }
 
 
     @Override
-    public Observable<BusStationWrapper> getStationByLineId(@Query("handlerName") String handlerName, @Query("lineId") String lineId) {
+    public Observable<BusStationWrapper> getStationByLineId(@Query("handlerName") String handlerName, @Query("lineId") String lineId,@Query("_") long timestamp) {
         BusStationWrapper busStationWrapper = new BusStationWrapper();
         try {
             InputStream inputStream = context.getResources().getAssets().open("BusStations.json");
@@ -55,12 +54,12 @@ public class MockBusService implements BusService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return delegate.returningResponse(busStationWrapper).getStationByLineId(handlerName, lineId);
+        return delegate.returningResponse(busStationWrapper).getStationByLineId(handlerName, lineId,System.currentTimeMillis());
     }
 
 
     @Override
-    public Observable<BusWrapper> getBusListOnRoad(@Query("handlerName") String handlerName, @Query("lineName") String lineName, @Query("fromStation") String fromStation) {
+    public Observable<BusWrapper> getBusListOnRoad(@Query("handlerName") String handlerName, @Query("lineName") String lineName, @Query("fromStation") String fromStation,@Query("_") long timestamp) {
         BusWrapper busWrapper = new BusWrapper();
         try {
             InputStream inputStream = context.getResources().getAssets().open("Buses.json");
@@ -68,7 +67,7 @@ public class MockBusService implements BusService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return delegate.returningResponse(busWrapper).getBusListOnRoad(handlerName, lineName, fromStation);
+        return delegate.returningResponse(busWrapper).getBusListOnRoad(handlerName, lineName, fromStation,System.currentTimeMillis());
 
     }
 }
