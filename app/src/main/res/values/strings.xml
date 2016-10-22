@@ -4,6 +4,9 @@
 
     <string name="error_connection">Connection error！</string>
     <string name="error_get_bus">Get bus on line error！</string>
+    <string name="error_unknown">"Unknown error，please retry！"</string>
+    <string name="error_search_line">"Can't find this line or it's not supported yet，please retry！"</string>
+
     <string name="try_again">Try again, please!</string>
     <string name="menu_settings_title">Settings</string>
     <string name="settings_toolbar_title">Settings</string>

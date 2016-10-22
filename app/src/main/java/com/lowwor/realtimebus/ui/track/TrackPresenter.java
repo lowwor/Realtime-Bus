@@ -7,6 +7,8 @@ import com.lowwor.realtimebus.ui.base.BasePresenter;
  */
 public abstract class TrackPresenter extends BasePresenter<TrackVista> {
 
+    public static final int ERROR_SEARCH_LINE = 1;
+
     public abstract void addAlarmStation(String stationName);
 
     public abstract void removeAlarmStation(String stationName);

@@ -15,7 +15,7 @@ public interface TrackVista extends Vista {
 
     void showOffline(boolean isOffline);
 
-    void showError(String erroMsg);
+    void showError(int errorType);
 
     void showBuses(List<Bus> buses);
 

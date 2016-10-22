@@ -123,8 +123,17 @@ public class TrackViewModel extends BaseObservable implements TrackVista {
     }
 
     @Override
-    public void showError(String erroMsg) {
-        Toast.makeText(context, erroMsg, Toast.LENGTH_SHORT).show();
+    public void showError(int errorType) {
+        String errorMsg;
+        switch (errorType){
+            case TrackPresenter.ERROR_SEARCH_LINE:
+                errorMsg = context.getString(R.string.error_search_line);
+                break;
+            default:
+                errorMsg = context.getString(R.string.error_unknown);
+                break;
+        }
+        Toast.makeText(context, errorMsg, Toast.LENGTH_SHORT).show();
     }
 
     @Override

@@ -151,7 +151,7 @@ public class TrackPresenterImp extends TrackPresenter {
                     public void onError(Throwable e) {
                         Logger.d("onError() called with: " + "e = [" + e + "]");
                         vista.showLoading(false);
-                        vista.showError("找不到线路,请重试！");
+                        vista.showError(ERROR_SEARCH_LINE);
                         e.printStackTrace();
                     }
 
@@ -200,7 +200,7 @@ public class TrackPresenterImp extends TrackPresenter {
                             public void onError(Throwable e) {
                                 Logger.e("There was a problem loading the top stories " + e);
                                 e.printStackTrace();
-                                vista.showError("找不到线路,请重试！");
+                                vista.showError(ERROR_SEARCH_LINE);
                                 vista.showLoading(false);
                             }
 
