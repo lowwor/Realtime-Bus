@@ -21,7 +21,12 @@ public class LeakCanaryProxyImpl implements LeakCanaryProxy {
 
     @Override
     public void init() {
-        watcher = LeakCanary.install(busApplication);
+        if (LeakCanary.isInAnalyzerProcess(busApplication)) {
+            // This process is dedicated to LeakCanary for heap analysis.
+            // You should not init your app in this process.
+            return;
+        }
+        watcher =  LeakCanary.install(busApplication);
     }
 
     @Override

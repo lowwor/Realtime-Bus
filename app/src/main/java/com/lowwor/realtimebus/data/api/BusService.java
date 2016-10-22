@@ -5,6 +5,7 @@ import com.lowwor.realtimebus.data.model.wrapper.BusStationWrapper;
 import com.lowwor.realtimebus.data.model.wrapper.BusWrapper;
 
 import retrofit2.http.GET;
+import retrofit2.http.Headers;
 import retrofit2.http.Query;
 import rx.Observable;
 
@@ -17,13 +18,16 @@ public interface BusService {
 
 
     @GET("BusQuery.ashx")
-    Observable<BusLineWrapper> searchLine(@Query("handlerName") String handlerName, @Query("key") String key);
+    @Headers("Referer: http://www.zhbuswx.com/busline/BusQuery.html")
+    Observable<BusLineWrapper> searchLine(@Query("handlerName") String handlerName, @Query("key") String key, @Query("_") long timestamp);
 
 
     @GET("BusQuery.ashx")
-    Observable<BusStationWrapper> getStationByLineId(@Query("handlerName") String handlerName, @Query("lineId") String lineId);
+    @Headers("Referer: http://www.zhbuswx.com/busline/BusQuery.html")
+    Observable<BusStationWrapper> getStationByLineId(@Query("handlerName") String handlerName, @Query("lineId") String lineId, @Query("_") long timestamp);
 
 
     @GET("BusQuery.ashx")
-    Observable<BusWrapper> getBusListOnRoad(@Query("handlerName") String handlerName, @Query("lineName") String lineName, @Query("fromStation") String fromStation);
+    @Headers("Referer: http://www.zhbuswx.com/busline/BusQuery.html")
+    Observable<BusWrapper> getBusListOnRoad(@Query("handlerName") String handlerName, @Query("lineName") String lineName, @Query("fromStation") String fromStation, @Query("_") long timestamp);
 }
