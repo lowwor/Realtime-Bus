@@ -80,7 +80,7 @@ public class TrackPresenterImp extends TrackPresenter {
     public void searchLineIfNetworkConnected(String lineName) {
         if (networkManager.isNetworkAvailable()) {
             vista.showOffline(false);
-            searchLine(lineName);
+            searchLine(lineName.toUpperCase());
         } else {
             vista.showOffline(true);
             vista.showLoading(false);
