@@ -114,7 +114,7 @@ public class RxTrackServiceImpl implements RxTrackService {
                     @Override
                     public void call(ITrackService trackService) {
                         try {
-                            mService.setShowNotificatoin(mPreferencesHelper.getShowNotification());
+                            mService.setShowNotification(mPreferencesHelper.getShowNotification());
                             mService.setShowPopupNotification(mPreferencesHelper.getShowPopupNotification());
                             mService.startAutoRefresh(lineName, fromStation, mPreferencesHelper.getAutoRefreshInterval());
                         } catch (RemoteException e) {

@@ -50,11 +50,11 @@ import rx.subscriptions.CompositeSubscription;
  */
 public class TrackService extends Service {
 
+    private static final int NOTIFICATION_FLAG = 1;
     public static final int BACKGROUND_NOTIFICATION_FLAG = 2;
     public static final int ACTION_STOP_FLAG = 3;
     public static final String EXTRA_STOP_KEY = "extra_stop_key";
     public static final String EXTRA_UPDATE_NOTIFICATION = "extra_update_notification";
-    private static final int NOTIFICATION_FLAG = 1;
     final RemoteCallbackList<ITrackCallback> mCallbacks = new RemoteCallbackList<>();
     @Inject
     BusApiRepository busApiRepository;
@@ -78,7 +78,8 @@ public class TrackService extends Service {
         @Override
         public void startAutoRefresh(final String lineName, final String fromStation, int interval) throws RemoteException {
             Logger.d("startAutoRefresh() called with: " + "lineName = [" + lineName + "], fromStation = [" + fromStation + "]");
-            Subscription autoRefreshSupscription = Observable.interval(interval, TimeUnit.SECONDS).timeInterval()
+            Subscription autoRefreshSubscription = Observable.interval(interval, TimeUnit.SECONDS).timeInterval()
+                    .subscribeOn(Schedulers.io())
                     .flatMap(new Func1<TimeInterval<Long>, Observable<BusWrapper>>() {
                         @Override
                         public Observable<BusWrapper> call(TimeInterval<Long> longTimeInterval) {
@@ -95,7 +96,6 @@ public class TrackService extends Service {
                     })
                     .retry()
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribeOn(Schedulers.io())
                     .subscribe(new Subscriber<BusWrapper>() {
                         @Override
                         public void onCompleted() {
@@ -114,11 +114,11 @@ public class TrackService extends Service {
                             callbackSuccess(busWrapper.getData());
                         }
                     });
-            compositeSubscription.add(autoRefreshSupscription);
+            compositeSubscription.add(autoRefreshSubscription);
         }
 
         @Override
-        public void setShowNotificatoin(boolean shouldShow) throws RemoteException {
+        public void setShowNotification(boolean shouldShow) throws RemoteException {
             shouldShowNotification = shouldShow;
         }
 

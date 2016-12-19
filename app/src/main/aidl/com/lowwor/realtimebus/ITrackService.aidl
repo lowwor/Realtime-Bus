@@ -7,20 +7,13 @@ import com.lowwor.realtimebus.data.model.Bus;
 import com.lowwor.realtimebus.ITrackCallback;
 
 interface ITrackService {
-//    /**
-//     * Demonstrates some basic types that you can use as parameters
-//     * and return values in AIDL.
-//     */
-//    void basicTypes(int anInt, long aLong, boolean aBoolean, float aFloat,
-//            double aDouble, String aString);
-//
 
     void stopAutoRefresh();
 
     void startAutoRefresh(String lineName,  String fromStation,int interval);
 
     //Not safe for multi thread SharedPreferences
-    void setShowNotificatoin(boolean shouldShow);
+    void setShowNotification(boolean shouldShow);
 
     void setShowPopupNotification(boolean shouldShow);
 
