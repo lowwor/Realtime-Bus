@@ -1,4 +1,4 @@
-package com.lowwor.realtimebus.utils;
+package com.lowwor.realtimebus.databinding;
 
 import android.content.Context;
 import android.databinding.BindingAdapter;
@@ -15,7 +15,7 @@ import android.widget.TextView;
 import com.lowwor.realtimebus.R;
 import com.lowwor.realtimebus.ui.widget.InstantAutoComplete;
 import com.lowwor.realtimebus.ui.widget.LimitArrayAdapter;
-import com.lowwor.realtimebus.utils.bindinghelper.OnSearchActionListener;
+import com.lowwor.realtimebus.databinding.bindinghelper.OnSearchActionListener;
 import com.orhanobut.logger.Logger;
 
 import java.util.List;
@@ -23,7 +23,7 @@ import java.util.List;
 /**
  * Created by lowworker on 2016/3/2 0002.
  */
-public class BindingUtils {
+public class CustomBinding {
 
 
     @BindingAdapter("isRefreshing")
