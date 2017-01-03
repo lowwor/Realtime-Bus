@@ -4,56 +4,55 @@ import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
-import rx.Scheduler;
-import rx.android.plugins.RxAndroidPlugins;
-import rx.android.plugins.RxAndroidSchedulersHook;
-import rx.plugins.RxJavaPlugins;
-import rx.plugins.RxJavaSchedulersHook;
-import rx.schedulers.Schedulers;
+import java.util.concurrent.Callable;
+
+import io.reactivex.Scheduler;
+import io.reactivex.android.plugins.RxAndroidPlugins;
+import io.reactivex.functions.Function;
+import io.reactivex.plugins.RxJavaPlugins;
+import io.reactivex.schedulers.Schedulers;
+
 
 /**
- * This rule registers SchedulerHooks for RxJava and RxAndroid to ensure that subscriptions 
- * always subscribeOn and observeOn Schedulers.immediate(). 
- * Warning, this rule will reset RxAndroidPlugins and RxJavaPlugins before and after each test so 
- * if the application code uses RxJava plugins this may affect the behaviour of the testing method. 
- */ 
+ * This rule registers SchedulerHooks for RxJava and RxAndroid to ensure that subscriptions
+ * always subscribeOn and observeOn Schedulers.immediate().
+ * Warning, this rule will reset RxAndroidPlugins and RxJavaPlugins before and after each test so
+ * if the application code uses RxJava plugins this may affect the behaviour of the testing method.
+ */
 public class RxSchedulersOverrideRule implements TestRule {
- 
-    private final RxJavaSchedulersHook mRxJavaSchedulersHook = new RxJavaSchedulersHook() {
-        @Override 
-        public Scheduler getIOScheduler() {
-            return Schedulers.immediate();
-        } 
- 
-        @Override 
-        public Scheduler getNewThreadScheduler() { 
-            return Schedulers.immediate(); 
-        } 
-    }; 
- 
-    private final RxAndroidSchedulersHook mRxAndroidSchedulersHook = new RxAndroidSchedulersHook() {
-        @Override 
-        public Scheduler getMainThreadScheduler() { 
-            return Schedulers.immediate(); 
-        } 
-    }; 
- 
-    @Override 
+
+
+    @Override
     public Statement apply(final Statement base, Description description) {
         return new Statement() {
-            @Override 
+            @Override
             public void evaluate() throws Throwable {
-                RxAndroidPlugins.getInstance().reset();
-                RxAndroidPlugins.getInstance().registerSchedulersHook(mRxAndroidSchedulersHook);
- 
-                RxJavaPlugins.getInstance().reset();
-                RxJavaPlugins.getInstance().registerSchedulersHook(mRxJavaSchedulersHook);
- 
+
+                RxAndroidPlugins.reset();
+                RxJavaPlugins.reset();
+                RxAndroidPlugins.setInitMainThreadSchedulerHandler(new Function<Callable<Scheduler>, Scheduler>() {
+                                                                       @Override
+                                                                       public Scheduler apply(Callable<Scheduler> schedulerCallable) throws Exception {
+                                                                           return Schedulers.trampoline();
+                                                                       }
+                                                                   }
+                );
+                RxJavaPlugins.setNewThreadSchedulerHandler(new Function<Scheduler, Scheduler>() {
+                    @Override
+                    public Scheduler apply(Scheduler scheduler) throws Exception {
+                        return Schedulers.trampoline();
+                    }
+                });
+                RxJavaPlugins.setInitIoSchedulerHandler(new Function<Callable<Scheduler>, Scheduler>() {
+                    @Override
+                    public Scheduler apply(Callable<Scheduler> schedulerCallable) throws Exception {
+                        return Schedulers.trampoline();
+                    }
+                });
                 base.evaluate();
- 
-                RxAndroidPlugins.getInstance().reset(); 
-                RxJavaPlugins.getInstance().reset(); 
-            } 
-        }; 
-    } 
+                RxAndroidPlugins.reset();
+                RxJavaPlugins.reset();
+            }
+        };
+    }
 } 

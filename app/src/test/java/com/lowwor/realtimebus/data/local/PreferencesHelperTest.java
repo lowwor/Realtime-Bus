@@ -9,12 +9,11 @@ import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import rx.observers.TestSubscriber;
+import io.reactivex.observers.TestObserver;
 
 import static com.google.common.truth.Truth.assertThat;
 
@@ -22,7 +21,7 @@ import static com.google.common.truth.Truth.assertThat;
  * Created by lowworker on 2016/5/19 0019.
  */
 @RunWith(BusRobolectricTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 21,packageName = "com.lowwor.realtimebus")
+@Config(constants = BuildConfig.class, sdk = 21, packageName = "com.lowwor.realtimebus")
 public class PreferencesHelperTest {
     final PreferencesHelper mPreferencesHelper = new PreferencesHelper(RuntimeEnvironment.application);
 
@@ -45,51 +44,44 @@ public class PreferencesHelperTest {
 
     @Test
     public void getAutoCompleteAsObservable() throws Exception {
-        TestSubscriber<List<String>> testSubscriber = new TestSubscriber<>();
-        mPreferencesHelper.getAutoCompleteAsObservable().subscribe(testSubscriber);
-        mPreferencesHelper.saveAutoCompleteItem("3A");
+
+        TestObserver<List<String>> testObserver = mPreferencesHelper.getAutoCompleteAsObservable().test();
+        // default 3A
+        testObserver.assertValues(Collections.singletonList("3A"));
+
+        // add 4A
         mPreferencesHelper.saveAutoCompleteItem("4A");
+        testObserver.assertValues(Collections.singletonList("3A"), Arrays.asList("3A", "4A"));
 
-
-        List<String> items = new ArrayList<>();
-
-        List<String> first = new ArrayList<>();
-
-        items.add("3A");
-        List<String> second = new ArrayList<>(items);
-
-        items.add("4A");
-        List<String> third = new ArrayList<>(items);
-
-
-
-        testSubscriber.assertReceivedOnNext(Arrays.asList(first,second,third));
+        // add 10A
+        mPreferencesHelper.saveAutoCompleteItem("10A");
+        testObserver.assertValues(Collections.singletonList("3A"), Arrays.asList("3A", "4A"), Arrays.asList("3A", "4A","10A"));
     }
 
     @Test
-    public void getAutoCompleteAsObservable_whenEmpty() throws Exception {
-        List<String> items = new ArrayList<>();
+    public void getAutoCompleteAsObservable_whenEmpty_default3A() throws Exception {
 
-        TestSubscriber<List<String>> testSubscriber = new TestSubscriber<>();
-        mPreferencesHelper.getAutoCompleteAsObservable().subscribe(testSubscriber);
-        testSubscriber.assertReceivedOnNext(Collections.singletonList(items));
+        // default 3A
+        TestObserver<List<String>> testObserver = mPreferencesHelper.getAutoCompleteAsObservable().test();
+        // null is not allow in RxJava2
+        testObserver.assertValues(Collections.singletonList("3A"));
 
     }
 
     @Test
     public void saveAutoCompleteAsObservable_removeDuplicate() throws Exception {
-        List<String> items = new ArrayList<>();
 
-        TestSubscriber<List<String>> testSubscriber = new TestSubscriber<>();
-        mPreferencesHelper.getAutoCompleteAsObservable().subscribe(testSubscriber);
+        // default 3A
+        TestObserver<List<String>> testObserver = mPreferencesHelper.getAutoCompleteAsObservable().test();
+        testObserver.assertValues(Collections.singletonList("3A"));
 
-        mPreferencesHelper.saveAutoCompleteItem("3A");
-        mPreferencesHelper.saveAutoCompleteItem("3A");
-        mPreferencesHelper.saveAutoCompleteItem("3A");
-        mPreferencesHelper.saveAutoCompleteItem("3A");
+        // add 10A
+        mPreferencesHelper.saveAutoCompleteItem("10A");
+        mPreferencesHelper.saveAutoCompleteItem("10A");
+        mPreferencesHelper.saveAutoCompleteItem("10A");
+        mPreferencesHelper.saveAutoCompleteItem("10A");
 
-        items.add("3A");
-        testSubscriber.assertReceivedOnNext(Arrays.asList(new ArrayList<String>(),items));
+        testObserver.assertValues(Collections.singletonList("3A"), Arrays.asList("3A","10A"));
 
     }
 

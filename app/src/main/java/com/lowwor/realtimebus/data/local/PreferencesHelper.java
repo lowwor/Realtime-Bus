@@ -61,26 +61,25 @@ public class PreferencesHelper {
 
     public Observable<List<String>> getAutoCompleteAsObservable() {
 
-        return mRxSharedPreferences.getString(PREF_KEY_AUTO_COMPLETE_LIST).asObservable()
+        return mRxSharedPreferences.getString(PREF_KEY_AUTO_COMPLETE_LIST, getDefaultAutoCompleteString()).asObservable()
                 .map(new Function<String, List<String>>() {
-            @Override
-            public List<String> apply(String s) throws Exception {
-                List<String> items = new ArrayList<>();
-                if (!TextUtils.isEmpty(s)) {
-                    String json = mPref.getString(PREF_KEY_AUTO_COMPLETE_LIST, "");
-                    items = gson.fromJson(json, new TypeToken<List<String>>() {
-                    }.getType());
-                    return items;
-                }else{
-                    items.add("3A");
-                    return items;
-                }
-            }
-        });
+                    @Override
+                    public List<String> apply(String json) throws Exception {
+                        List<String> items = new ArrayList<>();
+                        if (!TextUtils.isEmpty(json)) {
+                            items = gson.fromJson(json, new TypeToken<List<String>>() {
+                            }.getType());
+                            return items;
+                        } else {
+                            items.add("3A");
+                            return items;
+                        }
+                    }
+                });
     }
 
     public void saveAutoCompleteItem(String item) {
-        String json = mPref.getString(PREF_KEY_AUTO_COMPLETE_LIST, null);
+        String json = mPref.getString(PREF_KEY_AUTO_COMPLETE_LIST, getDefaultAutoCompleteString());
         List<String> items = new ArrayList<>();
         if (json != null) {
             items = gson.fromJson(json, new TypeToken<List<String>>() {
@@ -90,6 +89,12 @@ public class PreferencesHelper {
 
         removeDuplicateWithOrder(items);
         mPref.edit().putString(PREF_KEY_AUTO_COMPLETE_LIST, gson.toJson(items)).apply();
+    }
+
+    private String getDefaultAutoCompleteString() {
+        List<String> items = new ArrayList<>();
+        items.add("3A");
+        return gson.toJson(items);
     }
 
     public void saveLastQueryLine(String lastQueryStation) {
