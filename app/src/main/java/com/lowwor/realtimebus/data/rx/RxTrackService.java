@@ -4,7 +4,8 @@ import com.lowwor.realtimebus.data.model.Bus;
 
 import java.util.List;
 
-import rx.Observable;
+import io.reactivex.Observable;
+
 
 /**
  * Created by lowworker on 2016/3/8 0008.

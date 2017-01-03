@@ -18,12 +18,12 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import rx.Observable;
-import rx.Subscription;
-import rx.functions.Action1;
-import rx.subjects.BehaviorSubject;
-import rx.subjects.PublishSubject;
-import rx.subscriptions.CompositeSubscription;
+import io.reactivex.Observable;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.observers.DisposableObserver;
+import io.reactivex.subjects.BehaviorSubject;
+import io.reactivex.subjects.PublishSubject;
+
 
 /**
  * Created by lowworker on 2016/3/8 0008.
@@ -35,7 +35,7 @@ public class RxTrackServiceImpl implements RxTrackService {
     private final PublishSubject<List<Bus>> mBusSubject = PublishSubject.create();
     private BehaviorSubject<ITrackService> trackServiceSubject = BehaviorSubject.create();
     private ITrackService mService;
-    private CompositeSubscription compositeSubscription;
+    private CompositeDisposable compositeDisposable;
     private ITrackCallback mCallback = new ITrackCallback.Stub() {
         @Override
         public void onBusArrived(List<Bus> buses) throws RemoteException {
@@ -72,7 +72,7 @@ public class RxTrackServiceImpl implements RxTrackService {
         public void onServiceDisconnected(ComponentName name) {
             Logger.d("onServiceDisconnected() called with: " + "name = [" + name + "]");
             mService = null;
-            trackServiceSubject.onCompleted();
+            trackServiceSubject.onComplete();
         }
     };
 
@@ -80,98 +80,115 @@ public class RxTrackServiceImpl implements RxTrackService {
     public RxTrackServiceImpl(Context context, PreferencesHelper preferencesHelper) {
         mContext = context;
         mPreferencesHelper = preferencesHelper;
-        compositeSubscription = new CompositeSubscription();
+        compositeDisposable = new CompositeDisposable();
     }
 
     @Override
     public void stopAutoRefresh() {
-        Subscription stopAutoRefreshSubscription =
-                trackServiceSubject.subscribe(new Action1<ITrackService>() {
-                    @Override
-                    public void call(ITrackService trackService) {
-                        Logger.d("call() called with: " + "trackService = [" + trackService + "]");
-                        try {
-                            mService.stopAutoRefresh();
-                        } catch (RemoteException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        mBusSubject.onError(throwable);
-                    }
-                });
-        compositeSubscription.add(stopAutoRefreshSubscription);
+
+        compositeDisposable.add(trackServiceSubject.subscribeWith(new DisposableObserver<ITrackService>() {
+            @Override
+            public void onNext(ITrackService iTrackService) {
+                Logger.d("call() called with: " + "trackService = [" + iTrackService + "]");
+                try {
+                    mService.stopAutoRefresh();
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                mBusSubject.onError(throwable);
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        }));
     }
 
 
     @Override
     public void startAutoRefresh(final String lineName, final String fromStation) {
 
-        Subscription startAutoRefreshSubscription =
-                trackServiceSubject.subscribe(new Action1<ITrackService>() {
-                    @Override
-                    public void call(ITrackService trackService) {
-                        try {
-                            mService.setShowNotification(mPreferencesHelper.getShowNotification());
-                            mService.setShowPopupNotification(mPreferencesHelper.getShowPopupNotification());
-                            mService.startAutoRefresh(lineName, fromStation, mPreferencesHelper.getAutoRefreshInterval());
-                        } catch (RemoteException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        mBusSubject.onError(throwable);
-                    }
-                });
-        compositeSubscription.add(startAutoRefreshSubscription);
+        compositeDisposable.add(trackServiceSubject.subscribeWith(new DisposableObserver<ITrackService>() {
+            @Override
+            public void onNext(ITrackService iTrackService) {
+                try {
+                    mService.setShowNotification(mPreferencesHelper.getShowNotification());
+                    mService.setShowPopupNotification(mPreferencesHelper.getShowPopupNotification());
+                    mService.startAutoRefresh(lineName, fromStation, mPreferencesHelper.getAutoRefreshInterval());
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                mBusSubject.onError(throwable);
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        }));
     }
 
     @Override
     public void addAlarmStation(final String stationName) {
-        Subscription stopAutoRefreshSubscription =
-                trackServiceSubject.subscribe(new Action1<ITrackService>() {
-                    @Override
-                    public void call(ITrackService trackService) {
-                        Logger.d("call() called with: " + "trackService = [" + trackService + "]");
-                        try {
-                            mService.addAlarmStation(stationName);
-                        } catch (RemoteException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        mBusSubject.onError(throwable);
-                    }
-                });
-        compositeSubscription.add(stopAutoRefreshSubscription);
+
+        compositeDisposable.add(trackServiceSubject.subscribeWith(new DisposableObserver<ITrackService>() {
+            @Override
+            public void onNext(ITrackService iTrackService) {
+                Logger.d("call() called with: " + "trackService = [" + iTrackService + "]");
+                try {
+                    mService.addAlarmStation(stationName);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                mBusSubject.onError(throwable);
+
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        }));
     }
 
     @Override
     public void removeAlarmStation(final String stationName) {
-        Subscription stopAutoRefreshSubscription =
-                trackServiceSubject.subscribe(new Action1<ITrackService>() {
-                    @Override
-                    public void call(ITrackService trackService) {
-                        Logger.d("call() called with: " + "trackService = [" + trackService + "]");
-                        try {
-                            mService.removeAlarmStation(stationName);
-                        } catch (RemoteException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }, new Action1<Throwable>() {
-                    @Override
-                    public void call(Throwable throwable) {
-                        mBusSubject.onError(throwable);
-                    }
-                });
-        compositeSubscription.add(stopAutoRefreshSubscription);
+
+        compositeDisposable.add(trackServiceSubject.subscribeWith(new DisposableObserver<ITrackService>() {
+            @Override
+            public void onNext(ITrackService iTrackService) {
+                Logger.d("call() called with: " + "trackService = [" + iTrackService + "]");
+                try {
+                    mService.removeAlarmStation(stationName);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                mBusSubject.onError(throwable);
+
+            }
+
+            @Override
+            public void onComplete() {
+
+            }
+        }));
     }
 
 
@@ -181,7 +198,7 @@ public class RxTrackServiceImpl implements RxTrackService {
         Intent intent = new Intent(mContext, TrackService.class);
         mContext.bindService(intent, mServiceConnection,
                 Context.BIND_AUTO_CREATE);
-        return mBusSubject.asObservable();
+        return mBusSubject.hide();
     }
 
 
@@ -194,8 +211,8 @@ public class RxTrackServiceImpl implements RxTrackService {
         }
         mContext.unbindService(mServiceConnection);
 
-        if (compositeSubscription != null && !compositeSubscription.isUnsubscribed()) {
-            compositeSubscription.unsubscribe();
+        if (compositeDisposable != null && !compositeDisposable.isDisposed()) {
+            compositeDisposable.dispose();
         }
     }
 }

@@ -8,7 +8,7 @@ import com.lowwor.realtimebus.data.model.wrapper.BusLineWrapper;
 import com.lowwor.realtimebus.data.model.wrapper.BusStationWrapper;
 import com.lowwor.realtimebus.data.model.wrapper.BusWrapper;
 
-import rx.Observable;
+import io.reactivex.Single;
 
 
 /**
@@ -25,16 +25,16 @@ public class BusApiRepository {
         this.busService = busService;
     }
 
-    public Observable<BusLineWrapper> searchLine(String key) {
+    public Single<BusLineWrapper> searchLine(String key) {
         return busService.searchLine(HANDLER_GET_LINELIST_BY_LINENAME, key,System.currentTimeMillis());
     }
 
 
-    public Observable<BusStationWrapper> getStationByLineId(String lineId) {
+    public Single<BusStationWrapper> getStationByLineId(String lineId) {
         return busService.getStationByLineId(HANDLER_GET_STATION_LIST, lineId,System.currentTimeMillis());
     }
 
-    public Observable<BusWrapper> getBusListOnRoad(String lineName, String fromStation) {
+    public Single<BusWrapper> getBusListOnRoad(String lineName, String fromStation) {
         return busService.getBusListOnRoad(HANDLER_GET_BUSLIST_ONROAD, lineName, fromStation,System.currentTimeMillis());
     }
 

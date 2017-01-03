@@ -4,8 +4,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.preference.PreferenceManager;
+import android.text.TextUtils;
 
-import com.f2prateek.rx.preferences.RxSharedPreferences;
+import com.f2prateek.rx.preferences2.RxSharedPreferences;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.lowwor.realtimebus.R;
@@ -16,8 +17,8 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import rx.Observable;
-import rx.functions.Func1;
+import io.reactivex.Observable;
+import io.reactivex.functions.Function;
 
 import static com.lowwor.realtimebus.utils.CollectionUtils.removeDuplicateWithOrder;
 
@@ -60,16 +61,20 @@ public class PreferencesHelper {
 
     public Observable<List<String>> getAutoCompleteAsObservable() {
 
-        return mRxSharedPreferences.getString(PREF_KEY_AUTO_COMPLETE_LIST).asObservable().map(new Func1<String, List<String>>() {
+        return mRxSharedPreferences.getString(PREF_KEY_AUTO_COMPLETE_LIST).asObservable()
+                .map(new Function<String, List<String>>() {
             @Override
-            public List<String> call(String s) {
+            public List<String> apply(String s) throws Exception {
                 List<String> items = new ArrayList<>();
-                if (s != null) {
+                if (!TextUtils.isEmpty(s)) {
                     String json = mPref.getString(PREF_KEY_AUTO_COMPLETE_LIST, "");
                     items = gson.fromJson(json, new TypeToken<List<String>>() {
                     }.getType());
+                    return items;
+                }else{
+                    items.add("3A");
+                    return items;
                 }
-                return items;
             }
         });
     }

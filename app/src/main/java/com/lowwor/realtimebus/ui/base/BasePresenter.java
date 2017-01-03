@@ -2,11 +2,11 @@ package com.lowwor.realtimebus.ui.base;
 
 import android.support.annotation.CallSuper;
 
-import rx.subscriptions.CompositeSubscription;
+import io.reactivex.disposables.CompositeDisposable;
 
 public abstract class BasePresenter<V extends Vista> {
 
-    protected CompositeSubscription subscriptions;
+    protected CompositeDisposable compositeDisposable;
     protected V vista;
 
     public final void attachView(V vista) {
@@ -22,18 +22,22 @@ public abstract class BasePresenter<V extends Vista> {
 
     @CallSuper
     public void onStart() {
-        if (subscriptions != null) {
-            subscriptions.unsubscribe();
+        if (compositeDisposable != null) {
+            compositeDisposable.dispose();
         }
 
-        this.subscriptions = new CompositeSubscription();
+        this.compositeDisposable = new CompositeDisposable();
     }
 
     @CallSuper
     public void onStop() {
-        if (subscriptions != null) {
-            subscriptions.unsubscribe();
+        if (compositeDisposable != null) {
+            compositeDisposable.dispose();
         }
+    }
+
+    public CompositeDisposable getCompositeDisposable(){
+        return compositeDisposable;
     }
 
 }

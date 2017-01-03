@@ -3,6 +3,7 @@ package com.lowwor.realtimebus.ui.track;
 import com.lowwor.realtimebus.data.api.BusApiRepository;
 import com.lowwor.realtimebus.data.local.PreferencesHelper;
 import com.lowwor.realtimebus.data.model.Bus;
+import com.lowwor.realtimebus.data.model.BusLine;
 import com.lowwor.realtimebus.data.model.BusStation;
 import com.lowwor.realtimebus.data.model.wrapper.BusLineWrapper;
 import com.lowwor.realtimebus.data.model.wrapper.BusStationWrapper;
@@ -13,14 +14,16 @@ import com.orhanobut.logger.Logger;
 
 import java.util.List;
 
-import rx.Observable;
-import rx.Subscriber;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action0;
-import rx.functions.Func1;
-import rx.schedulers.Schedulers;
-import rx.subscriptions.Subscriptions;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Action;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
+import io.reactivex.observers.DisposableObserver;
+import io.reactivex.observers.DisposableSingleObserver;
+import io.reactivex.schedulers.Schedulers;
+
+import static com.tencent.bugly.crashreport.crash.c.e;
 
 /**
  * Created by lowworker on 2016/4/22 0022.
@@ -122,175 +125,175 @@ public class TrackPresenterImp extends TrackPresenter {
 
 
     private void searchLine(String name) {
-        busApiRepository.searchLine(name)
-                .doOnSubscribe(new Action0() {
+        getCompositeDisposable().add(busApiRepository.searchLine(name)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnSubscribe(new Consumer<Disposable>() {
                     @Override
-                    public void call() {
+                    public void accept(Disposable disposable) throws Exception {
                         vista.showLoading(true);
                     }
                 })
-                .subscribeOn(Schedulers.io())
-                .flatMap(new Func1<BusLineWrapper, Observable<BusLineWrapper>>() {
+                .observeOn(Schedulers.io())
+                .map(new Function<BusLineWrapper, List<BusLine>>() {
                     @Override
-                    public Observable<BusLineWrapper> call(BusLineWrapper busLineWrapper) {
+                    public List<BusLine> apply(BusLineWrapper busLineWrapper) throws Exception {
+
                         if (busLineWrapper.getData().isEmpty()) {
-                            return Observable.error(new IndexOutOfBoundsException());
+                            throw new IllegalStateException("Bus line is null");
                         } else {
-                            return Observable.just(busLineWrapper);
+                            return busLineWrapper.getData();
                         }
                     }
                 })
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<BusLineWrapper>() {
+                .subscribeWith(new DisposableSingleObserver<List<BusLine>>() {
                     @Override
-                    public void onCompleted() {
+                    public void onSuccess(List<BusLine> busLines) {
+                        Logger.d("onNext() called with: " + "busLines = [" + busLines + "]");
+                        mLineName = busLines.get(0).name;
+                        preferencesHelper.saveLastQueryLine(mLineName);
+
+                        firstStation = busLines.get(0).fromStation;
+                        lastStation = busLines.get(0).toStation;
+                        fromStation = getStartFrom() ? firstStation : lastStation;
+
+                        mNormalLineId = busLines.get(0).id;
+                        mReverseLineId = busLines.get(1).id;
+                        mLineId = getStartFrom() ? mNormalLineId : mReverseLineId;
                         getStations();
                     }
 
                     @Override
-                    public void onError(Throwable e) {
-                        Logger.d("onError() called with: " + "e = [" + e + "]");
+                    public void onError(Throwable throwable) {
+                        throwable.printStackTrace();
                         vista.showLoading(false);
                         vista.showError(ERROR_SEARCH_LINE);
-                        e.printStackTrace();
                     }
-
-                    @Override
-                    public void onNext(BusLineWrapper busLineWrapper) {
-                        Logger.d("onNext() called with: " + "busLineWrapper = [" + busLineWrapper + "]");
-                        mLineName = busLineWrapper.getData().get(0).name;
-                        preferencesHelper.saveLastQueryLine(mLineName);
-
-                        firstStation = busLineWrapper.getData().get(0).fromStation;
-                        lastStation = busLineWrapper.getData().get(0).toStation;
-                        fromStation = getStartFrom() ? firstStation : lastStation;
-
-                        mNormalLineId = busLineWrapper.getData().get(0).id;
-                        mReverseLineId = busLineWrapper.getData().get(1).id;
-                        mLineId = getStartFrom() ? mNormalLineId : mReverseLineId;
-
-                    }
-                });
+                }));
     }
 
     private void getStations() {
-        subscriptions.add(
+        getCompositeDisposable().add(
                 busApiRepository.getStationByLineId(mLineId)
-                        .doOnSubscribe(new Action0() {
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .doOnSubscribe(new Consumer<Disposable>() {
                             @Override
-                            public void call() {
+                            public void accept(Disposable disposable) throws Exception {
                                 vista.showLoading(true);
                             }
                         })
-                        .map(new Func1<BusStationWrapper, List<BusStation>>() {
+                        .observeOn(Schedulers.io())
+                        .map(new Function<BusStationWrapper, List<BusStation>>() {
                             @Override
-                            public List<BusStation> call(BusStationWrapper busStationWrapper) {
+                            public List<BusStation> apply(BusStationWrapper busStationWrapper) throws Exception {
                                 return busStationWrapper.getData();
                             }
                         })
-                        .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Subscriber<List<BusStation>>() {
+                        .subscribeWith(new DisposableSingleObserver<List<BusStation>>() {
                             @Override
-                            public void onCompleted() {
-
-                            }
-
-                            @Override
-                            public void onError(Throwable e) {
-                                Logger.e("There was a problem loading the top stories " + e);
-                                e.printStackTrace();
-                                vista.showError(ERROR_SEARCH_LINE);
-                                vista.showLoading(false);
-                            }
-
-                            @Override
-                            public void onNext(List<BusStation> busStations) {
+                            public void onSuccess(List<BusStation> busStations) {
                                 vista.showLoading(false);
                                 vista.showStations(busStations);
                                 saveAutoComplete();
                                 loadBusIfNetworkConnected();
                                 executeAutoRefresh();
                             }
+
+                            @Override
+                            public void onError(Throwable throwable) {
+                                Logger.e("There was a problem loading the top stories " + e);
+                                throwable.printStackTrace();
+                                vista.showError(ERROR_SEARCH_LINE);
+                                vista.showLoading(false);
+                            }
                         }));
     }
 
     private void getBus() {
-//        Logger.i("getBus" + fromStation);
-        subscriptions.add(busApiRepository.getBusListOnRoad(mLineName, fromStation)
-                .map(new Func1<BusWrapper, List<Bus>>() {
+        getCompositeDisposable().add(busApiRepository.getBusListOnRoad(mLineName, fromStation)
+                .map(new Function<BusWrapper, List<Bus>>() {
                     @Override
-                    public List<Bus> call(BusWrapper busWrapper) {
+                    public List<Bus> apply(BusWrapper busWrapper) throws Exception {
                         return busWrapper.getData();
                     }
                 })
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(getBusSubscriber()));
+                .subscribeWith(getBusObserver()));
     }
 
 
-    private Subscriber<List<Bus>> getBusSubscriber() {
-        return new Subscriber<List<Bus>>() {
+    private DisposableSingleObserver<List<Bus>> getBusObserver() {
+        return new DisposableSingleObserver<List<Bus>>() {
             @Override
-            public void onCompleted() {
-
-//                Logger.i("onCompleted");
-            }
-
-            @Override
-            public void onError(Throwable e) {
-
-                Logger.e("There was a problem loading bus on line " + e);
-                e.printStackTrace();
-                vista.showLoading(false);
-            }
-
-            @Override
-            public void onNext(List<Bus> buses) {
-//                Logger.i("onNext");
+            public void onSuccess(List<Bus> buses) {
                 vista.showLoading(false);
                 vista.showBuses(buses);
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                Logger.e("There was a problem loading bus on line " + e);
+                throwable.printStackTrace();
+                vista.showLoading(false);
             }
         };
     }
 
     private void initTrackService() {
         Logger.d("initTrackService() called with: " + "");
+        getCompositeDisposable().add(rxTrackService.getBusObservable()
+                .doOnDispose(new Action() {
+                    @Override
+                    public void run() throws Exception {
+                        rxTrackService.close();
+                    }
+                })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableObserver<List<Bus>>() {
+                    @Override
+                    public void onNext(List<Bus> buses) {
+                        vista.showLoading(false);
+                        vista.showBuses(buses);
+                    }
 
-        Subscriber<List<Bus>> subscriber = getBusSubscriber();
-        subscriber.add(Subscriptions.create(new Action0() {
-            @Override
-            public void call() {
-                rxTrackService.close();
-            }
-        }));
-        Subscription autoRefreshSubscription = rxTrackService.getBusObservable().subscribe(
-                subscriber);
-        subscriptions.add(autoRefreshSubscription);
+                    @Override
+                    public void onError(Throwable throwable) {
+                        throwable.printStackTrace();
+                        vista.showLoading(false);
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                }));
 
     }
 
     private void initAutoComplete() {
         vista.showInitLineName(preferencesHelper.getLastQueryLine());
-        subscriptions.add(preferencesHelper.getAutoCompleteAsObservable()
+        getCompositeDisposable().add(preferencesHelper.getAutoCompleteAsObservable()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Subscriber<List<String>>() {
-                    @Override
-                    public void onCompleted() {
-                        Logger.i("auto onCompleted");
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Logger.d("onError() called with: " + "e = [" + e + "]");
-
-                    }
-
+                .subscribeWith(new DisposableObserver<List<String>>() {
                     @Override
                     public void onNext(List<String> strings) {
                         Logger.d("onNext() called with: " + "strings = [" + strings + "]");
                         vista.showSearchLineHistory(strings);
+                    }
+
+                    @Override
+                    public void onError(Throwable throwable) {
+                        Logger.d("onError() called with: " + "throwable = [" + throwable + "]");
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+
                     }
                 }));
     }

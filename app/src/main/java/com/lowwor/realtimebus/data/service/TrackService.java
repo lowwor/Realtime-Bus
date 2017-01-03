@@ -35,15 +35,18 @@ import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
-import rx.Observable;
-import rx.Subscriber;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
-import rx.functions.Func1;
-import rx.schedulers.Schedulers;
-import rx.schedulers.TimeInterval;
-import rx.subscriptions.CompositeSubscription;
+import io.reactivex.Observable;
+import io.reactivex.SingleSource;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
+import io.reactivex.observers.DisposableObserver;
+import io.reactivex.schedulers.Schedulers;
+import io.reactivex.schedulers.Timed;
+
+import static com.tencent.bugly.crashreport.crash.c.e;
+
 
 /**
  * Created by lowworker on 2016/3/6 0006.
@@ -58,7 +61,7 @@ public class TrackService extends Service {
     final RemoteCallbackList<ITrackCallback> mCallbacks = new RemoteCallbackList<>();
     @Inject
     BusApiRepository busApiRepository;
-    CompositeSubscription compositeSubscription = new CompositeSubscription();
+    CompositeDisposable compositeDisposable = new CompositeDisposable();
     private Toast toast;
     private List<String> mAlarmStations = new ArrayList<>();
     private boolean shouldShowNotification = true;
@@ -72,49 +75,51 @@ public class TrackService extends Service {
         @Override
         public void stopAutoRefresh() throws RemoteException {
             Logger.d("stopAutoRefresh() called with: " + "");
-            compositeSubscription.clear();
+            compositeDisposable.clear();
         }
 
         @Override
         public void startAutoRefresh(final String lineName, final String fromStation, int interval) throws RemoteException {
             Logger.d("startAutoRefresh() called with: " + "lineName = [" + lineName + "], fromStation = [" + fromStation + "]");
-            Subscription autoRefreshSubscription = Observable.interval(interval, TimeUnit.SECONDS).timeInterval()
+
+            compositeDisposable.add( Observable.interval(interval, TimeUnit.SECONDS)
+                    .timeInterval()
                     .subscribeOn(Schedulers.io())
-                    .flatMap(new Func1<TimeInterval<Long>, Observable<BusWrapper>>() {
+                    .flatMapSingle(new Function<Timed<Long>, SingleSource<BusWrapper>>() {
                         @Override
-                        public Observable<BusWrapper> call(TimeInterval<Long> longTimeInterval) {
-                            return busApiRepository.getBusListOnRoad(lineName, fromStation)
-                                    .observeOn(AndroidSchedulers.mainThread())
-                                    .doOnError(new Action1<Throwable>() {
-                                        @Override
-                                        public void call(Throwable throwable) {
-                                            Toast.makeText(getApplicationContext(), R.string.error_get_bus, Toast.LENGTH_SHORT).show();
-                                            callbackFailed(throwable.getMessage());
-                                        }
-                                    });
+                        public SingleSource<BusWrapper> apply(Timed<Long> longTimed) throws Exception {
+                            return busApiRepository.getBusListOnRoad(lineName, fromStation);
+                        }
+                    })
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .doOnError(new Consumer<Throwable>() {
+                        @Override
+                        public void accept(Throwable throwable) throws Exception {
+                            Toast.makeText(getApplicationContext(), R.string.error_get_bus, Toast.LENGTH_SHORT).show();
+                            callbackFailed(throwable.getMessage());
                         }
                     })
                     .retry()
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Subscriber<BusWrapper>() {
-                        @Override
-                        public void onCompleted() {
-
-                        }
-
-                        @Override
-                        public void onError(Throwable e) {
-                            Logger.d("onError() called with: " + "e = [" + e + "]");
-                            callbackFailed(e.getMessage());
-                        }
-
+                    .subscribeWith(new DisposableObserver<BusWrapper>() {
                         @Override
                         public void onNext(BusWrapper busWrapper) {
                             Logger.d("onNext() called with: " + "busWrapper = [" + busWrapper + "]");
                             callbackSuccess(busWrapper.getData());
+
                         }
-                    });
-            compositeSubscription.add(autoRefreshSubscription);
+
+                        @Override
+                        public void onError(Throwable throwable) {
+                            Logger.d("onError() called with: " + "e = [" + e + "]");
+                            callbackFailed(throwable.getMessage());
+                        }
+
+                        @Override
+                        public void onComplete() {
+
+                        }
+                    }));
         }
 
         @Override

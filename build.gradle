@@ -3,6 +3,9 @@
 buildscript {
     repositories {
         jcenter()
+        maven {
+            url "https://oss.sonatype.org/content/repositories/snapshots"
+        }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.2.2'
@@ -19,6 +22,9 @@ buildscript {
 allprojects {
     repositories {
         jcenter()
+        maven {
+            url "https://oss.sonatype.org/content/repositories/snapshots"
+        }
     }
     //This last line is needed due to the different versions of the support-annotations that are bundled with
     // the espresso libraries and the one that you probably already had in your project.
