@@ -1,5 +1,7 @@
 package com.lowwor.realtimebus.ui.track;
 
+import android.util.Log;
+
 import com.lowwor.realtimebus.data.api.BusApiRepository;
 import com.lowwor.realtimebus.data.local.PreferencesHelper;
 import com.lowwor.realtimebus.data.model.Bus;
@@ -10,11 +12,11 @@ import com.lowwor.realtimebus.data.model.wrapper.BusStationWrapper;
 import com.lowwor.realtimebus.data.model.wrapper.BusWrapper;
 import com.lowwor.realtimebus.data.rx.RxTrackService;
 import com.lowwor.realtimebus.domain.NetworkInteractor;
-import com.lowwor.realtimebus.domain.NoBusException;
 import com.orhanobut.logger.Logger;
 
 import java.util.List;
 
+import io.reactivex.Notification;
 import io.reactivex.Single;
 import io.reactivex.SingleSource;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -78,11 +80,7 @@ public class TrackPresenterImp extends TrackPresenter {
                                         .map(new Function<BusWrapper, List<Bus>>() {
                                             @Override
                                             public List<Bus> apply(BusWrapper busWrapper) throws Exception {
-                                                if (busWrapper.getData() != null && busWrapper.getData().size() != 0) {
-                                                    return busWrapper.getData();
-                                                } else {
-                                                    throw new NoBusException();
-                                                }
+                                                return busWrapper.getData();
                                             }
                                         })
                                         .subscribeOn(Schedulers.io())
@@ -221,9 +219,13 @@ public class TrackPresenterImp extends TrackPresenter {
         return new DisposableSingleObserver<List<Bus>>() {
             @Override
             public void onSuccess(List<Bus> buses) {
-                vista.showLoading(false);
-                vista.showBuses(buses);
                 vista.showOffline(false);
+                vista.showLoading(false);
+                if (buses == null || buses.isEmpty()) {
+                    vista.showError(ERROR_NO_BUS);
+                } else {
+                    vista.showBuses(buses);
+                }
             }
 
             @Override
@@ -233,10 +235,7 @@ public class TrackPresenterImp extends TrackPresenter {
                 vista.showLoading(false);
                 if (throwable instanceof NetworkInteractor.NetworkUnavailableException) {
                     vista.showOffline(true);
-                } else if (throwable instanceof NoBusException) {
-                    vista.showOffline(false);
-                    vista.showError(ERROR_NO_BUS);
-                }else {
+                } else {
                     vista.showOffline(false);
                 }
             }
@@ -246,36 +245,32 @@ public class TrackPresenterImp extends TrackPresenter {
     private void initTrackService() {
         Logger.d("initTrackService() called with: " + "");
         getCompositeDisposable().add(rxTrackService.getBusObservable()
-                .map(new Function<List<Bus>, List<Bus>>() {
-                    @Override
-                    public List<Bus> apply(List<Bus> busData) throws Exception {
-                        if (busData != null && busData.size() != 0) {
-                            return busData;
-                        } else {
-                            throw new NoBusException();
-                        }
-                    }
-                })
                 .doOnDispose(new Action() {
                     @Override
                     public void run() throws Exception {
                         rxTrackService.close();
                     }
                 })
+                .materialize()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableObserver<List<Bus>>() {
+                .subscribeWith(new DisposableObserver<Notification<List<Bus>>>() {
                     @Override
-                    public void onNext(List<Bus> buses) {
-                        vista.showBuses(buses);
+                    public void onNext(Notification<List<Bus>> listNotification) {
+                        vista.showOffline(false);
+                        vista.showLoading(false);
+                        if (listNotification.isOnNext()) {
+                            List<Bus> buses = listNotification.getValue();
+                            if (buses == null ||buses.isEmpty()) {
+                                vista.showError(ERROR_NO_BUS);
+                            } else {
+                                vista.showBuses(buses);
+                            }
+                        }
                     }
 
                     @Override
-                    public void onError(Throwable throwable) {
-                        throwable.printStackTrace();
-                        if (throwable instanceof NoBusException) {
-                            vista.showOffline(false);
-                            vista.showError(ERROR_NO_BUS);
-                        }
+                    public void onError(Throwable e) {
+                        Log.e(TAG, "onError: ", e);
                     }
 
                     @Override
