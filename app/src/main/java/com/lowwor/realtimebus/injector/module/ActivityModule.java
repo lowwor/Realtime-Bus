@@ -1,8 +1,10 @@
 package com.lowwor.realtimebus.injector.module;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
 
-import com.lowwor.realtimebus.domain.NetworkManager;
+import com.lowwor.realtimebus.domain.NetworkInteractor;
+import com.lowwor.realtimebus.domain.NetworkInteractorImpl;
 import com.lowwor.realtimebus.injector.ActivityScope;
 
 import dagger.Module;
@@ -30,7 +32,8 @@ public class ActivityModule {
 
     @Provides
     @ActivityScope
-    NetworkManager provideNetworkManager(Context context) {
-        return new NetworkManager(context);
+    NetworkInteractor provideNetworkInteractor(Context context) {
+        return new NetworkInteractorImpl(
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE));
     }
 }

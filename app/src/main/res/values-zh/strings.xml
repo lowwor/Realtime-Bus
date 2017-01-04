@@ -34,4 +34,5 @@
     <string name="service_track_background_notification_text">公交追踪服务正在后台运行</string>
     <string name="bottom_profile">我的</string>
     <string name="bottom_track">公交追踪</string>
+    <string name="error_no_bus">未找到正在营运的公交！</string>
 </resources>

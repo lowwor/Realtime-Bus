@@ -5,6 +5,7 @@ import com.lowwor.realtimebus.BusApplication;
 import com.lowwor.realtimebus.Injection;
 import com.lowwor.realtimebus.data.api.BusApiRepository;
 import com.lowwor.realtimebus.data.api.BusService;
+import com.lowwor.realtimebus.data.local.PreferencesHelper;
 
 import javax.inject.Singleton;
 
@@ -32,4 +33,9 @@ public class RepositoryModule {
     }
 
 
+    @Singleton
+    @Provides
+    PreferencesHelper providePreferencesHelper(BusApplication busApplication) {
+        return new PreferencesHelper(busApplication);
+    }
 }

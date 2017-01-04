@@ -41,11 +41,10 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
+import io.reactivex.functions.Predicate;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.schedulers.Timed;
-
-import static com.tencent.bugly.crashreport.crash.c.e;
 
 
 /**
@@ -82,7 +81,7 @@ public class TrackService extends Service {
         public void startAutoRefresh(final String lineName, final String fromStation, int interval) throws RemoteException {
             Logger.d("startAutoRefresh() called with: " + "lineName = [" + lineName + "], fromStation = [" + fromStation + "]");
 
-            compositeDisposable.add( Observable.interval(interval, TimeUnit.SECONDS)
+            compositeDisposable.add(Observable.interval(interval, TimeUnit.SECONDS)
                     .timeInterval()
                     .subscribeOn(Schedulers.io())
                     .flatMapSingle(new Function<Timed<Long>, SingleSource<BusWrapper>>() {
@@ -99,6 +98,12 @@ public class TrackService extends Service {
                             callbackFailed(throwable.getMessage());
                         }
                     })
+                    .filter(new Predicate<BusWrapper>() {
+                        @Override
+                        public boolean test(BusWrapper busWrapper) throws Exception {
+                            return busWrapper.getData() != null && busWrapper.getData().size() != 0;
+                        }
+                    })
                     .retry()
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribeWith(new DisposableObserver<BusWrapper>() {
@@ -106,12 +111,11 @@ public class TrackService extends Service {
                         public void onNext(BusWrapper busWrapper) {
                             Logger.d("onNext() called with: " + "busWrapper = [" + busWrapper + "]");
                             callbackSuccess(busWrapper.getData());
-
                         }
 
                         @Override
                         public void onError(Throwable throwable) {
-                            Logger.d("onError() called with: " + "e = [" + e + "]");
+                            Logger.d("onError() called with: " + "e = [" + throwable + "]");
                             callbackFailed(throwable.getMessage());
                         }
 

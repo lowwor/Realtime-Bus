@@ -7,7 +7,7 @@ import com.lowwor.realtimebus.data.api.BusApiRepository;
 import com.lowwor.realtimebus.data.local.PreferencesHelper;
 import com.lowwor.realtimebus.data.rx.RxTrackService;
 import com.lowwor.realtimebus.data.rx.RxTrackServiceImpl;
-import com.lowwor.realtimebus.domain.NetworkManager;
+import com.lowwor.realtimebus.domain.NetworkInteractor;
 import com.lowwor.realtimebus.injector.TrackScope;
 import com.lowwor.realtimebus.ui.track.TrackPresenter;
 import com.lowwor.realtimebus.ui.track.TrackPresenterImp;
@@ -35,7 +35,7 @@ public class TrackModule {
 
     @TrackScope
     @Provides
-    TrackPresenter provideTrackPresenter(NetworkManager networkManager, RxTrackService rxTrackService, PreferencesHelper preferencesHelper, BusApiRepository busApiRepository) {
-        return new TrackPresenterImp(networkManager, busApiRepository, preferencesHelper, rxTrackService);
+    TrackPresenter provideTrackPresenter(NetworkInteractor networkInteractor, RxTrackService rxTrackService, PreferencesHelper preferencesHelper, BusApiRepository busApiRepository) {
+        return new TrackPresenterImp(networkInteractor, busApiRepository, preferencesHelper, rxTrackService);
     }
 }

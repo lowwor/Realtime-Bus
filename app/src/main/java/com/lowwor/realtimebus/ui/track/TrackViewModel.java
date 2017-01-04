@@ -129,6 +129,9 @@ public class TrackViewModel extends BaseObservable implements TrackVista {
             case TrackPresenter.ERROR_SEARCH_LINE:
                 errorMsg = context.getString(R.string.error_search_line);
                 break;
+            case TrackPresenter.ERROR_NO_BUS:
+                errorMsg = context.getString(R.string.error_no_bus);
+                break;
             default:
                 errorMsg = context.getString(R.string.error_unknown);
                 break;

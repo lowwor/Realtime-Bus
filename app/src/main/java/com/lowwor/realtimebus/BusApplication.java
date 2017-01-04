@@ -2,6 +2,7 @@ package com.lowwor.realtimebus;
 
 import android.app.Application;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.lowwor.realtimebus.developer_settings.AnalyticsProxy;
 import com.lowwor.realtimebus.developer_settings.BugReportProxy;
@@ -14,6 +15,9 @@ import com.orhanobut.logger.LogLevel;
 import com.orhanobut.logger.Logger;
 
 import javax.inject.Inject;
+
+import io.reactivex.functions.Consumer;
+import io.reactivex.plugins.RxJavaPlugins;
 
 /**
  * Created by lowworker on 2015/9/19.
@@ -41,6 +45,20 @@ public class BusApplication extends Application {
         initLeakCanary();
         initBugReport();
         initAnalytics();
+
+        initRxJavaErrorPluginHandler();
+    }
+
+    // FIXME: 2017/1/4 0004 wait for  https://github.com/ReactiveX/RxJava/pull/4928
+    private void initRxJavaErrorPluginHandler() {
+//        https://github.com/ReactiveX/RxJava/issues/4894
+        //https://github.com/ReactiveX/RxJava/issues/4863
+        RxJavaPlugins.setErrorHandler(new Consumer<Throwable>() {
+            @Override
+            public void accept(Throwable throwable) throws Exception {
+                Log.e("RealTimeBus","Uncaught: "+throwable.toString());
+            }
+        });
     }
 
     private void initBugReport() {
