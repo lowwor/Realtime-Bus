@@ -33,7 +33,7 @@ Libraries
  * Retrofit 2.0 - http://square.github.io/retrofit
  * Glide  - https://github.com/bumptech/glide
  * OkHttp - http://square.github.io/okhttp
- * RxJava - https://github.com/ReactiveX/RxJava
+ * RxJava2 - https://github.com/ReactiveX/RxJava
  
 License
 ---------
