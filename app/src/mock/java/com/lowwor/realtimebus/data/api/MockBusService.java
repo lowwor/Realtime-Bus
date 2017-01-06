@@ -33,7 +33,7 @@ public class MockBusService implements BusService {
     }
 
     @Override
-    public Single<BusLineWrapper> searchLine(@Query("handlerName") String handlerName, @Query("key") String key, @Query("_") long timestamp) {
+    public Single<BusLineWrapper> searchLine(@Query("handlerName") String handlerName, @Query("key") String key) {
         BusLineWrapper busLineWrapper = new BusLineWrapper();
         try {
             InputStream inputStream = context.getResources().getAssets().open("BusLines.json");
@@ -41,12 +41,12 @@ public class MockBusService implements BusService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return delegate.returningResponse(busLineWrapper).searchLine(handlerName, key,System.currentTimeMillis());
+        return delegate.returningResponse(busLineWrapper).searchLine(handlerName, key);
     }
 
 
     @Override
-    public Single<BusStationWrapper> getStationByLineId(@Query("handlerName") String handlerName, @Query("lineId") String lineId,@Query("_") long timestamp) {
+    public Single<BusStationWrapper> getStationByLineId(@Query("handlerName") String handlerName, @Query("lineId") String lineId) {
         BusStationWrapper busStationWrapper = new BusStationWrapper();
         try {
             InputStream inputStream = context.getResources().getAssets().open("BusStations.json");
@@ -54,12 +54,12 @@ public class MockBusService implements BusService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return delegate.returningResponse(busStationWrapper).getStationByLineId(handlerName, lineId,System.currentTimeMillis());
+        return delegate.returningResponse(busStationWrapper).getStationByLineId(handlerName, lineId);
     }
 
 
     @Override
-    public Single<BusWrapper> getBusListOnRoad(@Query("handlerName") String handlerName, @Query("lineName") String lineName, @Query("fromStation") String fromStation,@Query("_") long timestamp) {
+    public Single<BusWrapper> getBusListOnRoad(@Query("handlerName") String handlerName, @Query("lineName") String lineName, @Query("fromStation") String fromStation) {
         BusWrapper busWrapper = new BusWrapper();
         try {
             InputStream inputStream = context.getResources().getAssets().open("Buses.json");
@@ -67,7 +67,7 @@ public class MockBusService implements BusService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return delegate.returningResponse(busWrapper).getBusListOnRoad(handlerName, lineName, fromStation,System.currentTimeMillis());
+        return delegate.returningResponse(busWrapper).getBusListOnRoad(handlerName, lineName, fromStation);
 
     }
 }
