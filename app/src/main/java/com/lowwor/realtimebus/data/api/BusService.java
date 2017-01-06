@@ -18,15 +18,15 @@ public interface BusService {
 
     @GET("BusQuery.ashx")
     @Headers("Referer: http://www.zhbuswx.com/busline/BusQuery.html")
-    Single<BusLineWrapper> searchLine(@Query("handlerName") String handlerName, @Query("key") String key, @Query("_") long timestamp);
+    Single<BusLineWrapper> searchLine(@Query("handlerName") String handlerName, @Query("key") String key);
 
 
     @GET("BusQuery.ashx")
     @Headers("Referer: http://www.zhbuswx.com/busline/BusQuery.html")
-    Single<BusStationWrapper> getStationByLineId(@Query("handlerName") String handlerName, @Query("lineId") String lineId, @Query("_") long timestamp);
+    Single<BusStationWrapper> getStationByLineId(@Query("handlerName") String handlerName, @Query("lineId") String lineId);
 
 
     @GET("BusQuery.ashx")
     @Headers("Referer: http://www.zhbuswx.com/busline/BusQuery.html")
-    Single<BusWrapper> getBusListOnRoad(@Query("handlerName") String handlerName, @Query("lineName") String lineName, @Query("fromStation") String fromStation, @Query("_") long timestamp);
+    Single<BusWrapper> getBusListOnRoad(@Query("handlerName") String handlerName, @Query("lineName") String lineName, @Query("fromStation") String fromStation);
 }

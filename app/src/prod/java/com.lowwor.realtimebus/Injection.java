@@ -3,6 +3,7 @@ package com.lowwor.realtimebus;
 import android.content.Context;
 
 import com.lowwor.realtimebus.data.api.BusService;
+import com.lowwor.realtimebus.domain.AuthInterceptor;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -16,15 +17,19 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class Injection {
 
 
-    public static BusService provideBusService(Context context){
+    public static BusService provideBusService(Context context) {
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
         if (BuildConfig.DEBUG) {
-            interceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
+            interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         } else {
             interceptor.setLevel(HttpLoggingInterceptor.Level.NONE);
         }
 
-        OkHttpClient okHttpClient = new OkHttpClient.Builder().addInterceptor(interceptor).build();
+
+        OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                .addInterceptor(new AuthInterceptor())
+                .addInterceptor(interceptor)
+                .build();
 
         Retrofit mRetrofit = new Retrofit.Builder()
                 .baseUrl(BusService.BASE_URL)
