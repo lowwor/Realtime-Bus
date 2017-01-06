@@ -24,7 +24,8 @@ android {
         manifestPlaceholders = [BUGLY_APP_CHANNEL: "Unspecified"]
         // Make generated apks contain version name and release time.
         archivesBaseName = "RealTimeBus_v-$versionName-${releaseTime()}"
-        resValue "string", "version_name", "珠海公交 v"+versionName
+        resValue "string", "version_name", "珠海公交 v" + versionName
+        resValue "string", "bugly_app_version", versionName
     }
     signingConfigs {
         release
@@ -33,47 +34,49 @@ android {
     buildTypes {
         debug {
             applicationIdSuffix '.debug'
+            resValue "string", "bugly_enable_debug", "true"
         }
 
         release {
             signingConfig signingConfigs.release
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            resValue "string", "bugly_enable_debug", "false"
         }
     }
 
-    flavorDimensions 'env','channel'
+    flavorDimensions 'env', 'channel'
     productFlavors {
         prod {
-            dimension  'env'
+            dimension 'env'
         }
         mock {
-            dimension  'env'
+            dimension 'env'
             applicationIdSuffix = ".mock"
         }
         fir {
-            dimension  'channel'
+            dimension 'channel'
             manifestPlaceholders = [BUGLY_APP_CHANNEL: "FIR.IM"]
         }
         wandoujia {
-            dimension  'channel'
+            dimension 'channel'
             manifestPlaceholders = [BUGLY_APP_CHANNEL: "WanDouJia"]
         }
         yingyongbao {
-            dimension  'channel'
+            dimension 'channel'
             manifestPlaceholders = [BUGLY_APP_CHANNEL: "YingYongBao"]
         }
     }
 
     // Remove mockRelease as it's not needed.
     android.variantFilter { variant ->
-        if(variant.buildType.name.equals('release')
+        if (variant.buildType.name.equals('release')
                 && variant.getFlavors().get(0).name.equals('mock')) {
             variant.setIgnore(true);
         }
         //Remove flavor not needed in CI
         if (isCi) {
-            if(variant.getFlavors().get(1).name.equals('fir')||variant.getFlavors().get(1).name.equals('wandoujia')) {
+            if (variant.getFlavors().get(1).name.equals('fir') || variant.getFlavors().get(1).name.equals('wandoujia')) {
                 variant.setIgnore(true);
             }
         }
