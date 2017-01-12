@@ -132,6 +132,9 @@ public class TrackViewModel extends BaseObservable implements TrackVista {
             case TrackPresenter.ERROR_NO_BUS:
                 errorMsg = context.getString(R.string.error_no_bus);
                 break;
+            case TrackPresenter.ERROR_ONLY_ONE_DIRECTION:
+                errorMsg = context.getString(R.string.error_only_one_direction);
+                break;
             default:
                 errorMsg = context.getString(R.string.error_unknown);
                 break;

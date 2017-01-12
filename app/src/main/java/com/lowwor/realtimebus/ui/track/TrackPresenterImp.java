@@ -37,14 +37,15 @@ public class TrackPresenterImp extends TrackPresenter {
     private BusApiRepository busApiRepository;
     private PreferencesHelper preferencesHelper;
     private RxTrackService rxTrackService;
-    private String mNormalLineId;
-    private String mReverseLineId;
-    private String mLineId;
-    private String mLineName;
+    private String normalLineId;
+    private String reverseLineId;
+    private String lineId;
+    private String lineName;
     private String fromStation;
     private String firstStation;
     private String lastStation;
     private boolean isFirstIn = true;
+    private boolean isOneDirection = false;
 
     public TrackPresenterImp(NetworkInteractor networkInteractor, BusApiRepository busApiRepository, PreferencesHelper preferencesHelper, RxTrackService rxTrackService) {
         this.networkInteractor = networkInteractor;
@@ -76,7 +77,7 @@ public class TrackPresenterImp extends TrackPresenter {
         getCompositeDisposable()
                 .add(networkInteractor.hasNetworkConnectionCompletable()
                         .andThen(
-                                busApiRepository.getBusListOnRoad(mLineName, fromStation)
+                                busApiRepository.getBusListOnRoad(lineName, fromStation)
                                         .map(new Function<BusWrapper, List<Bus>>() {
                                             @Override
                                             public List<Bus> apply(BusWrapper busWrapper) throws Exception {
@@ -118,16 +119,22 @@ public class TrackPresenterImp extends TrackPresenter {
                         .doOnSuccess(new Consumer<List<BusLine>>() {
                             @Override
                             public void accept(List<BusLine> busLines) throws Exception {
-                                mLineName = busLines.get(0).name;
-                                preferencesHelper.saveLastQueryLine(mLineName);
+                                TrackPresenterImp.this.lineName = busLines.get(0).name;
+                                preferencesHelper.saveLastQueryLine(TrackPresenterImp.this.lineName);
 
                                 firstStation = busLines.get(0).fromStation;
                                 lastStation = busLines.get(0).toStation;
                                 fromStation = getStartFrom() ? firstStation : lastStation;
 
-                                mNormalLineId = busLines.get(0).id;
-                                mReverseLineId = busLines.get(1).id;
-                                mLineId = getStartFrom() ? mNormalLineId : mReverseLineId;
+                                normalLineId = busLines.get(0).id;
+                                if (busLines.size() == 1) {
+                                    isOneDirection = true;
+                                    reverseLineId = busLines.get(0).id;
+                                }else{
+                                    isOneDirection = false;
+                                    reverseLineId = busLines.get(1).id;
+                                }
+                                lineId = getStartFrom() ? normalLineId : reverseLineId;
                             }
                         })
                         .flatMap(new Function<List<BusLine>, SingleSource<List<BusStation>>>() {
@@ -148,7 +155,7 @@ public class TrackPresenterImp extends TrackPresenter {
 
     public void restartAutoRefreshService() {
         rxTrackService.stopAutoRefresh();
-        rxTrackService.startAutoRefresh(mLineName, fromStation);
+        rxTrackService.startAutoRefresh(lineName, fromStation);
     }
 
 
@@ -165,12 +172,16 @@ public class TrackPresenterImp extends TrackPresenter {
 
     @Override
     public void switchDirection() {
-        switchStartFrom();
-        loadStationsIfNetworkConnected();
+        if (isOneDirection) {
+            vista.showError(ERROR_ONLY_ONE_DIRECTION);
+        } else {
+            switchStartFrom();
+            loadStationsIfNetworkConnected();
+        }
     }
 
     private Single<List<BusStation>> getStationsSingle() {
-        return busApiRepository.getStationByLineId(mLineId)
+        return busApiRepository.getStationByLineId(lineId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe(new Consumer<Disposable>() {
@@ -196,7 +207,7 @@ public class TrackPresenterImp extends TrackPresenter {
                 vista.showLoading(false);
                 vista.showStations(busStations);
                 vista.showOffline(false);
-                preferencesHelper.saveAutoCompleteItem(mLineName);
+                preferencesHelper.saveAutoCompleteItem(lineName);
                 loadBusIfNetworkConnected();
                 restartAutoRefreshService();
             }
@@ -260,7 +271,7 @@ public class TrackPresenterImp extends TrackPresenter {
                         vista.showLoading(false);
                         if (listNotification.isOnNext()) {
                             List<Bus> buses = listNotification.getValue();
-                            if (buses == null ||buses.isEmpty()) {
+                            if (buses == null || buses.isEmpty()) {
                                 vista.showError(ERROR_NO_BUS);
                             } else {
                                 vista.showBuses(buses);
@@ -308,7 +319,7 @@ public class TrackPresenterImp extends TrackPresenter {
     private void switchStartFrom() {
         preferencesHelper.saveStartFromFirst(!getStartFrom());
         boolean startFromFirst = preferencesHelper.getIsStartFromFirst();
-        mLineId = startFromFirst ? mNormalLineId : mReverseLineId;
+        lineId = startFromFirst ? normalLineId : reverseLineId;
         fromStation = startFromFirst ? firstStation : lastStation;
     }
 

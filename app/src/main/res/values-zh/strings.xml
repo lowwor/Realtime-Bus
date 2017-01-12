@@ -35,4 +35,5 @@
     <string name="bottom_profile">我的</string>
     <string name="bottom_track">公交追踪</string>
     <string name="error_no_bus">未找到正在营运的公交！</string>
+    <string name="error_only_one_direction">该线路为单向线路！</string>
 </resources>

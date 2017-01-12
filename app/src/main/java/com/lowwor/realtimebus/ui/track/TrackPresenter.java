@@ -9,6 +9,7 @@ public abstract class TrackPresenter extends BasePresenter<TrackVista> {
 
     public static final int ERROR_SEARCH_LINE = 1;
     public static final int ERROR_NO_BUS = 2;
+    public static final int ERROR_ONLY_ONE_DIRECTION = 3;
 
     public abstract void addAlarmStation(String stationName);
 
