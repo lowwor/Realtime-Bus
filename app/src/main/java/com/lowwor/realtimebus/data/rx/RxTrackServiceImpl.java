@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.util.Log;
 
 import com.lowwor.realtimebus.ITrackCallback;
 import com.lowwor.realtimebus.ITrackService;
@@ -25,11 +26,12 @@ import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subjects.PublishSubject;
 
 
+
 /**
  * Created by lowworker on 2016/3/8 0008.
  */
 public class RxTrackServiceImpl implements RxTrackService {
-
+    private static final String TAG = "RxTrackServiceImpl";
     private final Context mContext;
     private final PreferencesHelper mPreferencesHelper;
     private final PublishSubject<List<Bus>> mBusSubject = PublishSubject.create();
@@ -86,7 +88,7 @@ public class RxTrackServiceImpl implements RxTrackService {
     @Override
     public void stopAutoRefresh() {
 
-        compositeDisposable.add(trackServiceSubject.subscribeWith(new DisposableObserver<ITrackService>() {
+        compositeDisposable.add(trackServiceSubject.take(1).subscribeWith(new DisposableObserver<ITrackService>() {
             @Override
             public void onNext(ITrackService iTrackService) {
                 Logger.d("call() called with: " + "trackService = [" + iTrackService + "]");
@@ -113,7 +115,7 @@ public class RxTrackServiceImpl implements RxTrackService {
     @Override
     public void startAutoRefresh(final String lineName, final String fromStation) {
 
-        compositeDisposable.add(trackServiceSubject.subscribeWith(new DisposableObserver<ITrackService>() {
+        compositeDisposable.add(trackServiceSubject.take(1).subscribeWith(new DisposableObserver<ITrackService>() {
             @Override
             public void onNext(ITrackService iTrackService) {
                 try {
@@ -140,7 +142,7 @@ public class RxTrackServiceImpl implements RxTrackService {
     @Override
     public void addAlarmStation(final String stationName) {
 
-        compositeDisposable.add(trackServiceSubject.subscribeWith(new DisposableObserver<ITrackService>() {
+        compositeDisposable.add(trackServiceSubject.take(1).subscribeWith(new DisposableObserver<ITrackService>() {
             @Override
             public void onNext(ITrackService iTrackService) {
                 Logger.d("call() called with: " + "trackService = [" + iTrackService + "]");
@@ -167,7 +169,7 @@ public class RxTrackServiceImpl implements RxTrackService {
     @Override
     public void removeAlarmStation(final String stationName) {
 
-        compositeDisposable.add(trackServiceSubject.subscribeWith(new DisposableObserver<ITrackService>() {
+        compositeDisposable.add(trackServiceSubject.take(1).subscribeWith(new DisposableObserver<ITrackService>() {
             @Override
             public void onNext(ITrackService iTrackService) {
                 Logger.d("call() called with: " + "trackService = [" + iTrackService + "]");
