@@ -8,4 +8,11 @@ import com.lowwor.realtimebus.ui.base.BasePresenter;
 public abstract class ProfilePresenter extends BasePresenter<ProfileVista> {
 
 
+    public abstract void sendFeedBack();
+
+    public abstract void showShare();
+
+    public abstract void gotoSettings();
+
+
 }

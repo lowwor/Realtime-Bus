@@ -7,8 +7,8 @@
     <data>
 
         <variable
-            name="profileViewModel"
-            type="com.lowwor.realtimebus.ui.profile.ProfileViewModel" />
+            name="profilePresenter"
+            type="com.lowwor.realtimebus.ui.profile.ProfilePresenter" />
     </data>
 
     <android.support.design.widget.CoordinatorLayout
@@ -27,7 +27,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/profile_item_background"
-                app:onClickListener="@{(v)->profileViewModel.showShare()}"
+                app:onClickListener="@{(v)->profilePresenter.showShare()}"
                 android:orientation="horizontal">
 
                 <ImageView
@@ -56,7 +56,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/profile_item_background"
-                app:onClickListener="@{(v)->profileViewModel.sendFeedBack()}"
+                app:onClickListener="@{(v)->profilePresenter.sendFeedBack()}"
                 android:orientation="horizontal">
 
                 <ImageView
@@ -81,7 +81,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:background="@color/profile_item_background"
-                app:onClickListener="@{(v)->profileViewModel.gotoSettings()}"
+                app:onClickListener="@{(v)->profilePresenter.gotoSettings()}"
                 android:orientation="horizontal">
 
                 <ImageView

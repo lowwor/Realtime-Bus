@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.os.RemoteException;
-import android.util.Log;
 
 import com.lowwor.realtimebus.ITrackCallback;
 import com.lowwor.realtimebus.ITrackService;

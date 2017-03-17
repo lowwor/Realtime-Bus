@@ -35,7 +35,7 @@ public class ProfileFragment extends Fragment {
 
         FragmentProfileBinding fragmentProfileBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_profile, container, false);
         initDependencyInjector();
-        fragmentProfileBinding.setProfileViewModel(profileViewModel);
+        fragmentProfileBinding.setProfilePresenter(profilePresenter);
 
         fragmentProfileBinding.executePendingBindings();
         return fragmentProfileBinding.getRoot();

@@ -37,24 +37,14 @@ public class TrackViewModel extends BaseObservable implements TrackVista {
     @Bindable
     private boolean isLoading = true;
 
-    public OnBusStationClickListener busStationListener = new OnBusStationClickListener() {
-        @Override
-        public void onAlarmClick(BusStationItemViewModel item) {
 
-            item.setIsAlarm(!item.getIsAlarm());
-            if (item.getIsAlarm()) {
-                trackPresenter.addAlarmStation(item.getBusStationName());
-            } else {
-                trackPresenter.removeAlarmStation(item.getBusStationName());
-            }
-        }
-    };
 
-    public ItemBinding<BusStationItemViewModel> itemViewStation = ItemBinding.<BusStationItemViewModel>of(BR.busStationItemViewModel, R.layout.item_station).bindExtra(BR.busStationListener, busStationListener);
-    
+    public ItemBinding<BusStationItemViewModel> itemViewStation;
     public TrackViewModel(Context context, TrackPresenter trackPresenter) {
         this.context = context;
         this.trackPresenter = trackPresenter;
+        itemViewStation = ItemBinding.<BusStationItemViewModel>of(BR.busStationItemViewModel, R.layout.item_station).bindExtra(BR.trackPresenter, trackPresenter);
+
     }
 
     public void setItems(List<BusStation> busStations) {

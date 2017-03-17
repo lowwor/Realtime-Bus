@@ -7,9 +7,4 @@ import com.lowwor.realtimebus.ui.base.Vista;
  */
 public interface ProfileVista extends Vista {
 
-    void showShare();
-
-    void sendFeedBack();
-
-    void gotoSettings();
 }

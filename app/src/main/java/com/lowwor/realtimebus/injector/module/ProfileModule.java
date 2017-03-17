@@ -18,14 +18,14 @@ public class ProfileModule {
 
     @ProfileScope
     @Provides
-    ProfileViewModel provideProfileViewModel(Context context) {
-        return new ProfileViewModel(context);
+    ProfileViewModel provideProfileViewModel(ProfilePresenter profilePresenter) {
+        return new ProfileViewModel(profilePresenter);
     }
 
     @ProfileScope
     @Provides
-    ProfilePresenter provideProfilePresenter() {
-        return new ProfilePresenterImpl();
+    ProfilePresenter provideProfilePresenter(Context context) {
+        return new ProfilePresenterImpl(context);
     }
 
 }

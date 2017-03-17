@@ -11,8 +11,8 @@
             name="busStationItemViewModel"
             type="com.lowwor.realtimebus.ui.track.BusStationItemViewModel" />
         <variable
-            name="busStationListener"
-            type="com.lowwor.realtimebus.ui.track.OnBusStationClickListener" />
+            name="trackPresenter"
+            type="com.lowwor.realtimebus.ui.track.TrackPresenter" />
     </data>
 
     <android.support.v7.widget.CardView
@@ -42,7 +42,7 @@
                 android:layout_centerVertical="true"
                 android:layout_marginRight="16dp"
                 android:alpha="@{busStationItemViewModel.isAlarm?100:30}"
-                android:onClick="@{() -> busStationListener.onAlarmClick(busStationItemViewModel)}"
+                android:onClick="@{() -> trackPresenter.onAlarmClick(busStationItemViewModel)}"
                 android:scaleType="fitCenter"
                 android:src="@{busStationItemViewModel.isAlarm?@drawable/ic_alarm_on:@drawable/ic_alarm_add}" />
 

@@ -158,17 +158,15 @@ public class TrackPresenterImp extends TrackPresenter {
         rxTrackService.startAutoRefresh(lineName, fromStation);
     }
 
-
     @Override
-    public void addAlarmStation(String stationName) {
-        rxTrackService.addAlarmStation(stationName);
+    public void onAlarmClick(BusStationItemViewModel item) {
+        item.setIsAlarm(!item.getIsAlarm());
+        if (item.getIsAlarm()) {
+            rxTrackService.addAlarmStation(item.getBusStationName());
+        } else {
+            rxTrackService.removeAlarmStation(item.getBusStationName());
+        }
     }
-
-    @Override
-    public void removeAlarmStation(String stationName) {
-        rxTrackService.removeAlarmStation(stationName);
-    }
-
 
     @Override
     public void switchDirection() {
