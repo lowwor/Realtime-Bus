@@ -12,7 +12,7 @@ import com.lowwor.realtimebus.injector.module.DeveloperSettingsModule;
 import static org.mockito.Mockito.mock;
 
 /**
- * Created by lowworker on 2016/5/10 0010.
+ * Created by lowwor on 2016/5/10 0010.
  */
 public class BusTestApplication extends BusApplication {
 

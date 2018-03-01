@@ -8,7 +8,7 @@ import io.reactivex.Observable;
 
 
 /**
- * Created by lowworker on 2016/3/8 0008.
+ * Created by lowwor on 2016/3/8 0008.
  */
 public interface RxTrackService {
 

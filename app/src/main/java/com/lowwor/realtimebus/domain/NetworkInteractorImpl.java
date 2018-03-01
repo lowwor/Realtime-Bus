@@ -8,7 +8,7 @@ import javax.inject.Inject;
 import io.reactivex.Completable;
 
 /**
- * Created by lowworker on 2017/1/4 0004.
+ * Created by lowwor on 2017/1/4 0004.
  */
 public class NetworkInteractorImpl implements NetworkInteractor {
     private ConnectivityManager connectivityManager;

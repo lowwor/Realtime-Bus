@@ -11,7 +11,7 @@ import com.lowwor.realtimebus.ui.track.TrackViewModel;
 import dagger.Component;
 
 /**
- * Created by lowworker on 2015/10/15.
+ * Created by lowwor on 2015/10/15.
  */
 
 @TrackScope

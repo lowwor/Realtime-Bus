@@ -12,7 +12,7 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
- * Created by lowworker on 2016/5/7 0007.
+ * Created by lowwor on 2016/5/7 0007.
  */
 public class Injection {
 

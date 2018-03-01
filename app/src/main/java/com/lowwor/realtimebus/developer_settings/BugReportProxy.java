@@ -1,7 +1,7 @@
 package com.lowwor.realtimebus.developer_settings;
 
 /**
- * Created by lowworker on 2016/5/9 0009.
+ * Created by lowwor on 2016/5/9 0009.
  */
 public interface BugReportProxy {
 

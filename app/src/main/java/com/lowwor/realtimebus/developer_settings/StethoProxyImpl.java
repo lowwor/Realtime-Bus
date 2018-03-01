@@ -4,7 +4,7 @@ import com.facebook.stetho.Stetho;
 import com.lowwor.realtimebus.BusApplication;
 
 /**
- * Created by lowworker on 2016/5/11 0011.
+ * Created by lowwor on 2016/5/11 0011.
  */
 public class StethoProxyImpl implements StethoProxy {
     private BusApplication busApplication;

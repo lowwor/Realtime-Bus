@@ -1,7 +1,7 @@
 package com.lowwor.realtimebus.data.api;
 
 /**
- * Created by lowworker on 2015/10/14.
+ * Created by lowwor on 2015/10/14.
  */
 
 import com.lowwor.realtimebus.data.model.wrapper.BusLineWrapper;
@@ -12,7 +12,7 @@ import io.reactivex.Single;
 
 
 /**
- * Created by lowworker on 2015/9/19.
+ * Created by lowwor on 2015/9/19.
  */
 public class BusApiRepository {
     private static final String HANDLER_GET_STATION_LIST = "GetStationList";

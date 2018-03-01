@@ -6,7 +6,7 @@ import com.lowwor.realtimebus.data.model.BusStation;
 import java.util.List;
 
 /**
- * Created by lowworker on 2015/10/14.
+ * Created by lowwor on 2015/10/14.
  */
 public class BusStationWrapper {
 

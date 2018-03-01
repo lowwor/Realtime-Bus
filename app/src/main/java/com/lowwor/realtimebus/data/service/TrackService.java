@@ -48,7 +48,7 @@ import io.reactivex.schedulers.Timed;
 
 
 /**
- * Created by lowworker on 2016/3/6 0006.
+ * Created by lowwor on 2016/3/6 0006.
  */
 public class TrackService extends Service {
 

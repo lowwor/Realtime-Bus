@@ -29,7 +29,7 @@ import io.reactivex.observers.DisposableSingleObserver;
 import io.reactivex.schedulers.Schedulers;
 
 /**
- * Created by lowworker on 2016/4/22 0022.
+ * Created by lowwor on 2016/4/22 0022.
  */
 public class TrackPresenterImp extends TrackPresenter {
     private static final String TAG = "TrackPresenterImp";

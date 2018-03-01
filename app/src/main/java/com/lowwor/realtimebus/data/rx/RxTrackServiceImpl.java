@@ -27,7 +27,7 @@ import io.reactivex.subjects.PublishSubject;
 
 
 /**
- * Created by lowworker on 2016/3/8 0008.
+ * Created by lowwor on 2016/3/8 0008.
  */
 public class RxTrackServiceImpl implements RxTrackService {
     private static final String TAG = "RxTrackServiceImpl";

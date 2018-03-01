@@ -15,7 +15,7 @@ import com.lowwor.realtimebus.ui.MainActivity;
 import javax.inject.Inject;
 
 /**
- * Created by lowworker on 2016/5/21 0021.
+ * Created by lowwor on 2016/5/21 0021.
  */
 public class ProfileFragment extends Fragment {
 

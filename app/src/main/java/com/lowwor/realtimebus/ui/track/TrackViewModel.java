@@ -18,7 +18,7 @@ import java.util.List;
 import me.tatarka.bindingcollectionadapter.ItemBinding;
 
 /**
- * Created by lowworker on 2016/3/2 0002.
+ * Created by lowwor on 2016/3/2 0002.
  */
 public class TrackViewModel extends BaseObservable implements TrackVista {
 

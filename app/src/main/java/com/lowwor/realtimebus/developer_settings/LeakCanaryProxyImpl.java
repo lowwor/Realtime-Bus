@@ -7,7 +7,7 @@ import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
 
 /**
- * Created by lowworker on 2016/5/9 0009.
+ * Created by lowwor on 2016/5/9 0009.
  */
 public class LeakCanaryProxyImpl implements LeakCanaryProxy {
 

@@ -18,7 +18,7 @@ import io.reactivex.observers.TestObserver;
 import static com.google.common.truth.Truth.assertThat;
 
 /**
- * Created by lowworker on 2016/5/19 0019.
+ * Created by lowwor on 2016/5/19 0019.
  */
 @RunWith(BusRobolectricTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21, packageName = "com.lowwor.realtimebus")

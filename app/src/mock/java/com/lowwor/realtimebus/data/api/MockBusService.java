@@ -17,7 +17,7 @@ import retrofit2.http.Query;
 import retrofit2.mock.BehaviorDelegate;
 
 /**
- * Created by lowworker on 2015/10/14.
+ * Created by lowwor on 2015/10/14.
  */
 public class MockBusService implements BusService {
 

@@ -9,7 +9,7 @@ import android.util.AttributeSet;
 import com.lowwor.realtimebus.R;
 
 /**
- * Created by lowworker on 2015/10/30 0030.
+ * Created by lowwor on 2015/10/30 0030.
  */
 //http://stackoverflow.com/questions/31872653/how-can-i-determine-that-collapsingtoolbar-is-collapsed/31872915#31872915
 public class MySwipeRefreshLayout extends SwipeRefreshLayout implements AppBarLayout.OnOffsetChangedListener {

@@ -8,7 +8,7 @@ import java.util.List;
 import static com.google.common.truth.Truth.assertThat;
 
 /**
- * Created by lowworker on 2016/5/19 0019.
+ * Created by lowwor on 2016/5/19 0019.
  */
 public class CollectionUtilsTest {
 

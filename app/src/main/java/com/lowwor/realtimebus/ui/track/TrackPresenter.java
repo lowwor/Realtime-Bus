@@ -3,7 +3,7 @@ package com.lowwor.realtimebus.ui.track;
 import com.lowwor.realtimebus.ui.base.BasePresenter;
 
 /**
- * Created by lowworker on 2016/4/23 0023.
+ * Created by lowwor on 2016/4/23 0023.
  */
 public abstract class TrackPresenter extends BasePresenter<TrackVista> {
 

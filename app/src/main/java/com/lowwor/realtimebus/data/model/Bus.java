@@ -8,7 +8,7 @@ import com.hannesdorfmann.parcelableplease.annotation.ParcelablePlease;
 
 
 /**
- * Created by lowworker on 2015/10/14.
+ * Created by lowwor on 2015/10/14.
  */
 @ParcelablePlease
 public class Bus implements Parcelable {

@@ -9,7 +9,7 @@ import retrofit2.http.GET;
 import retrofit2.http.Headers;
 import retrofit2.http.Query;
 /**
- * Created by lowworker on 2015/10/14.
+ * Created by lowwor on 2015/10/14.
  */
 public interface BusService {
 

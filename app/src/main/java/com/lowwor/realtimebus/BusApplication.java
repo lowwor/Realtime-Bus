@@ -20,7 +20,7 @@ import io.reactivex.functions.Consumer;
 import io.reactivex.plugins.RxJavaPlugins;
 
 /**
- * Created by lowworker on 2015/9/19.
+ * Created by lowwor on 2015/9/19.
  */
 public class BusApplication extends Application {
 

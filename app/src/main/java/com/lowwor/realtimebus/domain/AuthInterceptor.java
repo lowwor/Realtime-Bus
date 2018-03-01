@@ -7,7 +7,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 /**
- * Created by lowworker on 2017/1/6 0006.
+ * Created by lowwor on 2017/1/6 0006.
  */
 
 public class AuthInterceptor implements Interceptor {

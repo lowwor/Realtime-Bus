@@ -11,7 +11,7 @@ import dagger.Module;
 import dagger.Provides;
 
 /**
- * Created by lowworker on 2015/10/15.
+ * Created by lowwor on 2015/10/15.
  */
 @Module
 public class ProfileModule {

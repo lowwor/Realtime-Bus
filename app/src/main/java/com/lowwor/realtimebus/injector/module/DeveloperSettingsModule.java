@@ -16,7 +16,7 @@ import dagger.Module;
 import dagger.Provides;
 
 /**
- * Created by lowworker on 2016/5/8 0008.
+ * Created by lowwor on 2016/5/8 0008.
  */
 @Module
 public class DeveloperSettingsModule {

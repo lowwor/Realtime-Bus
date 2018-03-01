@@ -13,7 +13,7 @@ import com.lowwor.realtimebus.injector.module.ActivityModule;
 import dagger.Component;
 
 /**
- * Created by lowworker on 2015/9/13.
+ * Created by lowwor on 2015/9/13.
  */
 @ActivityScope
 @Component(dependencies = AppComponent.class, modules = ActivityModule.class)
